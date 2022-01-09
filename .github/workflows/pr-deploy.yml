@@ -11,8 +11,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - run: |
-        apk add --no-cache gcc g++
-        go test -v ./pkg/...
+        apk add --no-cache gcc g++ make
+        make gen-go
+        make lint-go
+        make test-go
 
   test-js:
     runs-on: self-hosted
@@ -21,13 +23,13 @@ jobs:
     - uses: actions/checkout@v2
     - run: |
         yarn install --immutable
-        yarn test
-    needs: test-go
+        yarn test --no-watch
 
   deploy_to_development:
     runs-on: self-hosted
     steps:
     - uses: actions/checkout@v2
     - run: |
+        echo $GITHUB_SHA
         docker build --tag grafana/grafana:$GITHUB_SHA .
-    needs: test-js
+    needs: [test-go, test-js]
