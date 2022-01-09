@@ -35,13 +35,13 @@ exemptLabels:
 # Issue specific configuration
 issues:
   limitPerRun: 1
-  daysUntilStale: 100000
-  daysUntilClose: 100000
+  daysUntilStale: 90
+  daysUntilClose: 90
   markComment: >
-    This issue has been automatically marked as stale because it has not had activity in the
-    last 100 days. It will be closed in the next 100 days if no activity occurs.
+    This issue has been automatically marked as stale because it has not had activity in the last 90 days.
+    It will be closed in the next 90 days if no activity occurs.
     Thank you for your contributions.
   closeComment: >
-    This issue has been automatically closed because it has not had activity in the
-    last month and a half. If this issue is still valid, please ping a maintainer and ask them to check this again.
+    This issue has been automatically closed because it has not had activity in the last 90 days.
+    If this issue is still valid, please ping a maintainer and ask them to check this again.
     Thank you for your contributions.
