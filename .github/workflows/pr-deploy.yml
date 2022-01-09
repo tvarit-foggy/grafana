@@ -5,22 +5,24 @@ on:
     branches: [main]
 
 jobs:
-  run_yarn_tests:
+  test-go:
+    runs-on: self-hosted
+    container: golang:1.17.6-alpine3.15
+    steps:
+    - uses: actions/checkout@v2
+    - run: |
+        apk add --no-cache gcc g++
+        go test -v ./pkg/...
+
+  test-js:
     runs-on: self-hosted
     container: node:16-alpine3.15
     steps:
     - uses: actions/checkout@v2
     - run: |
         yarn install --immutable
-        yarn test --no-watch
-
-  run_go_tests:
-    runs-on: self-hosted
-    container: golang:1.17.6-alpine3.15
-    steps:
-    - uses: actions/checkout@v2
-    - run: |
-        go test -v ./pkg/...
+        yarn test
+    needs: test-go
 
   deploy_to_development:
     runs-on: self-hosted
@@ -28,3 +30,4 @@ jobs:
     - uses: actions/checkout@v2
     - run: |
         docker build --tag grafana/grafana:$GITHUB_SHA .
+    needs: test-js
