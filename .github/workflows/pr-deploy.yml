@@ -5,31 +5,25 @@ on:
     branches: [main]
 
 jobs:
-  test-go:
-    runs-on: self-hosted
-    container: golang:1.17.6-alpine3.15
-    steps:
-    - uses: actions/checkout@v2
-    - run: |
-        apk add --no-cache gcc g++ make
-        make gen-go
-        make lint-go
-        make test-go
-
-  test-js:
-    runs-on: self-hosted
-    container: node:16-alpine3.15
-    steps:
-    - uses: actions/checkout@v2
-    - run: |
-        yarn install --immutable
-        yarn test --no-watch
-
   deploy_to_development:
     runs-on: self-hosted
+    environment: development
+    env:
+      PR_NUMBER: ${{ github.event.number }}
     steps:
     - uses: actions/checkout@v2
     - run: |
-        echo $GITHUB_SHA
-        docker build --tag grafana/grafana:$GITHUB_SHA .
-    needs: [test-go, test-js]
+        echo "Building docker image..."
+        docker build --tag grafana/grafana:${PR_NUMBER} .
+        echo "Create Lightsail container service if not exists..."
+        (aws lightsail create-container-service --service-name  "dev-grafana-${PR_NUMBER}" --power nano --scale 1 --region "${AWS_DEFAULT_REGION}" && sleep 10) || :
+        echo "Upload docker image to lightsail container service and get image etag..."
+        IMAGE=$(aws lightsail push-container-image --service-name  "dev-grafana-${PR_NUMBER}" --label "dev-grafana-${PR_NUMBER}" --image "grafana/grafana:${PR_NUMBER}" --region "${AWS_DEFAULT_REGION}" | grep "Refer to this image as")
+        IMAGE=${IMAGE:24:-17}
+        echo "Create Lightsail container service deployment..."
+        sed -i "s#<PR_NUMBER/>#${PR_NUMBER}#g" .github/lightsail.json
+        sed -i "s#<IMAGE/>#${IMAGE}#g" .github/lightsail.json
+        sed -i "s#<SMTP_HOST/>#${SMTP_HOST}#g" .github/lightsail.json
+        sed -i "s#<SMTP_USER/>#${SMTP_USER}#g" .github/lightsail.json
+        sed -i "s#<SMTP_PASSWORD/>#${SMTP_PASSWORD}#g" .github/lightsail.json
+        aws lightsail create-container-service-deployment --cli-input-json file://.github/lightsail.json
