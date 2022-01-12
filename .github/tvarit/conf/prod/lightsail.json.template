@@ -1,0 +1,15 @@
+{
+  "serviceName": "<PREFIX/>-grafana",
+  "containers": {
+     "<PREFIX/>-grafana": {
+        "image": "<IMAGE/>",
+        "ports": {
+           "3000": "HTTP"
+        }
+     }
+  },
+  "publicEndpoint": {
+     "containerName": "<PREFIX/>-grafana",
+     "containerPort": 3000
+  }
+}

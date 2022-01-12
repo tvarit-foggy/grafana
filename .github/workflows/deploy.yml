@@ -1,0 +1,58 @@
+name: PR Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  test-go:
+    runs-on: self-hosted
+    container: golang:1.17.6-alpine3.15
+    steps:
+    - uses: actions/checkout@v2
+    - run: |
+        apk add --no-cache gcc g++ make
+        make gen-go
+        make lint-go
+        make test-go
+
+  test-js:
+    runs-on: self-hosted
+    container: node:16-alpine3.15
+    steps:
+    - uses: actions/checkout@v2
+    - run: |
+        yarn install --immutable
+        yarn test --no-watch
+
+  deploy_to_staging:
+    runs-on: self-hosted
+    environment: staging
+    env:
+      AWS_DEFAULT_REGION: eu-central-1
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      SMTP_HOST: ${{ secrets.SMTP_HOST }}
+      SMTP_USER: ${{ secrets.SMTP_USER }}
+      SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+    steps:
+    - uses: actions/checkout@v2
+    - run: |
+        bash .github/tvarit/deploy_to_staging.sh
+    needs: [test-go, test-js]
+
+  deploy_to_production:
+    runs-on: self-hosted
+    environment: production
+    env:
+      AWS_DEFAULT_REGION: eu-central-1
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      SMTP_HOST: ${{ secrets.SMTP_HOST }}
+      SMTP_USER: ${{ secrets.SMTP_USER }}
+      SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+    steps:
+    - uses: actions/checkout@v2
+    - run: |
+        bash .github/tvarit/deploy_to_production.sh
+    needs: [deploy_to_staging]

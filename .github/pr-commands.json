@@ -182,7 +182,7 @@
   {
     "type": "author",
     "name": "pr/external",
-    "notMemberOf": { "org": "grafana" },
+    "notMemberOf": { "org": "tvarit-foggy" },
     "ignoreList": ["renovate[bot]"],
     "action": "updateLabel",
     "addLabel": "pr/external"

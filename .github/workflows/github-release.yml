@@ -20,5 +20,4 @@ jobs:
       - name: Run github release action
         uses: ./actions/github-release
         with:
-          token: ${{secrets.GH_BOT_ACCESS_TOKEN}}
-          metricsWriteAPIKey: ${{secrets.GRAFANA_MISC_STATS_API_KEY}}
+          token: ${{secrets.GITHUB_TOKEN}}
