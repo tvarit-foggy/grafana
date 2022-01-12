@@ -15,3 +15,15 @@ jobs:
         gh pr edit ${{ github.event.number }} --milestone "" --repo $GITHUB_REPOSITORY
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  tear_down_deployment:
+    runs-on: self-hosted
+    environment: development
+    env:
+      AWS_DEFAULT_REGION: eu-central-1
+      PR_NUMBER: ${{ github.event.number }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    steps:
+    - run: |
+        aws lightsail delete-container-service --service-name dev-grafana-${PR_NUMBER} || :
