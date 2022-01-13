@@ -1,3 +1,4 @@
 FROM <BASE_IMAGE/>
 
+COPY plugins /var/lib/grafana/plugins
 COPY grafana.ini /etc/grafana/grafana.ini
