@@ -10,6 +10,13 @@ echo "Building docker image..."
 docker build --tag grafana/grafana:${PR_NUMBER} .
 
 cd .github/tvarit/conf/dev/
+echo "Downloading plugins..."
+rm -rf plugins
+aws s3 sync s3://com.tvarit.grafana.artifacts/grafana-plugins plugins
+find plugins/ -type f -name *.tar.gz -exec bash -c 'cd $(dirname $1) && tar -xf $(basename $1) && rm $(basename $1); cd -' bash {} \;
+find plugins/tvarit -type f -name MANIFEST.txt -exec rm {} \;
+
+echo "Finalising docker image..."
 cp grafana.ini.template grafana.ini
 sed -i "s#<ROOT_URL/>#${ROOT_URL}#g" grafana.ini
 sed -i "s#<SMTP_HOST/>#${SMTP_HOST}#g" grafana.ini
