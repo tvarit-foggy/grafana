@@ -5,7 +5,7 @@ set -e
 echo "Creating production database..."
 aws lightsail create-relational-database \
   --relational-database-name grafana-db \
-  --availability-zone eu-central-1a \
+  --availability-zone ${AWS_DEFAULT_REGION}a \
   --relational-database-blueprint-id mysql_8_0 \
   --relational-database-bundle-id micro_1_0 \
   --preferred-backup-window 00:00-00:30 \
@@ -44,6 +44,12 @@ echo "Building docker image..."
 docker build --tag grafana/grafana:latest .
 
 cd .github/tvarit/conf/prod/
+echo "Downloading plugins..."
+rm -rf plugins
+aws s3 sync s3://com.tvarit.grafana.artifacts/grafana-plugins plugins
+find plugins/ -type f -name *.tar.gz -exec bash -c 'cd $(dirname $1) && tar -xf $(basename $1) && rm $(basename $1); cd -' bash {} \;
+
+echo "Finalising docker image..."
 cp grafana.ini.template grafana.ini
 sed -i "s#<DOMAIN/>#cloud.tvarit.com#g" grafana.ini
 sed -i "s#<ROOT_URL/>#https://cloud.tvarit.com/#g" grafana.ini
