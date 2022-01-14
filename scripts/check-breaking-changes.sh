@@ -15,7 +15,7 @@ while IFS= read -r line; do
 
     # Calculate current and previous package paths / names
     CURRENT="$PACKAGE_PATH/dist/"
-    PREV=$(echo "${CURRENT}" | rev | sed s#/anafarg/#/tnerruc-anafarg/# | rev)
+    PREV=$(echo "${CURRENT}" | rev | sed s#/anafarg/#/tnerruc-anafarg/anafarg/# | rev)
 
     # Temporarily skipping @grafana/toolkit, as it doesn't have any exposed static typing
     if [[ "$PACKAGE_NAME" == '@grafana/toolkit' ]]; then
