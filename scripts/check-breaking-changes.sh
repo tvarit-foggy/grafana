@@ -28,7 +28,6 @@ while IFS= read -r line; do
     echo ""
     echo "${PACKAGE_NAME}"
     echo "================================================="
-    echo npm exec -- @grafana/levitate compare --prev "$PREV" --current "$CURRENT"
     npm exec -- @grafana/levitate compare --prev "$PREV" --current "$CURRENT"
 
     # Check if the comparison returned with a non-zero exit code
