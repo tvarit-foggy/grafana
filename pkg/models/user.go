@@ -13,6 +13,8 @@ var (
 	ErrProtectedUser     = errors.New("cannot adopt protected user")
 )
 
+var DefaultView = "Platform"
+
 type Password string
 
 func (p Password) IsWeak() bool {
@@ -41,6 +43,13 @@ type User struct {
 	Created    time.Time
 	Updated    time.Time
 	LastSeenAt time.Time
+}
+
+type UserView struct {
+	Id     int64
+	OrgId  int64
+	UserId int64
+	View   string
 }
 
 func (u *User) NameOrFallback() string {
@@ -109,6 +118,12 @@ type SetUsingOrgCommand struct {
 	OrgId  int64
 }
 
+type SetViewCommand struct {
+	UserId int64
+	OrgId  int64
+	View   string
+}
+
 // ----------------------
 // QUERIES
 
@@ -173,6 +188,7 @@ type SignedInUser struct {
 	OrgId          int64
 	OrgName        string
 	OrgRole        RoleType
+	View           string
 	Login          string
 	Name           string
 	Email          string

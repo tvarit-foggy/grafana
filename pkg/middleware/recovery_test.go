@@ -74,6 +74,7 @@ func recoveryScenario(t *testing.T, desc string, url string, fn scenarioFunc) {
 		sc.m.Use(contextHandler.Middleware)
 		// mock out gc goroutine
 		sc.m.Use(OrgRedirect(cfg))
+		sc.m.Use(ViewRedirect(cfg))
 
 		sc.defaultHandler = func(c *models.ReqContext) {
 			sc.context = c
