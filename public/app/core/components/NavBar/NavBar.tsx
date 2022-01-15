@@ -1,15 +1,17 @@
 import React, { FC, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { css, cx } from '@emotion/css';
-import { cloneDeep } from 'lodash';
+import { cloneDeep, filter } from 'lodash';
 import { GrafanaTheme2, NavModelItem, NavSection } from '@grafana/data';
 import { Icon, IconName, useTheme2 } from '@grafana/ui';
 import { locationService } from '@grafana/runtime';
 import { Branding } from 'app/core/components/Branding/Branding';
 import config from 'app/core/config';
+import { contextSrv } from 'app/core/services/context_srv';
 import { KioskMode } from 'app/types';
 import { enrichConfigItems, getActiveItem, isMatchOrChildMatch, isSearchActive, SEARCH_ITEM_ID } from './utils';
 import { OrgSwitcher } from '../OrgSwitcher';
+import { ViewSwitcher } from '../ViewSwitcher';
 import NavBarItem from './NavBarItem';
 import { NavBarSection } from './NavBarSection';
 import { NavBarMenu } from './NavBarMenu';
@@ -35,15 +37,25 @@ export const NavBar: FC = React.memo(() => {
   const query = new URLSearchParams(location.search);
   const kiosk = query.get('kiosk') as KioskMode;
   const [showSwitcherModal, setShowSwitcherModal] = useState(false);
+  const [showViewSwitcherModal, setShowViewSwitcherModal] = useState(false);
   const toggleSwitcherModal = () => {
     setShowSwitcherModal(!showSwitcherModal);
   };
+  const toggleViewSwitcherModal = () => {
+    setShowViewSwitcherModal(!showViewSwitcherModal);
+  };
   const navTree: NavModelItem[] = cloneDeep(config.bootData.navTree);
-  const topItems = navTree.filter((item) => item.section === NavSection.Core);
+  let topItems = navTree.filter((item) => item.section === NavSection.Core);
+  if (contextSrv.user.view === config.defaultView) {
+    topItems = filter(topItems, (item: any) => !item.view);
+  } else {
+    topItems = filter(topItems, (item: any) => item.view === contextSrv.user.view);
+  }
   const bottomItems = enrichConfigItems(
     navTree.filter((item) => item.section === NavSection.Config),
     location,
-    toggleSwitcherModal
+    toggleSwitcherModal,
+    toggleViewSwitcherModal
   );
   const activeItem = isSearchActive(location) ? searchItem : getActiveItem(navTree, location.pathname);
 
@@ -98,6 +110,7 @@ export const NavBar: FC = React.memo(() => {
       </NavBarSection>
 
       {showSwitcherModal && <OrgSwitcher onDismiss={toggleSwitcherModal} />}
+      {showViewSwitcherModal && <ViewSwitcher onDismiss={toggleViewSwitcherModal} />}
       {mobileMenuOpen && (
         <NavBarMenu
           activeItem={activeItem}

@@ -11,6 +11,7 @@ export class User {
   orgRole: any;
   orgId: number;
   orgName: string;
+  view: string;
   login: string;
   orgCount: number;
   timezone: string;
@@ -28,6 +29,7 @@ export class User {
     this.orgRole = '';
     this.orgId = 0;
     this.orgName = '';
+    this.view = 'Platform';
     this.login = '';
     this.orgCount = 0;
     this.timezone = '';

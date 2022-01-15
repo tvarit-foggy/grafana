@@ -19,7 +19,8 @@ export const getForcedLoginUrl = (url: string) => {
 export const enrichConfigItems = (
   items: NavModelItem[],
   location: Location<unknown>,
-  toggleOrgSwitcher: () => void
+  toggleOrgSwitcher: () => void,
+  toggleViewSwitcher: () => void
 ) => {
   const { isSignedIn, user } = contextSrv;
   const onOpenShortcuts = () => {
@@ -30,7 +31,13 @@ export const enrichConfigItems = (
     const profileNode = items.find((bottomNavItem) => bottomNavItem.id === 'profile');
     if (profileNode) {
       profileNode.showOrgSwitcher = true;
-      profileNode.subTitle = `Current Org.: ${user?.orgName}`;
+    }
+  }
+
+  if (user && getConfig().views.length > 1) {
+    const profileNode = items.find((bottomNavItem) => bottomNavItem.id === 'profile');
+    if (profileNode) {
+      profileNode.showViewSwitcher = true;
     }
   }
 
@@ -48,8 +55,6 @@ export const enrichConfigItems = (
   }
 
   items.forEach((link, index) => {
-    let menuItems = link.children || [];
-
     if (link.id === 'help') {
       link.children = [
         ...getFooterLinks(),
@@ -63,11 +68,22 @@ export const enrichConfigItems = (
 
     if (link.showOrgSwitcher) {
       link.children = [
-        ...menuItems,
+        ...(link.children || []),
         {
-          text: 'Switch organization',
+          text: `Current Org.: ${user?.orgName}`,
           icon: 'arrow-random',
           onClick: toggleOrgSwitcher,
+        },
+      ];
+    }
+
+    if (link.showViewSwitcher) {
+      link.children = [
+        ...(link.children || []),
+        {
+          text: `Current View: ${user?.view}`,
+          icon: 'arrow-random',
+          onClick: toggleViewSwitcher,
         },
       ];
     }
