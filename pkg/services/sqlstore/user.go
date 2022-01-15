@@ -500,17 +500,13 @@ func SetView(ctx context.Context, cmd *models.SetViewCommand) error {
 			_, err := sess.Insert(&view)
 			return err
 		} else {
-			for _, row := range res {
-				view.Id, err = strconv.ParseInt(string(row["id"]), 10, 64)
-				if err != nil {
-					return err
-				}
-				_, err = sess.ID(view.Id).Update(&view)
+			view.Id, err = strconv.ParseInt(string(res[0]["id"]), 10, 64)
+			if err != nil {
 				return err
 			}
+			_, err = sess.ID(view.Id).Update(&view)
+			return err
 		}
-
-		return nil
 	})
 }
 
