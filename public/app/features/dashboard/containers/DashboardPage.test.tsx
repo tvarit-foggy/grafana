@@ -190,7 +190,7 @@ describe('DashboardPage', () => {
     });
 
     it('Should update title', () => {
-      expect(document.title).toBe('My dashboard - Grafana');
+      expect(document.title).toBe('My dashboard - Tvarit AI Platform');
     });
   });
 
