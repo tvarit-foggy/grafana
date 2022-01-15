@@ -14,8 +14,8 @@ while IFS= read -r line; do
     PACKAGE_NAME="${ADDR[1]}"
 
     # Calculate current and previous package paths / names
-    PREV="$PACKAGE_NAME@canary"
     CURRENT="$PACKAGE_PATH/dist/"
+    PREV=$(echo "${CURRENT}" | rev | sed s#/anafarg/#/tnerruc-anafarg/anafarg/# | rev)
 
     # Temporarily skipping @grafana/toolkit, as it doesn't have any exposed static typing
     if [[ "$PACKAGE_NAME" == '@grafana/toolkit' ]]; then
