@@ -130,6 +130,27 @@ func addUserMigrations(mg *Migrator) {
 	mg.AddMigration("Add is_service_account column to user", NewAddColumnMigration(userV2, &Column{
 		Name: "is_service_account", Type: DB_Bool, Nullable: false, Default: "0",
 	}))
+
+	//-------  user view table -------------------
+	userViewV1 := Table{
+		Name: "user_view",
+		Columns: []*Column{
+			{Name: "id", Type: DB_BigInt, IsPrimaryKey: true, IsAutoIncrement: true},
+			{Name: "org_id", Type: DB_BigInt},
+			{Name: "user_id", Type: DB_BigInt},
+			{Name: "view", Type: DB_NVarchar, Length: 255},
+		},
+		Indices: []*Index{
+			{Cols: []string{"org_id", "user_id"}, Type: UniqueIndex},
+		},
+	}
+
+	mg.AddMigration("create user_view table v1", NewAddTableMigration(userViewV1))
+	addTableIndicesMigrations(mg, "v1", userViewV1)
+
+	mg.AddMigration("Update user_view table charset", NewTableCharsetMigration("org_user", []*Column{
+		{Name: "view", Type: DB_NVarchar, Length: 255},
+	}))
 }
 
 type AddMissingUserSaltAndRandsMigration struct {

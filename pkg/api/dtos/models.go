@@ -36,6 +36,7 @@ type CurrentUser struct {
 	OrgId                      int64              `json:"orgId"`
 	OrgName                    string             `json:"orgName"`
 	OrgRole                    models.RoleType    `json:"orgRole"`
+	View                       string             `json:"view"`
 	IsGrafanaAdmin             bool               `json:"isGrafanaAdmin"`
 	GravatarUrl                string             `json:"gravatarUrl"`
 	Timezone                   string             `json:"timezone"`

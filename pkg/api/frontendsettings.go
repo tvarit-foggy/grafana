@@ -205,6 +205,7 @@ func (hs *HTTPServer) getFrontendSettingsMap(c *models.ReqContext) (map[string]i
 	hasAccess := accesscontrol.HasAccess(hs.AccessControl, c)
 
 	jsonObj := map[string]interface{}{
+		"defaultView":                         models.DefaultView,
 		"defaultDatasource":                   defaultDS,
 		"datasources":                         dataSources,
 		"minRefreshInterval":                  setting.MinRefreshInterval,

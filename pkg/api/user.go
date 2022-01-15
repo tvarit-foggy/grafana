@@ -141,6 +141,18 @@ func UpdateUserActiveOrg(c *models.ReqContext) response.Response {
 	return response.Success("Active organization changed")
 }
 
+//POST /api/user/view/:view
+func UserSetActiveView(c *models.ReqContext) response.Response {
+	view := c.Params(":view")
+
+	cmd := models.SetViewCommand{UserId: c.UserId, OrgId: c.OrgId, View: view}
+	if err := bus.Dispatch(c.Req.Context(), &cmd); err != nil {
+		return response.Error(500, "Failed to change active view", err)
+	}
+
+	return response.Success("Active view changed")
+}
+
 func handleUpdateUser(ctx context.Context, cmd models.UpdateUserCommand) response.Response {
 	if len(cmd.Login) == 0 {
 		cmd.Login = cmd.Email

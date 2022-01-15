@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/grafana/grafana/pkg/api/dtos"
@@ -11,6 +12,7 @@ import (
 	"github.com/grafana/grafana/pkg/models"
 	"github.com/grafana/grafana/pkg/plugins"
 	ac "github.com/grafana/grafana/pkg/services/accesscontrol"
+	"github.com/grafana/grafana/pkg/services/search"
 	"github.com/grafana/grafana/pkg/setting"
 )
 
@@ -580,6 +582,71 @@ func (hs *HTTPServer) setIndexViewData(c *models.ReqContext) (*dtos.IndexViewDat
 		return nil, err
 	}
 
+	searchQuery := search.Query{
+		Tags:         []string{"pin"},
+		SignedInUser: c.SignedInUser,
+		OrgId:        c.OrgId,
+	}
+
+	err = bus.Dispatch(c.Req.Context(), &searchQuery)
+	if err != nil {
+		return nil, err
+	}
+
+	settings["views"] = []string{models.DefaultView}
+	userView := models.DefaultView
+	dashboards := []*dtos.NavLink{}
+
+	for _, dashboard := range searchQuery.Result {
+		if dashboard.FolderTitle == "" {
+			continue
+		}
+
+		view := dashboard.FolderTitle
+
+		found := false
+		for _, v := range settings["views"].([]string) {
+			if v == view {
+				found = true
+				break
+			}
+		}
+		if !found {
+			if view == c.SignedInUser.View {
+				userView = view
+			}
+			settings["views"] = append(settings["views"].([]string), view)
+		}
+
+		icon := ""
+		img := ""
+		weight := int64(0)
+		for _, t := range dashboard.Tags {
+			if strings.HasPrefix(t, "icon: ") {
+				icon = t[6:]
+			}
+			if strings.HasPrefix(t, "img: ") {
+				img = t[5:]
+			}
+			if strings.HasPrefix(t, "weight: ") {
+				weight, _ = strconv.ParseInt(t[8:], 10, 64)
+			}
+		}
+		if icon == "" && img == "" {
+			icon = "dashboard"
+		}
+		dashboards = append(dashboards, &dtos.NavLink{
+			Text:       dashboard.Title,
+			Id:         dashboard.URI,
+			Icon:       icon,
+			Img:        img,
+			SortWeight: -1 * weight,
+			Url:        setting.AppSubUrl + dashboard.URL,
+			View:       view,
+			Section:    dtos.NavSectionCore,
+		})
+	}
+
 	data := dtos.IndexViewData{
 		User: &dtos.CurrentUser{
 			Id:                         c.UserId,
@@ -591,6 +658,7 @@ func (hs *HTTPServer) setIndexViewData(c *models.ReqContext) (*dtos.IndexViewDat
 			OrgId:                      c.OrgId,
 			OrgName:                    c.OrgName,
 			OrgRole:                    c.OrgRole,
+			View:                       userView,
 			GravatarUrl:                dtos.GetGravatarUrl(c.Email),
 			IsGrafanaAdmin:             c.IsGrafanaAdmin,
 			LightTheme:                 prefs.Theme == lightName,
@@ -621,6 +689,8 @@ func (hs *HTTPServer) setIndexViewData(c *models.ReqContext) (*dtos.IndexViewDat
 		ContentDeliveryURL:      hs.Cfg.GetContentDeliveryURL(hs.License.ContentDeliveryPrefix()),
 		LoadingLogo:             "public/img/grafana_icon.svg",
 	}
+
+	data.NavTree = append(data.NavTree, dashboards...)
 
 	if hs.Cfg.FeatureToggles["accesscontrol"] {
 		userPermissions, err := hs.AccessControl.GetUserPermissions(c.Req.Context(), c.SignedInUser)

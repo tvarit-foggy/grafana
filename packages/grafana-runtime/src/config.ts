@@ -21,6 +21,8 @@ export interface AzureSettings {
 }
 
 export class GrafanaBootConfig implements GrafanaConfig {
+  defaultView = 'Platform';
+  views: string[] = [];
   datasources: { [str: string]: DataSourceInstanceSettings } = {};
   panels: { [key: string]: PanelPluginMeta } = {};
   minRefreshInterval = '';

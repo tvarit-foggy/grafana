@@ -179,6 +179,12 @@ func (ctx *Context) QueryInt64(name string) int64 {
 	return n
 }
 
+// Params returns params result in string type.
+// e.g. ctx.Params(":uid")
+func (ctx *Context) Params(name string) string {
+	return Params(ctx.Req)[name]
+}
+
 // ParamsInt64 returns params result in int64 type.
 // e.g. ctx.ParamsInt64(":uid")
 func (ctx *Context) ParamsInt64(name string) int64 {

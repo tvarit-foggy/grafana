@@ -15,6 +15,7 @@ export interface NavModelItem {
   parentItem?: NavModelItem;
   section?: NavSection;
   showOrgSwitcher?: boolean;
+  showViewSwitcher?: boolean;
   onClick?: () => void;
   menuItemType?: NavMenuItemType;
 }

@@ -441,6 +441,7 @@ func (hs *HTTPServer) addMiddlewaresAndStaticRoutes() {
 
 	m.Use(hs.ContextHandler.Middleware)
 	m.Use(middleware.OrgRedirect(hs.Cfg))
+	m.Use(middleware.ViewRedirect(hs.Cfg))
 	m.Use(acmiddleware.LoadPermissionsMiddleware(hs.AccessControl))
 
 	// needs to be after context handler

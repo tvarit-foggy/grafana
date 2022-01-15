@@ -26,6 +26,7 @@ func (ss *SQLStore) addUserQueryAndCommandHandlers() {
 	bus.AddHandler("sql", ss.GetUserByLogin)
 	bus.AddHandler("sql", ss.GetUserByEmail)
 	bus.AddHandler("sql", SetUsingOrg)
+	bus.AddHandler("sql", SetView)
 	bus.AddHandler("sql", UpdateUserLastSeenAt)
 	bus.AddHandler("sql", ss.GetUserProfile)
 	bus.AddHandler("sql", SearchUsers)
@@ -473,6 +474,42 @@ func setUsingOrgInTransaction(sess *DBSession, userID int64, orgID int64) error 
 	return err
 }
 
+func SetView(ctx context.Context, cmd *models.SetViewCommand) error {
+	return inTransaction(func(sess *DBSession) error {
+		if res, err := sess.Query("SELECT 1 from org WHERE id=?", cmd.OrgId); err != nil {
+			return err
+		} else if len(res) != 1 {
+			return models.ErrOrgNotFound
+		}
+
+		if res, err := sess.Query("SELECT 1 from user WHERE id=?", cmd.UserId); err != nil {
+			return err
+		} else if len(res) != 1 {
+			return models.ErrOrgNotFound
+		}
+
+		view := models.UserView{
+			UserId: cmd.UserId,
+			OrgId:  cmd.OrgId,
+			View:   cmd.View,
+		}
+
+		if res, err := sess.Query("SELECT id from user_view WHERE org_id=? AND user_id=?", cmd.OrgId, cmd.UserId); err != nil {
+			return err
+		} else if len(res) == 0 {
+			_, err := sess.Insert(&view)
+			return err
+		} else {
+			view.Id, err = strconv.ParseInt(string(res[0]["id"]), 10, 64)
+			if err != nil {
+				return err
+			}
+			_, err = sess.ID(view.Id).Update(&view)
+			return err
+		}
+	})
+}
+
 func (ss *SQLStore) GetUserProfile(ctx context.Context, query *models.GetUserProfileQuery) error {
 	return ss.WithDbSession(ctx, func(sess *DBSession) error {
 		var user models.User
@@ -573,8 +610,10 @@ func GetSignedInUser(ctx context.Context, query *models.GetSignedInUserQuery) er
 		(SELECT COUNT(*) FROM org_user where org_user.user_id = u.id) as org_count,
 		org.name         as org_name,
 		org_user.role    as org_role,
-		org.id           as org_id
+		org.id           as org_id,
+		user_view.view   as view
 		FROM ` + dialect.Quote("user") + ` as u
+		LEFT OUTER JOIN user_view on user_view.org_id = ` + orgId + ` and user_view.user_id = u.id
 		LEFT OUTER JOIN org_user on org_user.org_id = ` + orgId + ` and org_user.user_id = u.id
 		LEFT OUTER JOIN org on org.id = org_user.org_id `
 

@@ -144,6 +144,7 @@ func (hs *HTTPServer) registerRoutes() {
 			userRoute.Get("/", routing.Wrap(hs.GetSignedInUser))
 			userRoute.Put("/", routing.Wrap(UpdateSignedInUser))
 			userRoute.Post("/using/:id", routing.Wrap(UserSetUsingOrg))
+			userRoute.Post("/view/:view", routing.Wrap(UserSetActiveView))
 			userRoute.Get("/orgs", routing.Wrap(GetSignedInUserOrgList))
 			userRoute.Get("/teams", routing.Wrap(GetSignedInUserTeamList))
 
