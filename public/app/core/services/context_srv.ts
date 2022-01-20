@@ -85,7 +85,7 @@ export class ContextSrv {
   }
 
   accessControlEnabled(): boolean {
-    return featureEnabled('accesscontrol') && config.featureToggles['accesscontrol'];
+    return featureEnabled('accesscontrol') && Boolean(config.featureToggles['accesscontrol']);
   }
 
   // Checks whether user has required permission

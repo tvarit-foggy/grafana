@@ -63,17 +63,7 @@ export class GrafanaBootConfig implements GrafanaConfig {
   theme: GrafanaTheme;
   theme2: GrafanaTheme2;
   pluginsToPreload: PreloadPlugin[] = [];
-  featureToggles: FeatureToggles = {
-    accesscontrol: false,
-    trimDefaults: false,
-    tempoServiceGraph: false,
-    tempoSearch: false,
-    recordedQueries: false,
-    newNavigation: false,
-    fullRangeLogsVolume: false,
-    queryOverLive: false,
-    dashboardPreviews: false,
-  };
+  featureToggles: FeatureToggles = {};
   licenseInfo: LicenseInfo = {} as LicenseInfo;
   rendererAvailable = false;
   rendererVersion = '';
@@ -105,6 +95,9 @@ export class GrafanaBootConfig implements GrafanaConfig {
   applicationInsightsConnectionString?: string;
   applicationInsightsEndpointUrl?: string;
   recordedQueries = {
+    enabled: false,
+  };
+  featureHighlights = {
     enabled: false,
   };
 
