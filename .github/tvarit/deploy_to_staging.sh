@@ -76,7 +76,7 @@ sed -i "s#<DOMAIN/>#next-cloud.tvarit.com#g" grafana.ini
 sed -i "s#<ROOT_URL/>#https://next-cloud.tvarit.com/#g" grafana.ini
 sed -i "s#<SIGNING_SECRET/>#$(aws secretsmanager get-random-password --exclude-characters ';#' --output text)#g" grafana.ini
 sed -i "s#<DB_ENDPOINT/>#${DB_ENDPOINT}#g" grafana.ini
-sed -i "s#<DB_PASSWORD/>#$(echo ${DB_PASSWORD} | sed 's/#/\\#/g')#g" grafana.ini
+sed -i "s#<DB_PASSWORD/>#$(echo ${DB_PASSWORD} | sed 's/#/\\#/g' | sed 's/&/\\&/g')#g" grafana.ini
 sed -i "s#<SMTP_HOST/>#${SMTP_HOST}#g" grafana.ini
 sed -i "s#<SMTP_USER/>#${SMTP_USER}#g" grafana.ini
 sed -i "s#<SMTP_PASSWORD/>#${SMTP_PASSWORD}#g" grafana.ini
