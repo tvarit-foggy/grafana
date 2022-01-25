@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/grafana/grafana/pkg/api/dtos"
 	"github.com/grafana/grafana/pkg/api/response"
@@ -23,7 +24,11 @@ func (hs *HTTPServer) GetSignedInUser(c *models.ReqContext) response.Response {
 
 // GET /api/users/:id
 func (hs *HTTPServer) GetUserByID(c *models.ReqContext) response.Response {
-	return hs.getUserUserProfile(c, c.ParamsInt64(":id"))
+	id, err := strconv.ParseInt(web.Params(c.Req)[":id"], 10, 64)
+	if err != nil {
+		return response.Error(http.StatusBadRequest, "id is invalid", err)
+	}
+	return hs.getUserUserProfile(c, id)
 }
 
 func (hs *HTTPServer) getUserUserProfile(c *models.ReqContext, userID int64) response.Response {
@@ -116,17 +121,27 @@ func UpdateSignedInUser(c *models.ReqContext) response.Response {
 // POST /api/users/:id
 func UpdateUser(c *models.ReqContext) response.Response {
 	cmd := models.UpdateUserCommand{}
+	var err error
 	if err := web.Bind(c.Req, &cmd); err != nil {
 		return response.Error(http.StatusBadRequest, "bad request data", err)
 	}
-	cmd.UserId = c.ParamsInt64(":id")
+	cmd.UserId, err = strconv.ParseInt(web.Params(c.Req)[":id"], 10, 64)
+	if err != nil {
+		return response.Error(http.StatusBadRequest, "id is invalid", err)
+	}
 	return handleUpdateUser(c.Req.Context(), cmd)
 }
 
 // POST /api/users/:id/using/:orgId
 func UpdateUserActiveOrg(c *models.ReqContext) response.Response {
-	userID := c.ParamsInt64(":id")
-	orgID := c.ParamsInt64(":orgId")
+	userID, err := strconv.ParseInt(web.Params(c.Req)[":id"], 10, 64)
+	if err != nil {
+		return response.Error(http.StatusBadRequest, "id is invalid", err)
+	}
+	orgID, err := strconv.ParseInt(web.Params(c.Req)[":orgId"], 10, 64)
+	if err != nil {
+		return response.Error(http.StatusBadRequest, "orgId is invalid", err)
+	}
 
 	if !validateUsingOrg(c.Req.Context(), userID, orgID) {
 		return response.Error(401, "Not a valid organization", nil)
@@ -143,7 +158,7 @@ func UpdateUserActiveOrg(c *models.ReqContext) response.Response {
 
 //POST /api/user/view/:view
 func UserSetActiveView(c *models.ReqContext) response.Response {
-	view := c.Params(":view")
+	view := web.Params(c.Req)[":view"]
 
 	cmd := models.SetViewCommand{UserId: c.UserId, OrgId: c.OrgId, View: view}
 	if err := bus.Dispatch(c.Req.Context(), &cmd); err != nil {
@@ -180,7 +195,11 @@ func GetSignedInUserTeamList(c *models.ReqContext) response.Response {
 
 // GET /api/users/:id/teams
 func GetUserTeams(c *models.ReqContext) response.Response {
-	return getUserTeamList(c.Req.Context(), c.OrgId, c.ParamsInt64(":id"))
+	id, err := strconv.ParseInt(web.Params(c.Req)[":id"], 10, 64)
+	if err != nil {
+		return response.Error(http.StatusBadRequest, "id is invalid", err)
+	}
+	return getUserTeamList(c.Req.Context(), c.OrgId, id)
 }
 
 func getUserTeamList(ctx context.Context, orgID int64, userID int64) response.Response {
@@ -198,7 +217,11 @@ func getUserTeamList(ctx context.Context, orgID int64, userID int64) response.Re
 
 // GET /api/users/:id/orgs
 func GetUserOrgList(c *models.ReqContext) response.Response {
-	return getUserOrgList(c.Req.Context(), c.ParamsInt64(":id"))
+	id, err := strconv.ParseInt(web.Params(c.Req)[":id"], 10, 64)
+	if err != nil {
+		return response.Error(http.StatusBadRequest, "id is invalid", err)
+	}
+	return getUserOrgList(c.Req.Context(), id)
 }
 
 func getUserOrgList(ctx context.Context, userID int64) response.Response {
@@ -231,7 +254,10 @@ func validateUsingOrg(ctx context.Context, userID int64, orgID int64) bool {
 
 // POST /api/user/using/:id
 func UserSetUsingOrg(c *models.ReqContext) response.Response {
-	orgID := c.ParamsInt64(":id")
+	orgID, err := strconv.ParseInt(web.Params(c.Req)[":id"], 10, 64)
+	if err != nil {
+		return response.Error(http.StatusBadRequest, "id is invalid", err)
+	}
 
 	if !validateUsingOrg(c.Req.Context(), c.UserId, orgID) {
 		return response.Error(401, "Not a valid organization", nil)
@@ -248,7 +274,11 @@ func UserSetUsingOrg(c *models.ReqContext) response.Response {
 
 // GET /profile/switch-org/:id
 func (hs *HTTPServer) ChangeActiveOrgAndRedirectToHome(c *models.ReqContext) {
-	orgID := c.ParamsInt64(":id")
+	orgID, err := strconv.ParseInt(web.Params(c.Req)[":id"], 10, 64)
+	if err != nil {
+		c.JsonApiErr(http.StatusBadRequest, "id is invalid", err)
+		return
+	}
 
 	if !validateUsingOrg(c.Req.Context(), c.UserId, orgID) {
 		hs.NotFoundHandler(c)
@@ -310,7 +340,10 @@ func redirectToChangePassword(c *models.ReqContext) {
 }
 
 func SetHelpFlag(c *models.ReqContext) response.Response {
-	flag := c.ParamsInt64(":id")
+	flag, err := strconv.ParseInt(web.Params(c.Req)[":id"], 10, 64)
+	if err != nil {
+		return response.Error(http.StatusBadRequest, "id is invalid", err)
+	}
 
 	bitmask := &c.HelpFlags1
 	bitmask.AddFlag(models.HelpFlags1(flag))

@@ -16,13 +16,13 @@ export const palette = {
   darkBorder2: '#64646B',
 
   // Dashboard bg / layer 0 (light theme)
-  gray90: '#F4F5F5',
+  gray90: '#F2F2F2', // T // '#F4F5F5',
   // Card bg / layer 1
-  gray100: '#F4F5F5',
+  gray100: '#F2F2F2', // T // '#F4F5F5',
   // divider line
-  gray80: '#D0D1D3',
+  gray80: '#B3B3B3', // T // '#D0D1D3',
   // from figma
-  lightBorder1: '#E4E7E7',
+  lightBorder1: '#CCCCCC', // T // '#E4E7E7',
 
   blueDarkMain: '#3D71D9', // '#4165F5',
   blueDarkText: '#6E9FFF', // '#58a6ff', //'#33a2e5', // '#5790FF',
@@ -33,12 +33,12 @@ export const palette = {
   orangeDarkMain: '#F5B73D',
   orangeDarkText: '#F8D06B',
 
-  blueLightMain: '#3871DC',
-  blueLightText: '#1F62E0',
-  redLightMain: '#E0226E',
-  redLightText: '#CF0E5B',
-  greenLightMain: '#1B855E',
-  greenLightText: '#0A764E',
+  blueLightMain: '#203363', // T // '#3871DC',
+  blueLightText: '#203363', // T // '#1F62E0',
+  redLightMain: '#773737', // T // '#E0226E',
+  redLightText: '#4a1a1a', // T // '#CF0E5B',
+  greenLightMain: '#395000', // T // '#1B855E',
+  greenLightText: '#263000', // T // '#0A764E',
   orangeLightMain: '#FAD34A',
   orangeLightText: '#8A6C00',
 };
