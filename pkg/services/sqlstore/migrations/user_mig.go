@@ -148,7 +148,7 @@ func addUserMigrations(mg *Migrator) {
 	mg.AddMigration("create user_view table v1", NewAddTableMigration(userViewV1))
 	addTableIndicesMigrations(mg, "v1", userViewV1)
 
-	mg.AddMigration("Update user_view table charset", NewTableCharsetMigration("org_user", []*Column{
+	mg.AddMigration("Update user_view table charset", NewTableCharsetMigration("user_view", []*Column{
 		{Name: "view", Type: DB_NVarchar, Length: 255},
 	}))
 }
