@@ -38,7 +38,7 @@ echo "Create Lightsail container service if not exists..."
   --power nano \
   --scale 1 \
   --region "${AWS_DEFAULT_REGION}" \
-  --public-domain-names cloud-tvarit-com=cloud.tvarit.com && sleep 10) || :
+  --public-domain-names cloud-tvarit-com=cloud.tvarit.com,maxion-tvarit-com=maxion.tvarit.com && sleep 10) || :
 
 echo "Building docker image..."
 docker build --tag grafana/grafana:latest .
