@@ -93,6 +93,9 @@ from_name = <SMTP_FROM/>
 #Enable the Unified Alerting sub-system and interface. When enabled we'll migrate all of your alert rules and notification channels to the new system. New alert rules will be created and your notification channels will be converted into an Alertmanager configuration. Previous data is preserved to enable backwards compatibility but new data is removed.```
 enabled = true
 
+[panels]
+disable_sanitize_html = true
+
 [plugins]
 enable_alpha = true
 # Enable or disable installing / uninstalling / updating plugins directly from within Grafana.
