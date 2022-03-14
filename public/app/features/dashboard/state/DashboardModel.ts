@@ -81,6 +81,7 @@ export interface DashboardLink {
 export class DashboardModel {
   id: any;
   uid: string;
+  icon: string;
   title: string;
   autoUpdate: any;
   description: any;
@@ -147,6 +148,7 @@ export class DashboardModel {
     this.id = data.id || null;
     this.uid = data.uid || null;
     this.revision = data.revision;
+    this.icon = data.icon ?? 'apps';
     this.title = data.title ?? 'No Title';
     this.autoUpdate = data.autoUpdate;
     this.description = data.description;
@@ -230,6 +232,7 @@ export class DashboardModel {
       meta.canEdit = false;
       meta.canDelete = false;
       meta.canSave = false;
+      meta.canStar = false;
     }
 
     this.meta = meta;

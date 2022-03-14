@@ -6,7 +6,7 @@ import { playlistSrv } from 'app/features/playlist/PlaylistSrv';
 // Components
 import { DashNavButton } from './DashNavButton';
 import { DashNavTimeControls } from './DashNavTimeControls';
-import { ButtonGroup, ModalsController, ToolbarButton, PageToolbar } from '@grafana/ui';
+import { ButtonGroup, ModalsController, ToolbarButton, PageToolbar, IconName } from '@grafana/ui';
 import { locationUtil, textUtil } from '@grafana/data';
 // State
 import { updateTimeZoneForSession } from 'app/features/profile/state/reducers';
@@ -61,6 +61,14 @@ class DashNav extends PureComponent<Props> {
 
   onClose = () => {
     locationService.partial({ viewPanel: null });
+  };
+
+  onSignOut = () => {
+    window.location.href = '/logout';
+  };
+
+  onUserProfile = () => {
+    window.location.href = '/profile';
   };
 
   onToggleTVMode = () => {
@@ -130,7 +138,7 @@ class DashNav extends PureComponent<Props> {
     }
 
     if (canShare) {
-      let desc = 'Share dashboard or panel';
+      let desc = 'Share dashboard';
       buttons.push(
         <ModalsController key="button-share">
           {({ showModal, hideModal }) => (
@@ -183,7 +191,13 @@ class DashNav extends PureComponent<Props> {
     const snapshotUrl = snapshot && snapshot.originalUrl;
     const buttons: ReactNode[] = [];
     const tvButton = (
-      <ToolbarButton tooltip="Cycle view mode" icon="monitor" onClick={this.onToggleTVMode} key="tv-button" />
+      <ToolbarButton tooltip="Hide Sidebar" icon="expand-alt" onClick={this.onToggleTVMode} key="tv-button" />
+    );
+    const userButton = (
+      <ToolbarButton tooltip="User profile" icon="user" onClick={this.onUserProfile} key="signout-button" />
+    );
+    const signoutButton = (
+      <ToolbarButton tooltip="Sign out" icon="signout" onClick={this.onSignOut} key="signout-button" />
     );
 
     if (this.isPlaylistRunning()) {
@@ -191,7 +205,7 @@ class DashNav extends PureComponent<Props> {
     }
 
     if (kioskMode === KioskMode.TV) {
-      return [this.renderTimeControls(), tvButton];
+      return [this.renderTimeControls(), userButton, signoutButton];
     }
 
     if (canEdit && !isFullscreen) {
@@ -243,19 +257,16 @@ class DashNav extends PureComponent<Props> {
   }
 
   render() {
-    const { isFullscreen, title, folderTitle } = this.props;
+    const { isFullscreen, title, dashboard } = this.props;
     const onGoBack = isFullscreen ? this.onClose : undefined;
 
     const titleHref = locationUtil.updateSearchParams(window.location.href, '?search=open');
-    const parentHref = locationUtil.updateSearchParams(window.location.href, '?search=open&folder=current');
 
     return (
       <PageToolbar
-        pageIcon={isFullscreen ? undefined : 'apps'}
+        pageIcon={isFullscreen ? undefined : (dashboard.icon as IconName)}
         title={title}
-        parent={folderTitle}
         titleHref={titleHref}
-        parentHref={parentHref}
         onGoBack={onGoBack}
         leftItems={this.renderLeftActionsButton()}
       >
