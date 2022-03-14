@@ -60,7 +60,7 @@ export class SharedPreferences extends PureComponent<Props, State> {
 
   async componentDidMount() {
     const prefs = await this.service.load();
-    const dashboards = await backendSrv.search({ starred: true });
+    const dashboards = await backendSrv.search({ tag: 'pin' });
     const defaultDashboardHit: DashboardSearchHit = {
       id: 0,
       title: 'Default',
@@ -135,7 +135,7 @@ export class SharedPreferences extends PureComponent<Props, State> {
       <Tooltip
         content={
           <Trans id="shared-preferences.fields.home-dashboard-tooltip">
-            Not finding the dashboard you want? Star it first, then it should appear in this select box.
+            Not finding the dashboard you want? Pin it first, then it should appear in this select box.
           </Trans>
         }
       >
