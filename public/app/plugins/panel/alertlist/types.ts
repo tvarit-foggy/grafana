@@ -44,7 +44,7 @@ export interface UnifiedAlertListOptions {
   sortOrder: SortOrder;
   dashboardAlerts: boolean;
   alertName: string;
-  showInstances: boolean;
+  variableName: string;
   folder: { id: number; title: string };
   stateFilter: StateFilter;
   alertInstanceLabelFilter: string;

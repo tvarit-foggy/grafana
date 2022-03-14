@@ -5,7 +5,6 @@ import { GrafanaTheme, GrafanaTheme2, intervalToAbbreviatedDurationString, Panel
 import { CustomScrollbar, Icon, IconName, LoadingPlaceholder, useStyles, useStyles2 } from '@grafana/ui';
 import { css } from '@emotion/css';
 
-import { AlertInstances } from './AlertInstances';
 import alertDef from 'app/features/alerting/state/alertDef';
 import { SortOrder, UnifiedAlertListOptions } from './types';
 
@@ -22,6 +21,7 @@ import { getDashboardSrv } from 'app/features/dashboard/services/DashboardSrv';
 import { Annotation, RULE_LIST_POLL_INTERVAL_MS } from 'app/features/alerting/unified/utils/constants';
 import { PromAlertingRuleState } from 'app/types/unified-alerting-dto';
 import { labelsMatchMatchers, parseMatchers } from 'app/features/alerting/unified/utils/alertmanager';
+import { setOptionAsCurrent } from 'app/features/variables/state/actions';
 
 export function UnifiedAlertList(props: PanelProps<UnifiedAlertListOptions>) {
   const dispatch = useDispatch();
@@ -62,11 +62,22 @@ export function UnifiedAlertList(props: PanelProps<UnifiedAlertListOptions>) {
 
   const noAlertsMessage = rules.length ? '' : 'No alerts';
 
+  const selectAlert = (value: string) => {
+    dispatch(
+      setOptionAsCurrent(
+        { type: 'textbox', id: props.options.variableName },
+        { selected: true, text: value, value: value },
+        true
+      )
+    );
+  };
+
   return (
     <CustomScrollbar autoHeightMin="100%" autoHeightMax="100%">
       <div className={styles.container}>
         {dispatched && loading && !haveResults && <LoadingPlaceholder text="Loading..." />}
         {noAlertsMessage && <div className={styles.noAlertsMessage}>{noAlertsMessage}</div>}
+        {haveResults && <div className={styles.heading}>Alerts</div>}
         <section>
           <ol className={styles.alertRuleList}>
             {haveResults &&
@@ -77,35 +88,47 @@ export function UnifiedAlertList(props: PanelProps<UnifiedAlertListOptions>) {
                   <li
                     className={styles.alertRuleItem}
                     key={`alert-${namespaceName}-${groupName}-${rule.name}-${index}`}
+                    onFocus={() => selectAlert(`alert-${namespaceName}-${rule.name}`)}
+                    onBlur={() => selectAlert('')}
+                    tabIndex={-1}
                   >
                     <div className={stateStyle.icon}>
                       <Icon
-                        name={alertDef.getStateDisplayModel(rule.state).iconClass as IconName}
+                        name={
+                          (rule.annotations?.icon || alertDef.getStateDisplayModel(rule.state).iconClass) as IconName
+                        }
                         className={stateStyle[alertStateToState[rule.state]]}
-                        size={'lg'}
+                        size={'xl'}
                       />
                     </div>
-                    <div>
+                    <div style={{ width: '100%' }}>
                       <div className={styles.instanceDetails}>
                         <div className={styles.alertName} title={rule.name}>
                           {rule.name}
                         </div>
-                        <div className={styles.alertDuration}>
-                          <span className={stateStyle[alertStateToState[rule.state]]}>{rule.state.toUpperCase()}</span>{' '}
-                          {firstActiveAt && rule.state !== PromAlertingRuleState.Inactive && (
-                            <>
-                              for{' '}
-                              <span>
-                                {intervalToAbbreviatedDurationString({
-                                  start: firstActiveAt,
-                                  end: Date.now(),
-                                })}
-                              </span>
-                            </>
-                          )}
-                        </div>
+                        {rule.annotations?.message ? (
+                          <div className={styles.description}>
+                            <span>{rule.annotations?.message}</span>
+                          </div>
+                        ) : (
+                          <div className={styles.alertDuration}>
+                            <span className={stateStyle[alertStateToState[rule.state]]}>
+                              {rule.state.toUpperCase()}
+                            </span>{' '}
+                            {firstActiveAt && rule.state !== PromAlertingRuleState.Inactive && (
+                              <>
+                                for{' '}
+                                <span>
+                                  {intervalToAbbreviatedDurationString({
+                                    start: firstActiveAt,
+                                    end: Date.now(),
+                                  })}
+                                </span>
+                              </>
+                            )}
+                          </div>
+                        )}
                       </div>
-                      <AlertInstances ruleWithLocation={ruleWithLocation} options={props.options} />
                     </div>
                   </li>
                 );
@@ -194,6 +217,7 @@ const getStyles = (theme: GrafanaTheme) => ({
   container: css`
     overflow-y: auto;
     height: 100%;
+    padding: 8px 21px;
   `,
   alertRuleList: css`
     display: flex;
@@ -201,15 +225,30 @@ const getStyles = (theme: GrafanaTheme) => ({
     justify-content: space-between;
     list-style-type: none;
   `,
+  heading: css`
+    font-size: 32px;
+    font-weight: 400;
+    margin-bottom: 20px;
+  `,
+  description: css`
+    display: flex;
+    justify-content: space-between;
+    color: #73757b;
+  `,
   alertRuleItem: css`
     display: flex;
     align-items: center;
     width: 100%;
     height: 100%;
     background: ${theme.colors.bg2};
+    cursor: pointer;
     padding: ${theme.spacing.xs} ${theme.spacing.sm};
     border-radius: ${theme.border.radius.md};
     margin-bottom: ${theme.spacing.xs};
+
+    &:focus {
+      background: ${theme.colors.bg3};
+    }
 
     & > * {
       margin-right: ${theme.spacing.sm};
@@ -276,8 +315,7 @@ const getStateTagStyles = (theme: GrafanaTheme2) => ({
     justify-content: center;
   `,
   icon: css`
-    margin-top: ${theme.spacing(2.5)};
-    align-self: flex-start;
+    align-self: center;
   `,
   // good: css`
   //   background-color: ${theme.colors.success.main};
