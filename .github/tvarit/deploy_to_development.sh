@@ -5,6 +5,8 @@ set -e
 echo "Create Lightsail container service if not exists..."
 (aws lightsail create-container-service --service-name  "dev-grafana-${PR_NUMBER}" --power nano --scale 1 --region "${AWS_DEFAULT_REGION}" && sleep 10) || :
 ROOT_URL=$(aws lightsail get-container-services --service-name  "dev-grafana-${PR_NUMBER}" --output text --query "containerServices[0].url")
+AWS_ACCESS_KEY=$(aws secretsmanager get-secret-value --secret-id /credentials/grafana-user/access-key --output text --query SecretString)
+AWS_SECRET_KEY=$(aws secretsmanager get-secret-value --secret-id /credentials/grafana-user/secret-key --output text --query SecretString)
 
 echo "Building docker image..."
 docker build --tag grafana/grafana:${PR_NUMBER} .
@@ -26,6 +28,9 @@ sed -i "s#<SMTP_FROM/>#[dev-${PR_NUMBER}] Tvarit AI Platform#g" grafana.ini
 
 cp Dockerfile.template Dockerfile
 sed -i "s#<BASE_IMAGE/>#grafana/grafana:${PR_NUMBER}#g" Dockerfile
+sed -i "s#<AWS_ACCESS_KEY/>#${AWS_ACCESS_KEY}#g" Dockerfile
+sed -i "s#<AWS_SECRET_KEY/>#${AWS_SECRET_KEY}#g" Dockerfile
+sed -i "s#<AWS_REGION/>#${AWS_DEFAULT_REGION}#g" Dockerfile
 docker build --tag grafana/grafana:${PR_NUMBER} .
 
 echo "Upload docker image to lightsail container service and get image etag..."

@@ -6,7 +6,7 @@ Resources:
     Type: AWS::S3::Bucket
     DeletionPolicy: Retain
     Properties:
-      BucketName: !Sub com.tvarit.grafana.artifacts
+      BucketName: com.tvarit.grafana.artifacts
       AccessControl: Private
       BucketEncryption:
         ServerSideEncryptionConfiguration:
@@ -20,3 +20,47 @@ Resources:
             Status: Enabled
       VersioningConfiguration:
         Status: Enabled
+
+  GrafanaUser:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: GrafanaUser
+      Path: "/"
+      Policies:
+        - PolicyName: GrafanaUserPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "s3:Get*"
+                  - "s3:List*"
+                  - "s3:Put*"
+                Resource: "*"
+
+  GrafanaUserKey:
+    Type: AWS::IAM::AccessKey
+    Properties:
+      Serial: 1
+      Status: Active
+      UserName: GrafanaUser
+    DependsOn:
+      - GrafanaUser
+
+  SSMGrafanaUserAccessKey:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: GrafanaUser Access Key
+      Name: /credentials/grafana-user/access-key
+      SecretString: !Ref GrafanaUserKey
+    DependsOn:
+      - GrafanaUserKey
+
+  SSMGrafanaUserSecretKey:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: GrafanaUser Secret Key
+      Name: /credentials/grafana-user/secret-key
+      SecretString: !GetAtt GrafanaUserKey.SecretAccessKey
+    DependsOn:
+      - GrafanaUserKey

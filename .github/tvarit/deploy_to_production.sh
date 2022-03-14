@@ -31,6 +31,9 @@ fi
 
 DB_ENDPOINT=$(aws lightsail get-relational-database --relational-database-name grafana-db --output text --query 'relationalDatabase.masterEndpoint.address')
 DB_PASSWORD=$(aws lightsail get-relational-database-master-user-password --relational-database-name grafana-db --output text --query 'masterUserPassword')
+SIGNING_SECRET=$(aws secretsmanager get-secret-value --secret-id grafana-signing-secret --output text --query SecretString)
+AWS_ACCESS_KEY=$(aws secretsmanager get-secret-value --secret-id /credentials/grafana-user/access-key --output text --query SecretString)
+AWS_SECRET_KEY=$(aws secretsmanager get-secret-value --secret-id /credentials/grafana-user/secret-key --output text --query SecretString)
 
 echo "Create Lightsail container service if not exists..."
 (aws lightsail create-container-service \
@@ -38,7 +41,7 @@ echo "Create Lightsail container service if not exists..."
   --power nano \
   --scale 1 \
   --region "${AWS_DEFAULT_REGION}" \
-  --public-domain-names cloud-tvarit-com=cloud.tvarit.com,maxion-tvarit-com=maxion.tvarit.com && sleep 10) || :
+  --public-domain-names cloud-tvarit-com=cloud.tvarit.com && sleep 10) || :
 
 echo "Building docker image..."
 docker build --tag grafana/grafana:latest .
@@ -53,7 +56,7 @@ echo "Finalising docker image..."
 cp grafana.ini.template grafana.ini
 sed -i "s#<DOMAIN/>#cloud.tvarit.com#g" grafana.ini
 sed -i "s#<ROOT_URL/>#https://cloud.tvarit.com/#g" grafana.ini
-sed -i "s#<SIGNING_SECRET/>#$(aws secretsmanager get-random-password --exclude-characters ';#' --output text)#g" grafana.ini
+sed -i "s#<SIGNING_SECRET/>#${SIGNING_SECRET}#g" grafana.ini
 sed -i "s#<DB_ENDPOINT/>#${DB_ENDPOINT}#g" grafana.ini
 sed -i "s#<DB_PASSWORD/>#$(echo ${DB_PASSWORD} | sed 's/#/\\#/g' | sed 's/&/\\&/g')#g" grafana.ini
 sed -i "s#<SMTP_HOST/>#${SMTP_HOST}#g" grafana.ini
@@ -63,6 +66,9 @@ sed -i "s#<SMTP_FROM/>#Tvarit AI Platform#g" grafana.ini
 
 cp Dockerfile.template Dockerfile
 sed -i "s#<BASE_IMAGE/>#grafana/grafana:latest#g" Dockerfile
+sed -i "s#<AWS_ACCESS_KEY/>#${AWS_ACCESS_KEY}#g" Dockerfile
+sed -i "s#<AWS_SECRET_KEY/>#${AWS_SECRET_KEY}#g" Dockerfile
+sed -i "s#<AWS_REGION/>#${AWS_DEFAULT_REGION}#g" Dockerfile
 docker build --tag grafana/grafana:latest .
 
 echo "Upload docker image to lightsail container service and get image etag..."

@@ -29,43 +29,22 @@ if [ "${state}" != "available" ]; then
   exit 1
 fi
 
-echo "Creating staging database..."
-aws lightsail create-relational-database-from-snapshot \
-  --relational-database-name stage-grafana-db \
-  --source-relational-database-name grafana-db \
-  --use-latest-restorable-time || :
-
-echo "Waiting for database to be available..."
-for run in {1..60}; do
-  state=$(aws lightsail get-relational-database --relational-database-name stage-grafana-db --output text --query 'relationalDatabase.state')
-  if [ "${state}" == "available" ]; then
-    break
-  fi
-  echo "Waiting for database to be available..."
-  sleep 60
-done
-
-if [ "${state}" != "available" ]; then
-  echo "Database not created in 60 mins"
-  exit 1
-fi
-
-DB_ENDPOINT=$(aws lightsail get-relational-database --relational-database-name stage-grafana-db --output text --query 'relationalDatabase.masterEndpoint.address')
-DB_PASSWORD=$(aws lightsail get-relational-database-master-user-password --relational-database-name stage-grafana-db --output text --query masterUserPassword)
+DB_ENDPOINT=$(aws lightsail get-relational-database --relational-database-name grafana-db --output text --query 'relationalDatabase.masterEndpoint.address')
+DB_PASSWORD=$(aws lightsail get-relational-database-master-user-password --relational-database-name grafana-db --output text --query 'masterUserPassword')
 SIGNING_SECRET=$(aws secretsmanager get-secret-value --secret-id grafana-signing-secret --output text --query SecretString)
 AWS_ACCESS_KEY=$(aws secretsmanager get-secret-value --secret-id /credentials/grafana-user/access-key --output text --query SecretString)
 AWS_SECRET_KEY=$(aws secretsmanager get-secret-value --secret-id /credentials/grafana-user/secret-key --output text --query SecretString)
 
 echo "Create Lightsail container service if not exists..."
 (aws lightsail create-container-service \
-  --service-name  "stage-grafana" \
+  --service-name  "maxion-grafana" \
   --power nano \
   --scale 1 \
   --region "${AWS_DEFAULT_REGION}" \
-  --public-domain-names cloud-tvarit-com=next-cloud.tvarit.com,maxion-tvarit-com=next-maxion.tvarit.com && sleep 10) || :
+  --public-domain-names maxion-tvarit-com=maxion.tvarit.com && sleep 10) || :
 
 echo "Building docker image..."
-docker build --tag grafana/grafana:next .
+docker build --tag grafana/grafana:latest .
 
 cd .github/tvarit/conf/prod/
 echo "Downloading plugins..."
@@ -75,33 +54,37 @@ find plugins/ -type f -name *.tar.gz -exec bash -c 'cd $(dirname $1) && tar -xf 
 
 echo "Finalising docker image..."
 cp grafana.ini.template grafana.ini
-sed -i "s#<DOMAIN/>#next-cloud.tvarit.com#g" grafana.ini
-sed -i "s#<ROOT_URL/>#https://next-cloud.tvarit.com/#g" grafana.ini
-sed -i "s#<SIGNING_SECRET/>#$(aws secretsmanager get-random-password --exclude-characters ';#' --output text)#g" grafana.ini
+sed -i "s#<DOMAIN/>#maxion.tvarit.com#g" grafana.ini
+sed -i "s#<ROOT_URL/>#https://maxion.tvarit.com/#g" grafana.ini
+sed -i "s#<SIGNING_SECRET/>#${SIGNING_SECRET}#g" grafana.ini
 sed -i "s#<DB_ENDPOINT/>#${DB_ENDPOINT}#g" grafana.ini
 sed -i "s#<DB_PASSWORD/>#$(echo ${DB_PASSWORD} | sed 's/#/\\#/g' | sed 's/&/\\&/g')#g" grafana.ini
 sed -i "s#<SMTP_HOST/>#${SMTP_HOST}#g" grafana.ini
 sed -i "s#<SMTP_USER/>#${SMTP_USER}#g" grafana.ini
 sed -i "s#<SMTP_PASSWORD/>#${SMTP_PASSWORD}#g" grafana.ini
-sed -i "s#<SMTP_FROM/>#[BETA] Tvarit AI Platform#g" grafana.ini
+sed -i "s#<SMTP_FROM/>#Tvarit AI Platform#g" grafana.ini
 
 cp Dockerfile.template Dockerfile
-sed -i "s#<BASE_IMAGE/>#grafana/grafana:next#g" Dockerfile
+sed -i "s#<BASE_IMAGE/>#grafana/grafana:latest#g" Dockerfile
 sed -i "s#<AWS_ACCESS_KEY/>#${AWS_ACCESS_KEY}#g" Dockerfile
 sed -i "s#<AWS_SECRET_KEY/>#${AWS_SECRET_KEY}#g" Dockerfile
 sed -i "s#<AWS_REGION/>#${AWS_DEFAULT_REGION}#g" Dockerfile
-docker build --tag grafana/grafana:next .
+docker build --tag grafana/grafana:latest .
 
 echo "Upload docker image to lightsail container service and get image etag..."
 IMAGE=$(aws lightsail push-container-image \
-  --service-name  "stage-grafana" \
-  --label "stage-grafana" \
-  --image "grafana/grafana:next" \
+  --service-name  "maxion-grafana" \
+  --label "maxion-grafana" \
+  --image "grafana/grafana:latest" \
   --region "${AWS_DEFAULT_REGION}" | grep "Refer to this image as")
 IMAGE=${IMAGE:24:-17}
 
 echo "Create Lightsail container service deployment..."
 cp lightsail.json.template lightsail.json
-sed -i "s#<PREFIX/>#stage#g" lightsail.json
+sed -i "s#<PREFIX/>#maxion#g" lightsail.json
 sed -i "s#<IMAGE/>#${IMAGE}#g" lightsail.json
 aws lightsail create-container-service-deployment --cli-input-json file://lightsail.json
+
+echo "Deleting staging deployment..."
+aws lightsail delete-container-service --service-name stage-grafana || :
+aws lightsail delete-relational-database --relational-database-name stage-grafana-db --skip-final-snapshot || :
