@@ -184,7 +184,7 @@ func TestSendEmailAsync(t *testing.T) {
 		sentMsg := <-sut.mailQueue
 		assert.Contains(t, sentMsg.Body["text/html"], "body")
 		assert.NotContains(t, sentMsg.Body["text/plain"], "body")
-		assert.Equal(t, "Reset your Grafana password - asd@asd.com", sentMsg.Subject)
+		assert.Equal(t, "Reset your Tvarit Industrial AI password - asd@asd.com", sentMsg.Subject)
 		assert.NotContains(t, sentMsg.Body["text/html"], "Subject")
 		assert.NotContains(t, sentMsg.Body["text/plain"], "Subject")
 	})

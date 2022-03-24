@@ -1,4 +1,4 @@
-{{Subject .Subject "Welcome to Grafana, please complete your sign up!"}}
+{{Subject .Subject "Welcome to Tvarit Industrial AI, please complete your sign up!"}}
 
 Complete the signup
 
@@ -8,4 +8,4 @@ in the sign up form or use the link below.
 
 {{.SignUpUrl}}
 
-Sent by Grafana v{{.BuildVersion}} (c) 2021 Grafana Labs
+Sent by TiA v{{.BuildVersion}} (c) 2022 Tvarit GmbH

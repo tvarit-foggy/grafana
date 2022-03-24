@@ -1,4 +1,4 @@
-{{Subject .Subject "{{.InvitedBy}} has invited you to join Grafana"}}
+{{Subject .Subject "{{.InvitedBy}} has invited you to join Tvarit Industrial AI"}}
 
 You're invited to join {{.OrgName}}
 
@@ -8,4 +8,4 @@ directly:
 
 {{.LinkUrl}}
 
-Sent by Grafana v{{.BuildVersion}} (c) 2021 Grafana Labs
+Sent by TiA v{{.BuildVersion}} (c) 2022 Tvarit GmbH
