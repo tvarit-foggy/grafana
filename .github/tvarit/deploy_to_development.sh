@@ -5,6 +5,7 @@ set -e
 echo "Create Lightsail container service if not exists..."
 (aws lightsail create-container-service --service-name  "dev-grafana-${PR_NUMBER}" --power nano --scale 1 --region "${AWS_DEFAULT_REGION}" && sleep 10) || :
 ROOT_URL=$(aws lightsail get-container-services --service-name  "dev-grafana-${PR_NUMBER}" --output text --query "containerServices[0].url")
+SIGNING_SECRET=$(aws secretsmanager get-secret-value --secret-id grafana-signing-secret --output text --query SecretString)
 AWS_ACCESS_KEY=$(aws secretsmanager get-secret-value --secret-id /credentials/grafana-user/access-key --output text --query SecretString)
 AWS_SECRET_KEY=$(aws secretsmanager get-secret-value --secret-id /credentials/grafana-user/secret-key --output text --query SecretString)
 
@@ -20,7 +21,9 @@ find plugins/tvarit -type f -name MANIFEST.txt -exec rm {} \;
 
 echo "Finalising docker image..."
 cp grafana.ini.template grafana.ini
+sed -i "s#<DOMAIN/>#${ROOT_URL:8:-1}#g" grafana.ini
 sed -i "s#<ROOT_URL/>#${ROOT_URL}#g" grafana.ini
+sed -i "s#<SIGNING_SECRET/>#${SIGNING_SECRET}#g" grafana.ini
 sed -i "s#<SMTP_HOST/>#${SMTP_HOST}#g" grafana.ini
 sed -i "s#<SMTP_USER/>#${SMTP_USER}#g" grafana.ini
 sed -i "s#<SMTP_PASSWORD/>#${SMTP_PASSWORD}#g" grafana.ini

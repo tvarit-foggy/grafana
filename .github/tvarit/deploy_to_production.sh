@@ -2,6 +2,14 @@
 
 set -e
 
+PREFIX=$1
+if [ -z "${PREFIX}" ]; then
+    echo "Usage .github/tvarit/deploy_to_production.sh <PREFIX>"
+    exit 1
+fi
+
+aws lightsail get-certificates --certificate-name ${PREFIX}-tvarit-com > /dev/null
+
 echo "Creating production database..."
 aws lightsail create-relational-database \
   --relational-database-name grafana-db \
@@ -37,11 +45,11 @@ AWS_SECRET_KEY=$(aws secretsmanager get-secret-value --secret-id /credentials/gr
 
 echo "Create Lightsail container service if not exists..."
 (aws lightsail create-container-service \
-  --service-name  "prod-grafana" \
+  --service-name  "${PREFIX}-grafana" \
   --power nano \
   --scale 1 \
   --region "${AWS_DEFAULT_REGION}" \
-  --public-domain-names cloud-tvarit-com=cloud.tvarit.com && sleep 10) || :
+  --public-domain-names ${PREFIX}-tvarit-com=${PREFIX}.tvarit.com && sleep 10) || :
 
 echo "Building docker image..."
 docker build --tag grafana/grafana:latest .
@@ -54,8 +62,8 @@ find plugins/ -type f -name *.tar.gz -exec bash -c 'cd $(dirname $1) && tar -xf 
 
 echo "Finalising docker image..."
 cp grafana.ini.template grafana.ini
-sed -i "s#<DOMAIN/>#cloud.tvarit.com#g" grafana.ini
-sed -i "s#<ROOT_URL/>#https://cloud.tvarit.com/#g" grafana.ini
+sed -i "s#<DOMAIN/>#${PREFIX}.tvarit.com#g" grafana.ini
+sed -i "s#<ROOT_URL/>#https://${PREFIX}.tvarit.com/#g" grafana.ini
 sed -i "s#<SIGNING_SECRET/>#${SIGNING_SECRET}#g" grafana.ini
 sed -i "s#<DB_ENDPOINT/>#${DB_ENDPOINT}#g" grafana.ini
 sed -i "s#<DB_PASSWORD/>#$(echo ${DB_PASSWORD} | sed 's/#/\\#/g' | sed 's/&/\\&/g')#g" grafana.ini
@@ -73,18 +81,14 @@ docker build --tag grafana/grafana:latest .
 
 echo "Upload docker image to lightsail container service and get image etag..."
 IMAGE=$(aws lightsail push-container-image \
-  --service-name  "prod-grafana" \
-  --label "prod-grafana" \
+  --service-name  "${PREFIX}-grafana" \
+  --label "${PREFIX}-grafana" \
   --image "grafana/grafana:latest" \
   --region "${AWS_DEFAULT_REGION}" | grep "Refer to this image as")
 IMAGE=${IMAGE:24:-17}
 
 echo "Create Lightsail container service deployment..."
 cp lightsail.json.template lightsail.json
-sed -i "s#<PREFIX/>#prod#g" lightsail.json
+sed -i "s#<PREFIX/>#${PREFIX}#g" lightsail.json
 sed -i "s#<IMAGE/>#${IMAGE}#g" lightsail.json
 aws lightsail create-container-service-deployment --cli-input-json file://lightsail.json
-
-echo "Deleting staging deployment..."
-aws lightsail delete-container-service --service-name stage-grafana || :
-aws lightsail delete-relational-database --relational-database-name stage-grafana-db --skip-final-snapshot || :

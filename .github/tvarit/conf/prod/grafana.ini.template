@@ -8,7 +8,7 @@ domain = <DOMAIN/>
 
 # Redirect to correct domain if host header does not match domain
 # Prevents DNS rebinding attacks
-enforce_domain = false
+enforce_domain = true
 
 # The full public facing url you use in browser, used for redirects and emails
 # If you use reverse proxy and sub path specify full url (with sub path)
@@ -55,7 +55,7 @@ cookie_secure = true
 
 # Enable adding the Content-Security-Policy header to your requests.
 # CSP allows to control resources the user agent is allowed to load and helps prevent XSS attacks.
-content_security_policy = false
+content_security_policy = true
 
 # Set Content Security Policy template used when adding the Content-Security-Policy header to your requests.
 # $NONCE in the template includes a random nonce.
@@ -80,7 +80,7 @@ default_theme = light
 
 #################################### SMTP / Emailing ##########################
 [smtp]
-enabled = true 
+enabled = true
 host = <SMTP_HOST/>
 user = <SMTP_USER/>
 # If the password contains # or ; you have to wrap it with triple quotes. Ex """#password;"""

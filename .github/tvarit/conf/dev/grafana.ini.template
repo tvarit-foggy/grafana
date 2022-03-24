@@ -3,6 +3,13 @@ app_mode = development
 
 #################################### Server ####################################
 [server]
+# The public facing domain name used to access grafana from a browser
+domain = <DOMAIN/>
+
+# Redirect to correct domain if host header does not match domain
+# Prevents DNS rebinding attacks
+enforce_domain = true
+
 # The full public facing url you use in browser, used for redirects and emails
 # If you use reverse proxy and sub path specify full url (with sub path)
 root_url = <ROOT_URL/>
@@ -27,6 +34,12 @@ check_for_updates = false
 
 #################################### Security ####################################
 [security]
+# used for signing
+secret_key = <SIGNING_SECRET/>
+
+# set to true if you host Grafana behind HTTPS. default is false.
+cookie_secure = true
+
 # Enable adding the Content-Security-Policy header to your requests.
 # CSP allows to control resources the user agent is allowed to load and helps prevent XSS attacks.
 content_security_policy = true
@@ -66,6 +79,9 @@ from_name = <SMTP_FROM/>
 [unified_alerting]
 #Enable the Unified Alerting sub-system and interface. When enabled we'll migrate all of your alert rules and notification channels to the new system. New alert rules will be created and your notification channels will be converted into an Alertmanager configuration. Previous data is preserved to enable backwards compatibility but new data is removed.```
 enabled = true
+
+[panels]
+disable_sanitize_html = true
 
 [plugins]
 enable_alpha = true

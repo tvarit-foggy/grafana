@@ -62,7 +62,7 @@ echo "Create Lightsail container service if not exists..."
   --power nano \
   --scale 1 \
   --region "${AWS_DEFAULT_REGION}" \
-  --public-domain-names cloud-tvarit-com=next-cloud.tvarit.com,maxion-tvarit-com=next-maxion.tvarit.com && sleep 10) || :
+  --public-domain-names cloud-tvarit-com=next-cloud.tvarit.com && sleep 10) || :
 
 echo "Building docker image..."
 docker build --tag grafana/grafana:next .
@@ -77,7 +77,7 @@ echo "Finalising docker image..."
 cp grafana.ini.template grafana.ini
 sed -i "s#<DOMAIN/>#next-cloud.tvarit.com#g" grafana.ini
 sed -i "s#<ROOT_URL/>#https://next-cloud.tvarit.com/#g" grafana.ini
-sed -i "s#<SIGNING_SECRET/>#$(aws secretsmanager get-random-password --exclude-characters ';#' --output text)#g" grafana.ini
+sed -i "s#<SIGNING_SECRET/>#${SIGNING_SECRET}#g" grafana.ini
 sed -i "s#<DB_ENDPOINT/>#${DB_ENDPOINT}#g" grafana.ini
 sed -i "s#<DB_PASSWORD/>#$(echo ${DB_PASSWORD} | sed 's/#/\\#/g' | sed 's/&/\\&/g')#g" grafana.ini
 sed -i "s#<SMTP_HOST/>#${SMTP_HOST}#g" grafana.ini
