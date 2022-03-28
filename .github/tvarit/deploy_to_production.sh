@@ -12,7 +12,7 @@ aws lightsail get-certificates --certificate-name ${PREFIX}-tvarit-com > /dev/nu
 
 echo "Creating production database..."
 aws lightsail create-relational-database \
-  --relational-database-name grafana-db \
+  --relational-database-name ${PREFIX}-grafana-db \
   --availability-zone ${AWS_DEFAULT_REGION}a \
   --relational-database-blueprint-id mysql_8_0 \
   --relational-database-bundle-id micro_1_0 \
@@ -24,7 +24,7 @@ aws lightsail create-relational-database \
 
 echo "Waiting for database to be available..."
 for run in {1..60}; do
-  state=$(aws lightsail get-relational-database --relational-database-name grafana-db --output text --query 'relationalDatabase.state')
+  state=$(aws lightsail get-relational-database --relational-database-name ${PREFIX}-grafana-db --output text --query 'relationalDatabase.state')
   if [ "${state}" == "available" ]; then
     break
   fi
@@ -37,8 +37,8 @@ if [ "${state}" != "available" ]; then
   exit 1
 fi
 
-DB_ENDPOINT=$(aws lightsail get-relational-database --relational-database-name grafana-db --output text --query 'relationalDatabase.masterEndpoint.address')
-DB_PASSWORD=$(aws lightsail get-relational-database-master-user-password --relational-database-name grafana-db --output text --query 'masterUserPassword')
+DB_ENDPOINT=$(aws lightsail get-relational-database --relational-database-name ${PREFIX}-grafana-db --output text --query 'relationalDatabase.masterEndpoint.address')
+DB_PASSWORD=$(aws lightsail get-relational-database-master-user-password --relational-database-name ${PREFIX}-grafana-db --output text --query 'masterUserPassword')
 SIGNING_SECRET=$(aws secretsmanager get-secret-value --secret-id grafana-signing-secret --output text --query SecretString)
 AWS_ACCESS_KEY=$(aws secretsmanager get-secret-value --secret-id /credentials/grafana-user/access-key --output text --query SecretString)
 AWS_SECRET_KEY=$(aws secretsmanager get-secret-value --secret-id /credentials/grafana-user/secret-key --output text --query SecretString)
@@ -92,3 +92,7 @@ cp lightsail.json.template lightsail.json
 sed -i "s#<PREFIX/>#${PREFIX}#g" lightsail.json
 sed -i "s#<IMAGE/>#${IMAGE}#g" lightsail.json
 aws lightsail create-container-service-deployment --cli-input-json file://lightsail.json
+
+echo "Deleting staging deployment..."
+aws lightsail delete-container-service --service-name ${PREFIX}-next-grafana || :
+aws lightsail delete-relational-database --relational-database-name ${PREFIX}-next-grafana-db --skip-final-snapshot || :

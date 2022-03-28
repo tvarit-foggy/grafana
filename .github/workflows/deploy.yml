@@ -17,7 +17,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - run: |
-        bash .github/tvarit/deploy_to_staging.sh
+        bash .github/tvarit/deploy_to_staging.sh maxion
+        bash .github/tvarit/deploy_to_staging.sh covacsis
+        bash .github/tvarit/deploy_to_staging.sh cloud
 
   deploy_to_production:
     runs-on: self-hosted
@@ -35,5 +37,4 @@ jobs:
         bash .github/tvarit/deploy_to_production.sh maxion
         bash .github/tvarit/deploy_to_production.sh covacsis
         bash .github/tvarit/deploy_to_production.sh cloud
-        bash .github/tvarit/teardown_staging.sh
     needs: [deploy_to_staging]
