@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     container: golang:1.17.6-alpine3.15
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - run: |
         apk add --no-cache gcc g++ make
         make gen-go
@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     container: node:16-alpine3.15
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - run: |
         yarn install --immutable
         yarn test --no-watch
@@ -37,7 +37,7 @@ jobs:
       SMTP_USER: ${{ secrets.SMTP_USER }}
       SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - run: |
         bash .github/tvarit/deploy_to_development.sh
     needs: [test-go, test-js]

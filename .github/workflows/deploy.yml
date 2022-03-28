@@ -15,7 +15,7 @@ jobs:
       SMTP_USER: ${{ secrets.SMTP_USER }}
       SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - run: |
         bash .github/tvarit/deploy_to_staging.sh maxion
         bash .github/tvarit/deploy_to_staging.sh covacsis
@@ -32,7 +32,7 @@ jobs:
       SMTP_USER: ${{ secrets.SMTP_USER }}
       SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - run: |
         bash .github/tvarit/deploy_to_production.sh maxion
         bash .github/tvarit/deploy_to_production.sh covacsis
