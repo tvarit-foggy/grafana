@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 
 	"github.com/grafana/grafana/pkg/api/dtos"
 	"github.com/grafana/grafana/pkg/api/response"
@@ -20,6 +21,7 @@ import (
 	"github.com/grafana/grafana/pkg/services/alerting"
 	"github.com/grafana/grafana/pkg/services/dashboards"
 	"github.com/grafana/grafana/pkg/services/guardian"
+	"github.com/grafana/grafana/pkg/services/search"
 	"github.com/grafana/grafana/pkg/util"
 	"github.com/grafana/grafana/pkg/web"
 )
@@ -445,6 +447,42 @@ func (hs *HTTPServer) dashboardSaveErrorToApiResponse(ctx context.Context, err e
 
 // GetHomeDashboard returns the home dashboard.
 func (hs *HTTPServer) GetHomeDashboard(c *models.ReqContext) response.Response {
+	if c.SignedInUser.View != models.DefaultView {
+		searchQuery := search.Query{
+			Tags:         []string{"pin"},
+			SignedInUser: c.SignedInUser,
+			OrgId:        c.OrgId,
+		}
+
+		err := bus.Dispatch(c.Req.Context(), &searchQuery)
+		if err != nil {
+			return response.Error(500, "Failed to get pinned dashboards", err)
+		}
+
+		homedashboard := ""
+		homeweight := int64(0)
+		for _, dashboard := range searchQuery.Result {
+			if dashboard.FolderTitle != c.SignedInUser.View {
+				continue
+			}
+			weight := int64(0)
+			for _, t := range dashboard.Tags {
+				if strings.HasPrefix(t, "weight: ") {
+					weight, _ = strconv.ParseInt(t[8:], 10, 64)
+				}
+			}
+			if weight >= homeweight {
+				homedashboard = dashboard.URL
+				homeweight = weight
+			}
+		}
+		if homedashboard != "" {
+			dashRedirect := dtos.DashboardRedirect{RedirectUri: homedashboard}
+			return response.JSON(200, &dashRedirect)
+		}
+
+	}
+
 	prefsQuery := models.GetPreferencesWithDefaultsQuery{User: c.SignedInUser}
 	homePage := hs.Cfg.HomePage
 

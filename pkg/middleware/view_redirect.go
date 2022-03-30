@@ -1,9 +1,7 @@
 package middleware
 
 import (
-	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/grafana/grafana/pkg/bus"
 	"github.com/grafana/grafana/pkg/models"
@@ -38,7 +36,6 @@ func ViewRedirect(cfg *setting.Cfg) web.Handler {
 			}
 		}
 
-		newURL := fmt.Sprintf("%s%s?%s", cfg.AppURL, strings.TrimPrefix(c.Req.URL.Path, "/"), c.Req.URL.Query().Encode())
-		c.Redirect(newURL, 302)
+		c.Redirect(cfg.AppURL, 302)
 	}
 }
