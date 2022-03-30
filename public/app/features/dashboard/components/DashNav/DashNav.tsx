@@ -264,7 +264,7 @@ class DashNav extends PureComponent<Props> {
 
     return (
       <PageToolbar
-        pageIcon={isFullscreen ? undefined : (dashboard.icon as IconName)}
+        pageIcon={undefined}
         title={title}
         titleHref={titleHref}
         onGoBack={onGoBack}
