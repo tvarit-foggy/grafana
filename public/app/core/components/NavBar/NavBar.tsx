@@ -49,7 +49,7 @@ export const NavBar: FC = React.memo(() => {
   if (contextSrv.user.view === config.defaultView) {
     topItems = filter(topItems, (item: any) => !item.view);
   } else {
-    topItems = filter(topItems, (item: any) => item.view === contextSrv.user.view);
+    topItems = filter(topItems, (item: any) => item.view === contextSrv.user.view || item.view === '__all__');
   }
   const bottomItems = enrichConfigItems(
     navTree.filter((item) => item.section === NavSection.Config),
