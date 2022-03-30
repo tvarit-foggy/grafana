@@ -229,8 +229,8 @@ class LightColors implements ThemeColorsBase<Partial<ThemeRichColor>> {
   };
 
   gradients = {
-    brandHorizontal: 'linear-gradient(90deg, #99CAAA 0%, #263000 100%);',
-    brandVertical: 'linear-gradient(0.01deg, #263000 -31.2%, #99CAAA 113.07%);',
+    brandHorizontal: 'linear-gradient(90deg, #55AA66 0%, #CC6666 100%);',
+    brandVertical: 'linear-gradient(0.01deg, #CC6666 -31.2%, #55AA66 113.07%);',
   };
 
   contrastThreshold = 3;

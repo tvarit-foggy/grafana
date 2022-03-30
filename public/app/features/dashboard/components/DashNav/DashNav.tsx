@@ -6,7 +6,7 @@ import { playlistSrv } from 'app/features/playlist/PlaylistSrv';
 // Components
 import { DashNavButton } from './DashNavButton';
 import { DashNavTimeControls } from './DashNavTimeControls';
-import { ButtonGroup, ModalsController, ToolbarButton, PageToolbar, IconName } from '@grafana/ui';
+import { ButtonGroup, ModalsController, ToolbarButton, PageToolbar } from '@grafana/ui';
 import { locationUtil, textUtil } from '@grafana/data';
 // State
 import { updateTimeZoneForSession } from 'app/features/profile/state/reducers';
@@ -257,7 +257,7 @@ class DashNav extends PureComponent<Props> {
   }
 
   render() {
-    const { isFullscreen, title, dashboard } = this.props;
+    const { isFullscreen, title } = this.props;
     const onGoBack = isFullscreen ? this.onClose : undefined;
 
     const titleHref = locationUtil.updateSearchParams(window.location.href, '?search=open');
