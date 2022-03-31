@@ -14,7 +14,7 @@ export class ViewSwitcher extends React.PureComponent<Props> {
   setCurrentView = async (view: string) => {
     await getBackendSrv().post(`/api/user/view/${view}`);
     contextSrv.user.view = view;
-    window.location.reload();
+    window.location.href = config.appUrl;
   };
 
   render() {
