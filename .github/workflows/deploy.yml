@@ -5,7 +5,7 @@ on:
 
 jobs:
   deploy_to_staging:
-    runs-on: ip-172-30-0-99
+    runs-on: self-hosted
     environment: staging
     env:
       AWS_DEFAULT_REGION: eu-central-1
@@ -22,7 +22,7 @@ jobs:
         bash .github/tvarit/deploy_to_staging.sh cloud
 
   deploy_to_production:
-    runs-on: ip-172-30-0-99
+    runs-on: self-hosted
     environment: production
     env:
       AWS_DEFAULT_REGION: eu-central-1
