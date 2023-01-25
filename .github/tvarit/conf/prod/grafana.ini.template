@@ -83,7 +83,7 @@ default_theme = light
 disable_signout_menu = false
 
 # URL to redirect the user to after sign out
-signout_redirect_url = https://sso.tvarit.com/logout?client_id=<OAUTH_CLIENT_ID/>&logout_uri=<ROOT_URL/>login
+signout_redirect_url = https://auth.tvarit.com/logout?client_id=<OAUTH_CLIENT_ID/>&logout_uri=<ROOT_URL/>login
 
 # Set to true to attempt login with OAuth automatically, skipping the login screen.
 # This setting is ignored if multiple OAuth providers are configured.
@@ -101,9 +101,9 @@ allow_sign_up = true
 client_id = <OAUTH_CLIENT_ID/>
 client_secret = <OAUTH_CLIENT_SECRET/>
 scopes = email profile aws.cognito.signin.user.admin openid
-auth_url = https://sso.tvarit.com/oauth2/authorize
-token_url = https://sso.tvarit.com/oauth2/token
-api_url = https://sso.tvarit.com/oauth2/userInfo
+auth_url = https://auth.tvarit.com/oauth2/authorize
+token_url = https://auth.tvarit.com/oauth2/token
+api_url = https://auth.tvarit.com/oauth2/userInfo
 
 #################################### SMTP / Emailing ##########################
 [smtp]
