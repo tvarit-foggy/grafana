@@ -64,3 +64,130 @@ Resources:
       SecretString: !GetAtt GrafanaUserKey.SecretAccessKey
     DependsOn:
       - GrafanaUserKey
+
+  UserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: tia-cognito-user-pool
+      AccountRecoverySetting:
+        RecoveryMechanisms:
+          - Name: verified_email
+            Priority: 1
+      AdminCreateUserConfig:
+        AllowAdminCreateUserOnly: true
+        InviteMessageTemplate:
+          EmailSubject: "Your credentials for Tvarit AI Platform"
+          EmailMessage: "Your username is {username} and your temporary password is {####}. Please log in to the platform and reset your password and MFA."
+          SMSMessage: "Your username is {username} and your temporary password is {####} for Tvarit Industrial AI."
+      AutoVerifiedAttributes:
+        - email
+      DeviceConfiguration:
+        ChallengeRequiredOnNewDevice: true
+        DeviceOnlyRememberedOnUserPrompt: true
+      EmailConfiguration:
+        EmailSendingAccount: COGNITO_DEFAULT
+        ReplyToEmailAddress: support@tvarit.com
+        SourceArn: "arn:aws:ses:eu-central-1:250373516626:identity/no-reply@tvarit.com"
+      EnabledMfas:
+        - SOFTWARE_TOKEN_MFA
+      #  - SMS_MFA
+      #LambdaConfig:
+      #  CustomEmailSender:
+      #    CustomEmailSender
+      #  CustomMessage: String
+      #  CustomSMSSender:
+      #    CustomSMSSender
+      #  KMSKeyID: String
+      #  PostAuthentication: String
+      #  PostConfirmation: String
+      #  PreAuthentication: String
+      #  PreSignUp: String
+      #  PreTokenGeneration: String
+      #  UserMigration: String
+      MfaConfiguration: 'ON'
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 12
+          RequireLowercase: true
+          RequireNumbers: true
+          RequireSymbols: true
+          RequireUppercase: true
+          TemporaryPasswordValidityDays: 1
+      Schema:
+        - Name: email
+          Required: true
+          Mutable: false
+        - Name: name
+          Required: true
+          Mutable: true
+      #SmsAuthenticationMessage
+      #SmsConfiguration
+      #UserAttributeUpdateSettings
+      UsernameAttributes:
+        - email
+      UserPoolAddOns:
+        AdvancedSecurityMode: AUDIT
+      #UserPoolTags
+      VerificationMessageTemplate:
+        DefaultEmailOption: CONFIRM_WITH_CODE
+        EmailMessage: "Your verification code is {####}."
+        EmailMessageByLink: "Please click the link below to verify your email address. {##Verify Email##}."
+        EmailSubject: "Your verification code for Tvarit Industrial AI"
+        EmailSubjectByLink: "Your verification link for Tvarit Industrial AI"
+        SmsMessage: "Your verification code is {####}."
+
+  UserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: tia-cognito-client
+      UserPoolId: !Ref UserPool
+      #AccessTokenValidity
+      AllowedOAuthFlows:
+        - 'implicit'
+        - 'code'
+      AllowedOAuthFlowsUserPoolClient: true
+      AllowedOAuthScopes:
+        - 'openid'
+        - 'profile'
+        - 'phone'
+        - 'email'
+        - 'aws.cognito.signin.user.admin'
+      #AnalyticsConfiguration
+      #AuthSessionValidity
+      CallbackURLs:
+        - 'http://localhost:3000/login/generic_oauth'
+        - 'https://cloud.tvarit.com/login/generic_oauth'
+        - 'https://cloud-next.tvarit.com/login/generic_oauth'
+      #EnablePropagateAdditionalUserContextData
+      #EnableTokenRevocation
+      ExplicitAuthFlows:
+        - ALLOW_REFRESH_TOKEN_AUTH
+        - ALLOW_USER_PASSWORD_AUTH
+        - ALLOW_ADMIN_USER_PASSWORD_AUTH
+      GenerateSecret: true
+      #IdTokenValidity
+      LogoutURLs:
+        - 'http://localhost:3000/login/generic_oauth'
+        - 'https://cloud.tvarit.com/login/generic_oauth'
+        - 'https://cloud-next.tvarit.com/login/generic_oauth'
+      PreventUserExistenceErrors: ENABLED
+      #ReadAttributes
+      #RefreshTokenValidity
+      SupportedIdentityProviders:
+        - COGNITO
+      #WriteAttributes
+
+  UserPoolUICustomizationAttachment:
+    Type: AWS::Cognito::UserPoolUICustomizationAttachment
+    Properties:
+      UserPoolId: !Ref UserPool
+      ClientId: !Ref UserPoolClient
+      CSS: ".logo-customizable{max-width:100px;max-height:100px}.banner-customizable{padding:25px 0;background-color:#eee}.label-customizable{font-weight:400}.textDescription-customizable{padding-top:10px;padding-bottom:20px;display:block;font-size:16px;font-weight:600;content:''}.idpDescription-customizable{padding-top:10px;padding-bottom:10px;display:block;font-size:16px}.legalText-customizable{color:#747474;font-size:11px}.submitButton-customizable{font-size:14px;font-weight:400;margin:20px 0 10px;height:40px;width:100%;color:#fff;background-color:#126}.submitButton-customizable:hover{color:#fff;background-color:#0d1b51}.errorMessage-customizable{padding:5px;font-size:14px;width:100%;background:#f5f5f5;border:2px solid #d64958;color:#d64958}.inputField-customizable{width:100%;height:34px;color:#555;background-color:#fff;border:1px solid #ccc}.inputField-customizable:focus{border-color:#66afe9;outline:0}.idpButton-customizable{height:40px;width:100%;text-align:center;margin-bottom:15px;color:#fff;background-color:#5bc0de;border-color:#46b8da}.idpButton-customizable:hover{color:#fff;background-color:#31b0d5}.socialButton-customizable{border-radius:2px;height:40px;margin-bottom:15px;padding:1px;text-align:left;width:100%}.redirect-customizable{text-align:center}.passwordCheck-notValid-customizable{color:#df3312}.passwordCheck-valid-customizable{color:#19bf00}.background-customizable{box-shadow:0 20px 20px rgba(0,0%,0%,20%),0 0 0 10000px #bbb;margin-top:20vh;background-color:#eee;border-radius:8px}"
+
+  UserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      UserPoolId: !Ref UserPool
+      Domain: sso.tvarit.com
+      CustomDomainConfig:
+        CertificateArn: "arn:aws:acm:us-east-1:250373516626:certificate/08cf2fdd-8954-402a-8610-198abc88b1d6"

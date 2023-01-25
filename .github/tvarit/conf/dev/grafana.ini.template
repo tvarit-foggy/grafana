@@ -65,6 +65,33 @@ allow_org_create = false
 # Default UI theme ("dark" or "light")
 default_theme = light
 
+[auth]
+# Set to true to disable the sign out link in the side menu. Useful if you use auth.proxy or auth.jwt.
+disable_signout_menu = false
+
+# URL to redirect the user to after sign out
+signout_redirect_url = https://sso.tvarit.com/logout?client_id=<OAUTH_CLIENT_ID/>&logout_uri=<ROOT_URL/>login
+
+# Set to true to attempt login with OAuth automatically, skipping the login screen.
+# This setting is ignored if multiple OAuth providers are configured.
+oauth_auto_login = true
+
+#################################### Basic Auth ##########################
+[auth.basic]
+enabled = false
+
+#################################### Generic OAuth #######################
+[auth.generic_oauth]
+name = TiA
+enabled = true
+allow_sign_up = true
+client_id = <OAUTH_CLIENT_ID/>
+client_secret = <OAUTH_CLIENT_SECRET/>
+scopes = email profile aws.cognito.signin.user.admin openid
+auth_url = https://sso.tvarit.com/oauth2/authorize
+token_url = https://sso.tvarit.com/oauth2/token
+api_url = https://sso.tvarit.com/oauth2/userInfo
+
 #################################### SMTP / Emailing ##########################
 [smtp]
 enabled = true
