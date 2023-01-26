@@ -79,8 +79,8 @@ allow_org_create = false
 default_theme = light
 
 [auth]
-# Set to true to disable the sign out link in the side menu. Useful if you use auth.proxy or auth.jwt.
-disable_signout_menu = false
+# Set to true to disable (hide) the login form, useful if you use OAuth
+disable_login_form = true
 
 # URL to redirect the user to after sign out
 signout_redirect_url = https://auth.tvarit.com/logout?client_id=<OAUTH_CLIENT_ID/>&logout_uri=<ROOT_URL/>login/generic_oauth&redirect_uri=<ROOT_URL/>login/generic_oauth
@@ -97,7 +97,7 @@ enabled = false
 [auth.generic_oauth]
 name = TiA
 enabled = true
-allow_sign_up = true
+allow_sign_up = false
 client_id = <OAUTH_CLIENT_ID/>
 client_secret = <OAUTH_CLIENT_SECRET/>
 scopes = email profile aws.cognito.signin.user.admin openid
