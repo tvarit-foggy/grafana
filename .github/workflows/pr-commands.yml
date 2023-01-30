@@ -52,7 +52,7 @@ jobs:
 
   comment:
     runs-on: ubuntu-latest
-    #if: ${{ github.event.action == 'opened' }}
+    if: ${{ github.event.action == 'opened' }}
     steps:
     - uses: marocchino/sticky-pull-request-comment@v2
       with:
