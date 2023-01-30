@@ -49,3 +49,17 @@ jobs:
         with:
           token: ${{secrets.GITHUB_TOKEN}}
           configPath: pr-commands
+
+  comment:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.action == 'opened' }}
+    steps:
+    - uses: actions/github-script@v5
+      with:
+        script: |
+          github.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: 'Please deploy and test the PR on development environment before merging. To do this add pr/deploy label to the PR.'
+          })
