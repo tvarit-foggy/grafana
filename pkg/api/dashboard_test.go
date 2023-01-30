@@ -35,6 +35,7 @@ func TestGetHomeDashboard(t *testing.T) {
 	httpReq, err := http.NewRequest(http.MethodGet, "", nil)
 	require.NoError(t, err)
 	req := &models.ReqContext{SignedInUser: &models.SignedInUser{}, Context: &web.Context{Req: httpReq}}
+	req.SignedInUser.View = models.DefaultView
 	cfg := setting.NewCfg()
 	cfg.StaticRootPath = "../../public/"
 

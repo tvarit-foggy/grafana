@@ -23,8 +23,6 @@ echo "Finalising docker image..."
 cp grafana.ini.template grafana.ini
 sed -i "s#<DOMAIN/>#${ROOT_URL:8:-1}#g" grafana.ini
 sed -i "s#<ROOT_URL/>#${ROOT_URL}#g" grafana.ini
-sed -i "s#<OAUTH_CLIENT_ID/>#${OAUTH_CLIENT_ID}#g" grafana.ini
-sed -i "s#<OAUTH_CLIENT_SECRET/>#${OAUTH_CLIENT_SECRET}#g" grafana.ini
 sed -i "s#<SIGNING_SECRET/>#${SIGNING_SECRET}#g" grafana.ini
 sed -i "s#<SMTP_HOST/>#${SMTP_HOST}#g" grafana.ini
 sed -i "s#<SMTP_USER/>#${SMTP_USER}#g" grafana.ini
