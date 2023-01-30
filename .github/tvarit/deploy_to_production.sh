@@ -97,4 +97,3 @@ aws lightsail create-container-service-deployment --cli-input-json file://lights
 
 echo "Deleting staging deployment..."
 aws lightsail delete-container-service --service-name ${PREFIX}-next-grafana || :
-aws lightsail delete-relational-database --relational-database-name ${PREFIX}-next-grafana-db --skip-final-snapshot || :
