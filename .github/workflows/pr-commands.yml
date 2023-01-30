@@ -63,3 +63,11 @@ jobs:
             repo: context.repo.repo,
             body: 'Please deploy and test the PR on development environment before merging. To do this add pr/deploy label to the PR.'
           })
+
+  tcomment:
+    runs-on: ubuntu-latest
+    env:
+      PR_ACTION: ${{ github.event.action }}
+    steps:
+    - run: |
+        echo ${PR_ACTION}
