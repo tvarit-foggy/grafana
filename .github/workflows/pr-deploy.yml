@@ -6,6 +6,7 @@ on:
 
 jobs:
   deploy_to_development:
+    if: contains(github.event.pull_request.labels.*.name, 'pr/deploy')
     runs-on: self-hosted
     environment: development
     env:
@@ -20,3 +21,7 @@ jobs:
     - uses: actions/checkout@v2
     - run: |
         bash .github/tvarit/deploy_to_development.sh
+    - uses: marocchino/sticky-pull-request-comment@v2
+      with:
+        number: ${{ github.event.number }}
+        message: 'Deployment complete. Please visit https://dev-grafana-${{ github.event.number }}.gh13sk1ojoobm.eu-central-1.cs.amazonlightsail.com/ to view the deployment!'
