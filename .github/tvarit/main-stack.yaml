@@ -1,6 +1,28 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Description: Grafana Stack
 
+Parameters:
+  SESIdentityARN:
+    Type: String
+    Description: Verfied email identity in SES
+    Default: "arn:aws:ses:eu-central-1:250373516626:identity/no-reply@tvarit.com"
+  SESFromEmail:
+    Description: From email for verified email identity in SES
+    Type: String
+    Default: "no-reply@tvarit.com"
+  SESReplyToEmail:
+    Description: Support email for reply to
+    Type: String
+    Default: "support@tvarit.com"
+  AuthServiceDomainCertificateARN:
+    Description: ACM certificate ARN for auth service domain name
+    Type: String
+    Default: "arn:aws:acm:us-east-1:250373516626:certificate/08cf2fdd-8954-402a-8610-198abc88b1d6"
+  AuthServiceDomainName:
+    Description: Auth service domain name
+    Type: String
+    Default: "auth.tvarit.com"
+
 Resources:
   DataLakeArtifactS3Bucket:
     Type: AWS::S3::Bucket
@@ -77,17 +99,18 @@ Resources:
         AllowAdminCreateUserOnly: true
         InviteMessageTemplate:
           EmailSubject: "Your credentials for Tvarit AI Platform"
-          EmailMessage: "Your username is {username} and your temporary password is {####}. Please log in to the platform and reset your password and MFA."
-          SMSMessage: "Your username is {username} and your temporary password is {####} for Tvarit Industrial AI."
+          EmailMessage: "Your username is {username} and your temporary password is {####}. This password is valid only for 24hrs. Please log in to the platform and reset your password and MFA."
+          SMSMessage: "Your username is {username} and your temporary password is {####} for Tvarit Industrial AI. This password is valid only for 24hrs."
       AutoVerifiedAttributes:
         - email
       DeviceConfiguration:
         ChallengeRequiredOnNewDevice: true
         DeviceOnlyRememberedOnUserPrompt: true
       EmailConfiguration:
-        EmailSendingAccount: COGNITO_DEFAULT
-        ReplyToEmailAddress: support@tvarit.com
-        SourceArn: "arn:aws:ses:eu-central-1:250373516626:identity/no-reply@tvarit.com"
+        EmailSendingAccount: DEVELOPER
+        From: !Ref SESFromEmail
+        ReplyToEmailAddress: !Ref SESReplyToEmail
+        SourceArn: !Ref SESIdentityARN
       EnabledMfas:
         - SOFTWARE_TOKEN_MFA
       #  - SMS_MFA
@@ -126,7 +149,7 @@ Resources:
       UsernameAttributes:
         - email
       UserPoolAddOns:
-        AdvancedSecurityMode: AUDIT
+        AdvancedSecurityMode: ENFORCED
       #UserPoolTags
       VerificationMessageTemplate:
         DefaultEmailOption: CONFIRM_WITH_CODE
@@ -185,6 +208,84 @@ Resources:
     Type: AWS::Cognito::UserPoolDomain
     Properties:
       UserPoolId: !Ref UserPool
-      Domain: auth.tvarit.com
+      Domain: !Ref AuthServiceDomainName
       CustomDomainConfig:
-        CertificateArn: "arn:aws:acm:us-east-1:250373516626:certificate/08cf2fdd-8954-402a-8610-198abc88b1d6"
+        CertificateArn: !Ref AuthServiceDomainCertificateARN
+
+  UserPoolRiskConfigurationAttachment:
+    Type: AWS::Cognito::UserPoolRiskConfigurationAttachment
+    DependsOn: CognitoEmailServiceRole
+    Properties:
+      UserPoolId: !Ref UserPool
+      ClientId: ALL
+      AccountTakeoverRiskConfiguration:
+        Actions:
+          LowAction:
+            EventAction: NO_ACTION
+            Notify: true
+          MediumAction:
+            EventAction: MFA_REQUIRED
+            Notify: true
+          HighAction:
+            EventAction: BLOCK
+            Notify: true
+        NotifyConfiguration:
+          From: !Ref SESFromEmail
+          ReplyTo: !Ref SESReplyToEmail
+          SourceArn: !Ref SESIdentityARN
+          BlockEmail:
+            Subject: "Blocked sign-in attempt"
+            HtmlBody: "<!DOCTYPE html><html><head><title>HTML email context</title><meta charset='utf-8'></head><body><pre>We blocked an unrecognized sign-in to your account with this information:<ul><li>Time: {login-time}</li><li>Device: {device-name}</li><li>Location: {city}, {country}</li></ul>If this sign-in was not by you, you should change your password and notify us by clicking on <a href={one-click-link-invalid}>this link</a>If this sign-in was by you, you can follow <a href={one-click-link-valid}>this link</a> to let us know</pre></body></html>"
+            TextBody: "We blocked an unrecognized sign-in to your account with this information:
+Time: {login-time}
+Device: {device-name}
+Location: {city}, {country}
+If this sign-in was not by you, you should change your password and notify us by clicking on {one-click-link-invalid}
+If this sign-in was by you, you can follow {one-click-link-valid} to let us know"
+          MfaEmail:
+            Subject: "New sign-in attempt"
+            HtmlBody: "<!DOCTYPE html><html><head><title>HTML email context</title><meta charset='utf-8'></head><body><pre>We required you to use multi-factor authentication for the following sign-in attempt:<ul><li>Time: {login-time}</li><li>Device: {device-name}</li><li>Location: {city}, {country}</li></ul>If this sign-in was not by you, you should change your password and notify us by clicking on <a href={one-click-link-invalid}>this link</a>If this sign-in was by you, you can follow <a href={one-click-link-valid}>this link</a> to let us know</pre></body></html>"
+            TextBody: "We required you to use multi-factor authentication for the following sign-in attempt:
+Time: {login-time}
+Device: {device-name}
+Location: {city}, {country}
+If this sign-in was not by you, you should change your password and notify us by clicking on {one-click-link-invalid}
+If this sign-in was by you, you can follow {one-click-link-valid} to let us know"
+          NoActionEmail:
+            Subject: "New sign-in attempt"
+            HtmlBody: "<!DOCTYPE html><html><head><title>HTML email context</title><meta charset='utf-8'></head><body><pre>We observed an unrecognized sign-in to your account with this information:<ul><li>Time: {login-time}</li><li>Device: {device-name}</li><li>Location: {city}, {country}</li></ul>If this sign-in was not by you, you should change your password and notify us by clicking on <a href={one-click-link-invalid}>this link</a>If this sign-in was by you, you can follow <a href={one-click-link-valid}>this link</a> to let us know</pre></body></html>"
+            TextBody: "We observed an unrecognized sign-in to your account with this information:
+Time: {login-time}
+Device: {device-name}
+Location: {city}, {country}
+If this sign-in was not by you, you should change your password and notify us by clicking on {one-click-link-invalid}
+If this sign-in was by you, you can follow {one-click-link-valid} to let us know"
+      CompromisedCredentialsRiskConfiguration:
+        Actions:
+          EventAction: BLOCK
+      #RiskExceptionConfiguration:
+      #  RiskExceptionConfigurationType
+
+  CognitoEmailServiceRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: CognitoEmailServiceRole
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - email.cognito-idp.amazonaws.com
+            Action:
+              - "sts:AssumeRole"
+      Policies:
+        - PolicyName: CognitoEmailServiceRolePolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "SES:SendEmail"
+                  - "SES:SendRawEmail"
+                Resource: !Ref SESIdentityARN
