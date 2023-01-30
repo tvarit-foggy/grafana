@@ -49,3 +49,12 @@ cp lightsail.json.template lightsail.json
 sed -i "s#<PR_NUMBER/>#${PR_NUMBER}#g" lightsail.json
 sed -i "s#<IMAGE/>#${IMAGE}#g" lightsail.json
 aws lightsail create-container-service-deployment --cli-input-json file://lightsail.json
+
+for run in {1..60}; do
+  echo "Waiting for deployment to complete..."
+  sleep 60
+  state=$(aws lightsail get-container-service-deployments --service-name dev-grafana-${PR_NUMBER} --query deployments[0].state --output text)
+  if [ "${state}" == "ACTIVE" ]; then
+    break
+  fi
+done
