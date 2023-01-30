@@ -1,4 +1,4 @@
-name: Levitate / Report breaking changes
+name: PR report breaking changes
 
 on:
   workflow_run:
@@ -127,37 +127,3 @@ jobs:
             repo: context.repo.repo,
             name: 'breaking change'
           })
-
-    # This is very weird, the actual request goes through (comes back with a 201), but does not assign the team.
-    # Related issue: https://github.com/renovatebot/renovate/issues/1908
-    - name: Add "grafana/plugins-platform-frontend" as a reviewer
-      if: ${{ steps.levitate-run.outputs.exit_code == 1 }}
-      uses: actions/github-script@v5
-      env:
-        PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
-      with:
-        script: |
-          await github.rest.pulls.requestReviewers({
-            pull_number: process.env.PR_NUMBER,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            reviewers: [],
-            team_reviewers: ['grafana/plugins-platform-frontend']
-          });
-
-    - name: Remove "grafana/plugins-platform-frontend" from the list of reviewers
-      if: ${{ steps.levitate-run.outputs.exit_code == 0 }}
-      uses: actions/github-script@v5
-      env:
-        PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
-      with:
-        script: |
-          await github.rest.pulls.removeRequestedReviewers({
-            pull_number: process.env.PR_NUMBER,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            reviewers: [],
-            team_reviewers: ['grafana/plugins-platform-frontend']
-          });
-
-

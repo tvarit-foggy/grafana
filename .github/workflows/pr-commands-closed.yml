@@ -1,4 +1,5 @@
-name: Run when PRs are closed
+name: PR Teardown
+
 on:
   pull_request:
     types:

@@ -1,4 +1,4 @@
-name: Levitate / Detect breaking changes
+name: PR detect breaking changes
 
 on: pull_request
 
