@@ -19,10 +19,6 @@ jobs:
       SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
     steps:
     - uses: actions/checkout@v2
-    - uses: marocchino/sticky-pull-request-comment@v2
-      with:
-        number: ${{ github.event.number }}
-        message: 'Deployment in progress...'
     - run: |
         bash .github/tvarit/deploy_to_development.sh
     - uses: marocchino/sticky-pull-request-comment@v2
