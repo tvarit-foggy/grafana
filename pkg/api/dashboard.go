@@ -480,7 +480,6 @@ func (hs *HTTPServer) GetHomeDashboard(c *models.ReqContext) response.Response {
 			dashRedirect := dtos.DashboardRedirect{RedirectUri: homedashboard}
 			return response.JSON(200, &dashRedirect)
 		}
-
 	}
 
 	prefsQuery := models.GetPreferencesWithDefaultsQuery{User: c.SignedInUser}
