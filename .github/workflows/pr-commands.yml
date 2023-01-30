@@ -52,22 +52,9 @@ jobs:
 
   comment:
     runs-on: ubuntu-latest
-    if: ${{ github.event.action == 'opened' }}
+    #if: ${{ github.event.action == 'opened' }}
     steps:
-    - uses: actions/github-script@v5
+    - uses: marocchino/sticky-pull-request-comment@v2
       with:
-        script: |
-          github.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: 'Please deploy and test the PR on development environment before merging. To do this add pr/deploy label to the PR.'
-          })
-
-  tcomment:
-    runs-on: ubuntu-latest
-    env:
-      PR_ACTION: ${{ github.event.action }}
-    steps:
-    - run: |
-        echo ${PR_ACTION}
+        number: ${{ github.event.number }}
+        message: 'Please deploy and test the PR on development environment before merging. To do this add pr/deploy label to the PR.'

@@ -19,14 +19,13 @@ jobs:
       SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
     steps:
     - uses: actions/checkout@v2
+    - uses: marocchino/sticky-pull-request-comment@v2
+      with:
+        number: ${{ github.event.number }}
+        message: 'Deployment in progress...'
     - run: |
         bash .github/tvarit/deploy_to_development.sh
-    - uses: actions/github-script@v5
+    - uses: marocchino/sticky-pull-request-comment@v2
       with:
-        script: |
-          github.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: 'Deployment complete. Please visit https://dev-grafana-' + process.env.PR_NUMBER + '.gh13sk1ojoobm.eu-central-1.cs.amazonlightsail.com/ to view the deployment!'
-          })
+        number: ${{ github.event.number }}
+        message: 'Deployment complete. Please visit https://dev-grafana-' + process.env.PR_NUMBER + '.gh13sk1ojoobm.eu-central-1.cs.amazonlightsail.com/ to view the deployment!'
