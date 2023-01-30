@@ -28,4 +28,4 @@ jobs:
     - uses: marocchino/sticky-pull-request-comment@v2
       with:
         number: ${{ github.event.number }}
-        message: 'Deployment complete. Please visit https://dev-grafana-' + process.env.PR_NUMBER + '.gh13sk1ojoobm.eu-central-1.cs.amazonlightsail.com/ to view the deployment!'
+        message: 'Deployment complete. Please visit https://dev-grafana-${{ github.event.number }}.gh13sk1ojoobm.eu-central-1.cs.amazonlightsail.com/ to view the deployment!'
