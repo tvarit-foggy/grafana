@@ -65,7 +65,7 @@ jobs:
       id: does-label-exist
       uses: actions/github-script@v5
       env:
-        PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
+        PR_NUMBER: ${{ github.event.number }}
       with:
         script: |
           const { data } = await github.rest.issues.listLabelsOnIssue({
@@ -104,7 +104,7 @@ jobs:
       if: ${{ steps.levitate-run.outputs.exit_code == 1 && steps.does-label-exist.outputs.result == 0 }}
       uses: actions/github-script@v5
       env:
-        PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
+        PR_NUMBER: ${{ github.event.number }}
       with:
         script: |
           await github.rest.issues.addLabels({
@@ -118,7 +118,7 @@ jobs:
       if: ${{ steps.levitate-run.outputs.exit_code == 0 && steps.does-label-exist.outputs.result == 1 }}
       uses: actions/github-script@v5
       env:
-        PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
+        PR_NUMBER: ${{ github.event.number }}
       with:
         script: |
           await github.rest.issues.removeLabel({
