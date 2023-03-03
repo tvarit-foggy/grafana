@@ -2,8 +2,12 @@ FROM <BASE_IMAGE/>
 
 COPY plugins /var/lib/grafana/plugins
 COPY grafana.ini /etc/grafana/grafana.ini
+COPY cloudwatch.json /etc/cwagentconfig
 
-ENV GF_AWS_PROFILES=default
+ENV GF_AWS_PROFILES="default AmazonCloudWatchAgent"
 ENV GF_AWS_default_ACCESS_KEY_ID=<AWS_ACCESS_KEY/>
 ENV GF_AWS_default_SECRET_ACCESS_KEY=<AWS_SECRET_KEY/>
 ENV GF_AWS_default_REGION=<AWS_REGION/>
+ENV GF_AWS_AmazonCloudWatchAgent_ACCESS_KEY_ID=<AWS_ACCESS_KEY/>
+ENV GF_AWS_AmazonCloudWatchAgent_SECRET_ACCESS_KEY=<AWS_SECRET_KEY/>
+ENV GF_AWS_AmazonCloudWatchAgent_REGION=<AWS_REGION/>

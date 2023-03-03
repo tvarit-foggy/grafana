@@ -29,6 +29,9 @@ sed -i "s#<SMTP_USER/>#${SMTP_USER}#g" grafana.ini
 sed -i "s#<SMTP_PASSWORD/>#${SMTP_PASSWORD}#g" grafana.ini
 sed -i "s#<SMTP_FROM/>#[dev-${PR_NUMBER}] Tvarit AI Platform#g" grafana.ini
 
+cp cloudwatch.json.template cloudwatch.json
+sed -i "s#<DOMAIN/>#${ROOT_URL:8:-1}#g" cloudwatch.json
+
 cp Dockerfile.template Dockerfile
 sed -i "s#<BASE_IMAGE/>#grafana/grafana:${PR_NUMBER}#g" Dockerfile
 sed -i "s#<AWS_ACCESS_KEY/>#${AWS_ACCESS_KEY}#g" Dockerfile

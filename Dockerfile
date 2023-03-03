@@ -38,6 +38,19 @@ COPY .bingo .bingo
 RUN go mod verify
 RUN make build-go
 
+FROM debian:latest as cloudwatch-builder
+
+RUN apt-get update &&  \
+    apt-get install -y ca-certificates curl && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN curl -O https://s3.amazonaws.com/amazoncloudwatch-agent/debian/amd64/latest/amazon-cloudwatch-agent.deb && \
+    dpkg -i -E amazon-cloudwatch-agent.deb && \
+    rm -rf /tmp/* && \
+    rm -rf /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-config-wizard && \
+    rm -rf /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl && \
+    rm -rf /opt/aws/amazon-cloudwatch-agent/bin/config-downloader
+
 # Final stage
 FROM alpine:3.15
 
@@ -90,6 +103,12 @@ COPY --from=js-builder /grafana/tools ./tools
 EXPOSE 3000
 
 COPY ./packaging/docker/run.sh /run.sh
+
+COPY --from=cloudwatch-builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+COPY --from=cloudwatch-builder /opt/aws/amazon-cloudwatch-agent /opt/aws/amazon-cloudwatch-agent
+COPY conf/cloudwatch.json /etc/cwagentconfig
+RUN chown -R "grafana:$GF_GID_NAME" /opt/aws/amazon-cloudwatch-agent
+ENV RUN_IN_CONTAINER="True"
 
 USER grafana
 ENTRYPOINT [ "/run.sh" ]

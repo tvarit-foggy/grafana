@@ -1,4 +1,5 @@
 */Dockerfile
 */grafana.ini
+*/cloudwatch.json
 */lightsail.json
 */plugins/
