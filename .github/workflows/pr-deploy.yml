@@ -2,7 +2,7 @@ name: PR Deploy
 
 on:
   pull_request:
-    types: [labeled]
+    types: [labeled, synchronize]
 
 jobs:
   deploy_to_development:
