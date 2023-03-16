@@ -9,7 +9,7 @@
         "collect_list": [
           {
             "file_path": "/var/log/grafana/grafana*",
-            "log_group_name": "/com/tvarit/grafana",
+            "log_group_name": "/grafana/<DOMAIN/>",
             "retention_in_days": 365,
             "timezone": "UTC",
             "timestamp_format": "%Y-%m-%dT%H:%M:%S.%f%z"
