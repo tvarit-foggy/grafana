@@ -109,8 +109,8 @@ COPY --from=cloudwatch-builder /opt/aws/amazon-cloudwatch-agent /opt/aws/amazon-
 COPY conf/cloudwatch.json /etc/cwagentconfig
 RUN chown -R "grafana:$GF_GID_NAME" /opt/aws/amazon-cloudwatch-agent
 ENV RUN_IN_CONTAINER="True"
-chown -R "grafana:$GF_GID_NAME" "/usr/share/grafana/public/img/"
-chmod -R 777 "/usr/share/grafana/public/img/"
+RUN chown -R "grafana:$GF_GID_NAME" "/usr/share/grafana/public/img/"
+RUN chmod -R 777 "/usr/share/grafana/public/img/"
 
 USER grafana
 ENTRYPOINT [ "/run.sh" ]
