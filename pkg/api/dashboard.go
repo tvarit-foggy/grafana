@@ -446,7 +446,7 @@ func (hs *HTTPServer) dashboardSaveErrorToApiResponse(ctx context.Context, err e
 }
 
 // GetHomeDashboard returns the home dashboard.
-	func (hs *HTTPServer) GetHomeDashboard(c *models.ReqContext) response.Response {
+func (hs *HTTPServer) GetHomeDashboard(c *models.ReqContext) response.Response {
 	if c.SignedInUser.View != models.DefaultView {
 		searchQuery := search.Query{
 			Tags:         []string{"pin"},
