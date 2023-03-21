@@ -1,59 +1,240 @@
 {
+  "__inputs": [],
+  "__elements": [],
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "8.4.0-pre"
+    },
+    {
+      "type": "panel",
+      "id": "innius-video-panel",
+      "name": "Video",
+      "version": "1.0.5"
+    },
+    {
+      "type": "panel",
+      "id": "text",
+      "name": "Text",
+      "version": ""
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "icon": "apps",
+  "id": null,
   "links": [],
+  "liveNow": false,
   "panels": [
     {
-      "datasource": null,
       "gridPos": {
-        "h": 3,
+        "h": 2,
         "w": 24,
         "x": 0,
         "y": 0
       },
-      "id": 1,
-      "title": "",
-      "transparent": false,
-      "type": "welcome"
+      "id": 16,
+      "options": {
+        "content": "# Welcome to Tvarit Industrial AI",
+        "mode": "markdown"
+      },
+      "pluginVersion": "8.4.0-pre",
+      "transparent": true,
+      "type": "text"
     },
     {
-      "datasource": null,
-      "folderId": 0,
       "gridPos": {
-        "h": 15,
+        "h": 2,
+        "w": 24,
+        "x": 0,
+        "y": 2
+      },
+      "id": 17,
+      "options": {
+        "content": "## Tutorial Videos",
+        "mode": "markdown"
+      },
+      "pluginVersion": "8.4.0-pre",
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "gridPos": {
+        "h": 8,
         "w": 12,
         "x": 0,
         "y": 4
       },
-      "headings": true,
-      "id": 3,
-      "limit": 30,
-      "links": [],
-      "options": {},
-      "query": "",
-      "recent": true,
-      "search": false,
-      "starred": true,
-      "tags": [],
-      "title": "Dashboards",
-      "type": "dashlist"
+      "id": 10,
+      "options": {
+        "autoPlay": false,
+        "customBackground": false,
+        "geolocate": false,
+        "iframeURL": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/WhatIsAIAndHowCanItHelpInManufacturing.mp4",
+        "loop": false,
+        "videoId": "eQpyJQ2womo",
+        "videoType": "url",
+        "videoURL": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/WhatIsAIAndHowCanItHelpInManufacturing.mp4"
+      },
+      "title": "What Is AI And How Can It Help In Manufacturing",
+      "transparent": true,
+      "type": "innius-video-panel"
     },
     {
-      "datasource": null,
       "gridPos": {
-        "h": 15,
-        "w": 12,
+        "h": 8,
+        "w": 11,
         "x": 12,
         "y": 4
       },
-      "id": 4,
-      "links": [],
+      "id": 2,
       "options": {
-        "feedUrl": "https://grafana.com/blog/news.xml"
+        "autoPlay": false,
+        "customBackground": false,
+        "geolocate": false,
+        "loop": false,
+        "videoId": "eQpyJQ2womo",
+        "videoType": "url",
+        "videoURL": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/HowDoesItConceptuallyWork.mov"
       },
-      "title": "Latest from the blog",
-      "type": "news"
+      "title": "How Does it Conceptually Work ?",
+      "transparent": true,
+      "type": "innius-video-panel"
+    },
+    {
+      "description": "",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 12
+      },
+      "id": 6,
+      "options": {
+        "autoPlay": false,
+        "customBackground": false,
+        "geolocate": false,
+        "iframeURL": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/DataRequirements.mov",
+        "loop": false,
+        "videoId": "eQpyJQ2womo",
+        "videoType": "url",
+        "videoURL": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/DataRequirements.mov"
+      },
+      "title": "Main Requirements : Data",
+      "transparent": true,
+      "type": "innius-video-panel"
+    },
+    {
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 12
+      },
+      "id": 8,
+      "options": {
+        "autoPlay": false,
+        "customBackground": false,
+        "geolocate": false,
+        "loop": false,
+        "videoId": "eQpyJQ2womo",
+        "videoType": "url",
+        "videoURL": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/MainProcessRequirements.mov"
+      },
+      "title": "Main Requirements : Process",
+      "transparent": true,
+      "type": "innius-video-panel"
+    },
+    {
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 20
+      },
+      "id": 4,
+      "options": {
+        "autoPlay": false,
+        "customBackground": false,
+        "geolocate": false,
+        "iframeURL": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/HumanResourceRequirements.mov",
+        "loop": false,
+        "videoId": "eQpyJQ2womo",
+        "videoType": "url",
+        "videoURL": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/HumanResourceRequirements.mov"
+      },
+      "title": "Main Requirements : Human Resource",
+      "transparent": true,
+      "type": "innius-video-panel"
+    },
+    {
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 20
+      },
+      "id": 12,
+      "options": {
+        "autoPlay": false,
+        "customBackground": false,
+        "geolocate": false,
+        "loop": false,
+        "videoId": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/SuccessCriterion.mov",
+        "videoType": "url",
+        "videoURL": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/SuccessCriterion.mov"
+      },
+      "title": "Success Criterion",
+      "transparent": true,
+      "type": "innius-video-panel"
+    },
+    {
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 6,
+        "y": 28
+      },
+      "id": 14,
+      "options": {
+        "autoPlay": false,
+        "customBackground": false,
+        "geolocate": false,
+        "loop": false,
+        "videoId": "eQpyJQ2womo",
+        "videoType": "url",
+        "videoURL": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/RisksInvolved.mov"
+      },
+      "title": "Risks Involved",
+      "transparent": true,
+      "type": "innius-video-panel"
     }
   ],
-  "schemaVersion": 22,
+  "refresh": "",
+  "schemaVersion": 34,
+  "style": "dark",
   "tags": [],
   "templating": {
     "list": []
@@ -62,12 +243,10 @@
     "from": "now-6h",
     "to": "now"
   },
-  "timepicker": {
-    "hidden": true,
-    "refresh_intervals": ["5s", "10s", "30s", "1m", "5m", "15m", "30m", "1h", "2h", "1d"],
-    "time_options": ["5m", "15m", "1h", "6h", "12h", "24h", "2d", "7d", "30d"],
-    "type": "timepicker"
-  },
-  "timezone": "browser",
-  "title": "Home"
+  "timepicker": {},
+  "timezone": "",
+  "title": "TiA Home",
+  "uid": "MhRy6zBVz",
+  "version": 30,
+  "weekStart": ""
 }

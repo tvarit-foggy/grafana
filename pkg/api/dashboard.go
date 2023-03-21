@@ -15,7 +15,7 @@ import (
 	"github.com/grafana/grafana/pkg/api/response"
 	"github.com/grafana/grafana/pkg/bus"
 	"github.com/grafana/grafana/pkg/components/dashdiffs"
-	"github.com/grafana/grafana/pkg/components/simplejson"
+	// "github.com/grafana/grafana/pkg/components/simplejson"
 	"github.com/grafana/grafana/pkg/infra/metrics"
 	"github.com/grafana/grafana/pkg/models"
 	"github.com/grafana/grafana/pkg/services/alerting"
@@ -533,11 +533,12 @@ func (hs *HTTPServer) GetHomeDashboard(c *models.ReqContext) response.Response {
 		return response.Error(500, "Failed to load home dashboard", err)
 	}
 
-	hs.addGettingStartedPanelToHomeDashboard(c, dash.Dashboard)
+	// hs.addGettingStartedPanelToHomeDashboard(c, dash.Dashboard)
 
 	return response.JSON(200, &dash)
 }
 
+/*
 func (hs *HTTPServer) addGettingStartedPanelToHomeDashboard(c *models.ReqContext, dash *simplejson.Json) {
 	// We only add this getting started panel for Admins who have not dismissed it,
 	// and if a custom default home dashboard hasn't been configured
@@ -563,6 +564,7 @@ func (hs *HTTPServer) addGettingStartedPanelToHomeDashboard(c *models.ReqContext
 	panels = append(panels, newpanel)
 	dash.Set("panels", panels)
 }
+*/
 
 // GetDashboardVersions returns all dashboard versions as JSON
 func GetDashboardVersions(c *models.ReqContext) response.Response {
