@@ -1,26 +1,4 @@
 {
-  "__inputs": [],
-  "__elements": [],
-  "__requires": [
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "8.4.0-pre"
-    },
-    {
-      "type": "panel",
-      "id": "innius-video-panel",
-      "name": "Video",
-      "version": "1.0.5"
-    },
-    {
-      "type": "panel",
-      "id": "text",
-      "name": "Text",
-      "version": ""
-    }
-  ],
   "annotations": {
     "list": [
       {
@@ -44,7 +22,7 @@
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "icon": "apps",
-  "id": null,
+  "id": 408,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -106,7 +84,7 @@
       "gridPos": {
         "h": 8,
         "w": 11,
-        "x": 12,
+        "x": 13,
         "y": 4
       },
       "id": 2,
@@ -214,7 +192,7 @@
       "gridPos": {
         "h": 8,
         "w": 12,
-        "x": 6,
+        "x": 0,
         "y": 28
       },
       "id": 14,
@@ -229,6 +207,181 @@
       },
       "title": "Risks Involved",
       "transparent": true,
+      "type": "innius-video-panel"
+    },
+    {
+      "gridPos": {
+        "h": 3,
+        "w": 11,
+        "x": 6,
+        "y": 36
+      },
+      "id": 25,
+      "options": {
+        "content": "",
+        "mode": "markdown"
+      },
+      "pluginVersion": "8.4.0-pre",
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "gridPos": {
+        "h": 5,
+        "w": 11,
+        "x": 10,
+        "y": 39
+      },
+      "id": 19,
+      "options": {
+        "content": "# How to use your dashboards",
+        "mode": "markdown"
+      },
+      "pluginVersion": "8.4.0-pre",
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 44
+      },
+      "id": 21,
+      "options": {
+        "autoPlay": true,
+        "customBackground": false,
+        "geolocate": false,
+        "loop": true,
+        "videoId": "eQpyJQ2womo",
+        "videoType": "url",
+        "videoURL": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/Setup2FA_Login.mov"
+      },
+      "title": "Setup 2FA and SignIn",
+      "type": "innius-video-panel"
+    },
+    {
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 44
+      },
+      "id": 23,
+      "options": {
+        "autoPlay": true,
+        "customBackground": false,
+        "geolocate": false,
+        "loop": true,
+        "videoId": "eQpyJQ2womo",
+        "videoType": "url",
+        "videoURL": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/How to create an alert in Grafana.mp4"
+      },
+      "title": "How to set new alerts?",
+      "transparent": true,
+      "type": "innius-video-panel"
+    },
+    {
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 52
+      },
+      "id": 27,
+      "options": {
+        "autoPlay": true,
+        "customBackground": false,
+        "geolocate": false,
+        "loop": true,
+        "videoId": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/Grafana user management _ Grafana adminstration.mp4",
+        "videoType": "url",
+        "videoURL": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/Grafana user management _ Grafana adminstration.mp4"
+      },
+      "title": "How to manage user profiles?",
+      "type": "innius-video-panel"
+    },
+    {
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 52
+      },
+      "id": 29,
+      "options": {
+        "autoPlay": true,
+        "customBackground": false,
+        "geolocate": false,
+        "loop": true,
+        "videoId": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/Lesson 17 - Creating Dynamic Grafana Dashboards using Variables in Grafana.mp4",
+        "videoType": "url",
+        "videoURL": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/Lesson 17 - Creating Dynamic Grafana Dashboards using Variables in Grafana.mp4"
+      },
+      "title": "How to add info in different screens?",
+      "type": "innius-video-panel"
+    },
+    {
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 60
+      },
+      "id": 31,
+      "options": {
+        "autoPlay": true,
+        "customBackground": false,
+        "geolocate": false,
+        "loop": true,
+        "videoId": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/AddingAnnotations.mp4",
+        "videoType": "url",
+        "videoURL": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/AddingAnnotations.mp4"
+      },
+      "title": "How to annotate graphs?",
+      "transparent": true,
+      "type": "innius-video-panel"
+    },
+    {
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 60
+      },
+      "id": 33,
+      "options": {
+        "autoPlay": true,
+        "customBackground": false,
+        "geolocate": false,
+        "loop": true,
+        "videoId": "eQpyJQ2womo",
+        "videoType": "url",
+        "videoURL": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/ScaleUp.mp4"
+      },
+      "title": "How to generate new prescriptions?",
+      "transparent": true,
+      "type": "innius-video-panel"
+    },
+    {
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 68
+      },
+      "id": 35,
+      "options": {
+        "autoPlay": true,
+        "customBackground": false,
+        "geolocate": false,
+        "loop": true,
+        "videoId": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/Casting Operator - Tvarit Cloud Platform.mp4",
+        "videoType": "url",
+        "videoURL": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/Casting Operator - Tvarit Cloud Platform.mp4"
+      },
+      "title": "How to interpret predictions and Analyse root causes?",
       "type": "innius-video-panel"
     }
   ],
@@ -247,6 +400,6 @@
   "timezone": "",
   "title": "TiA Home",
   "uid": "MhRy6zBVz",
-  "version": 30,
+  "version": 34,
   "weekStart": ""
 }
