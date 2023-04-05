@@ -383,6 +383,27 @@
       },
       "title": "How to interpret predictions and Analyse root causes?",
       "type": "innius-video-panel"
+    },
+    {
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 68
+      },
+      "id": 37,
+      "options": {
+        "autoPlay": true,
+        "customBackground": false,
+        "geolocate": false,
+        "loop": true,
+        "videoId": "eQpyJQ2womo",
+        "videoType": "url",
+        "videoURL": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/TiA LPDC PsE Dashboard Demo.mkv"
+      },
+      "title": "PsE Prescriptions",
+      "transparent": true,
+      "type": "innius-video-panel"
     }
   ],
   "refresh": "",
@@ -400,6 +421,6 @@
   "timezone": "",
   "title": "TiA Home",
   "uid": "MhRy6zBVz",
-  "version": 34,
+  "version": 132,
   "weekStart": ""
 }
