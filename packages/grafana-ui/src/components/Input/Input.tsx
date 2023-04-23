@@ -54,6 +54,7 @@ export const Input = React.forwardRef<HTMLInputElement, Props>((props, ref) => {
         )}
 
         <input
+          maxLength={1000}
           ref={ref}
           className={styles.input}
           {...restProps}
