@@ -250,15 +250,16 @@
       },
       "id": 21,
       "options": {
-        "autoPlay": true,
+        "autoPlay": false,
         "customBackground": false,
         "geolocate": false,
-        "loop": true,
+        "loop": false,
         "videoId": "eQpyJQ2womo",
         "videoType": "url",
-        "videoURL": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/Setup2FA_Login.mov"
+        "videoURL": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/LoginDemo.mov"
       },
       "title": "Setup 2FA and SignIn",
+      "transparent": true,
       "type": "innius-video-panel"
     },
     {
@@ -270,13 +271,13 @@
       },
       "id": 23,
       "options": {
-        "autoPlay": true,
+        "autoPlay": false,
         "customBackground": false,
         "geolocate": false,
-        "loop": true,
+        "loop": false,
         "videoId": "eQpyJQ2womo",
         "videoType": "url",
-        "videoURL": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/How to create an alert in Grafana.mp4"
+        "videoURL": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/How to set new alerts.mp4"
       },
       "title": "How to set new alerts?",
       "transparent": true,
@@ -291,15 +292,16 @@
       },
       "id": 27,
       "options": {
-        "autoPlay": true,
+        "autoPlay": false,
         "customBackground": false,
         "geolocate": false,
-        "loop": true,
+        "loop": false,
         "videoId": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/Grafana user management _ Grafana adminstration.mp4",
         "videoType": "url",
-        "videoURL": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/Grafana user management _ Grafana adminstration.mp4"
+        "videoURL": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/How to manage User Profiles.mp4"
       },
       "title": "How to manage user profiles?",
+      "transparent": true,
       "type": "innius-video-panel"
     },
     {
@@ -311,15 +313,16 @@
       },
       "id": 29,
       "options": {
-        "autoPlay": true,
+        "autoPlay": false,
         "customBackground": false,
         "geolocate": false,
-        "loop": true,
+        "loop": false,
         "videoId": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/Lesson 17 - Creating Dynamic Grafana Dashboards using Variables in Grafana.mp4",
         "videoType": "url",
-        "videoURL": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/Lesson 17 - Creating Dynamic Grafana Dashboards using Variables in Grafana.mp4"
+        "videoURL": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/How to add info in different screens.mp4"
       },
       "title": "How to add info in different screens?",
+      "transparent": true,
       "type": "innius-video-panel"
     },
     {
@@ -331,13 +334,13 @@
       },
       "id": 31,
       "options": {
-        "autoPlay": true,
+        "autoPlay": false,
         "customBackground": false,
         "geolocate": false,
-        "loop": true,
+        "loop": false,
         "videoId": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/AddingAnnotations.mp4",
         "videoType": "url",
-        "videoURL": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/AddingAnnotations.mp4"
+        "videoURL": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/How to annotate graphs.mp4"
       },
       "title": "How to annotate graphs?",
       "transparent": true,
@@ -352,10 +355,10 @@
       },
       "id": 33,
       "options": {
-        "autoPlay": true,
+        "autoPlay": false,
         "customBackground": false,
         "geolocate": false,
-        "loop": true,
+        "loop": false,
         "videoId": "eQpyJQ2womo",
         "videoType": "url",
         "videoURL": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/ScaleUp.mp4"
@@ -373,15 +376,37 @@
       },
       "id": 35,
       "options": {
-        "autoPlay": true,
+        "autoPlay": false,
         "customBackground": false,
         "geolocate": false,
-        "loop": true,
+        "loop": false,
         "videoId": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/Casting Operator - Tvarit Cloud Platform.mp4",
         "videoType": "url",
         "videoURL": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/Casting Operator - Tvarit Cloud Platform.mp4"
       },
       "title": "How to interpret predictions and Analyse root causes?",
+      "transparent": true,
+      "type": "innius-video-panel"
+    },
+    {
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 68
+      },
+      "id": 37,
+      "options": {
+        "autoPlay": false,
+        "customBackground": false,
+        "geolocate": false,
+        "loop": false,
+        "videoId": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/TiA LPDC PsE Dashboard Demo.mkv",
+        "videoType": "url",
+        "videoURL": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/TiA LPDC PsE Dashboard Demo.mkv"
+      },
+      "title": "Interpreting PsE Prescriptions",
+      "transparent": true,
       "type": "innius-video-panel"
     }
   ],
@@ -400,6 +425,6 @@
   "timezone": "",
   "title": "TiA Home",
   "uid": "MhRy6zBVz",
-  "version": 34,
+  "version": 146,
   "weekStart": ""
 }
