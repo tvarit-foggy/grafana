@@ -12,7 +12,7 @@ import (
 	"github.com/grafana/grafana/pkg/bus"
 	"github.com/grafana/grafana/pkg/models"
 	"github.com/grafana/grafana/pkg/services/accesscontrol"
-	"github.com/grafana/grafana/pkg/setting"
+	// "github.com/grafana/grafana/pkg/setting"
 	"github.com/grafana/grafana/pkg/util"
 	"github.com/grafana/grafana/pkg/web"
 )
@@ -102,20 +102,21 @@ func GetUserByLoginOrEmail(c *models.ReqContext) response.Response {
 
 // POST /api/user
 func UpdateSignedInUser(c *models.ReqContext) response.Response {
-	cmd := models.UpdateUserCommand{}
-	if err := web.Bind(c.Req, &cmd); err != nil {
-		return response.Error(http.StatusBadRequest, "bad request data", err)
-	}
-	if setting.AuthProxyEnabled {
-		if setting.AuthProxyHeaderProperty == "email" && cmd.Email != c.Email {
-			return response.Error(400, "Not allowed to change email when auth proxy is using email property", nil)
-		}
-		if setting.AuthProxyHeaderProperty == "username" && cmd.Login != c.Login {
-			return response.Error(400, "Not allowed to change username when auth proxy is using username property", nil)
-		}
-	}
-	cmd.UserId = c.UserId
-	return handleUpdateUser(c.Req.Context(), cmd)
+	// cmd := models.UpdateUserCommand{}
+	// if err := web.Bind(c.Req, &cmd); err != nil {
+	// 	return response.Error(http.StatusBadRequest, "bad request data", err)
+	// }
+	// if setting.AuthProxyEnabled {
+	// 	if setting.AuthProxyHeaderProperty == "email" && cmd.Email != c.Email {
+	// 		return response.Error(400, "Not allowed to change email when auth proxy is using email property", nil)
+	// 	}
+	// 	if setting.AuthProxyHeaderProperty == "username" && cmd.Login != c.Login {
+	// 		return response.Error(400, "Not allowed to change username when auth proxy is using username property", nil)
+	// 	}
+	// }
+	// cmd.UserId = c.UserId
+	// return handleUpdateUser(c.Req.Context(), cmd)
+	return response.Error(400, "You are not allowed", nil)
 }
 
 // POST /api/users/:id
@@ -294,44 +295,45 @@ func (hs *HTTPServer) ChangeActiveOrgAndRedirectToHome(c *models.ReqContext) {
 }
 
 func ChangeUserPassword(c *models.ReqContext) response.Response {
-	cmd := models.ChangeUserPasswordCommand{}
-	if err := web.Bind(c.Req, &cmd); err != nil {
-		return response.Error(http.StatusBadRequest, "bad request data", err)
-	}
-	if setting.LDAPEnabled || setting.AuthProxyEnabled {
-		return response.Error(400, "Not allowed to change password when LDAP or Auth Proxy is enabled", nil)
-	}
+	// cmd := models.ChangeUserPasswordCommand{}
+	// if err := web.Bind(c.Req, &cmd); err != nil {
+	// 	return response.Error(http.StatusBadRequest, "bad request data", err)
+	// }
+	// if setting.LDAPEnabled || setting.AuthProxyEnabled {
+	// 	return response.Error(400, "Not allowed to change password when LDAP or Auth Proxy is enabled", nil)
+	// }
 
-	userQuery := models.GetUserByIdQuery{Id: c.UserId}
+	// userQuery := models.GetUserByIdQuery{Id: c.UserId}
 
-	if err := bus.Dispatch(c.Req.Context(), &userQuery); err != nil {
-		return response.Error(500, "Could not read user from database", err)
-	}
+	// if err := bus.Dispatch(c.Req.Context(), &userQuery); err != nil {
+	// 	return response.Error(500, "Could not read user from database", err)
+	// }
 
-	passwordHashed, err := util.EncodePassword(cmd.OldPassword, userQuery.Result.Salt)
-	if err != nil {
-		return response.Error(500, "Failed to encode password", err)
-	}
-	if passwordHashed != userQuery.Result.Password {
-		return response.Error(401, "Invalid old password", nil)
-	}
+	// passwordHashed, err := util.EncodePassword(cmd.OldPassword, userQuery.Result.Salt)
+	// if err != nil {
+	// 	return response.Error(500, "Failed to encode password", err)
+	// }
+	// if passwordHashed != userQuery.Result.Password {
+	// 	return response.Error(401, "Invalid old password", nil)
+	// }
 
-	password := models.Password(cmd.NewPassword)
-	if password.IsWeak() {
-		return response.Error(400, "New password is too short", nil)
-	}
+	// password := models.Password(cmd.NewPassword)
+	// if password.IsWeak() {
+	// 	return response.Error(400, "New password is too short", nil)
+	// }
 
-	cmd.UserId = c.UserId
-	cmd.NewPassword, err = util.EncodePassword(cmd.NewPassword, userQuery.Result.Salt)
-	if err != nil {
-		return response.Error(500, "Failed to encode password", err)
-	}
+	// cmd.UserId = c.UserId
+	// cmd.NewPassword, err = util.EncodePassword(cmd.NewPassword, userQuery.Result.Salt)
+	// if err != nil {
+	// 	return response.Error(500, "Failed to encode password", err)
+	// }
 
-	if err := bus.Dispatch(c.Req.Context(), &cmd); err != nil {
-		return response.Error(500, "Failed to change user password", err)
-	}
+	// if err := bus.Dispatch(c.Req.Context(), &cmd); err != nil {
+	// 	return response.Error(500, "Failed to change user password", err)
+	// }
 
-	return response.Success("User password changed")
+	// return response.Success("User password changed")
+	return response.Error(400, "You are not allowed", nil)
 }
 
 // redirectToChangePassword handles GET /.well-known/change-password.
