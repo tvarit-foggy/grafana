@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/url"
 	"path"
+	"regexp"
 	"sort"
 	"strings"
 	"time"
@@ -29,6 +30,7 @@ type ExtendedAlert struct {
 	DashboardURL string      `json:"dashboardURL"`
 	PanelURL     string      `json:"panelURL"`
 	ValueString  string      `json:"valueString"`
+	Values       template.KV `json:"values"`
 }
 
 type ExtendedAlerts []ExtendedAlert
@@ -86,9 +88,17 @@ func extendAlert(alert template.Alert, externalURL string, logger log.Logger) *E
 			extended.PanelURL = u.String()
 		}
 	}
-
 	if alert.Annotations != nil {
 		extended.ValueString = alert.Annotations[`__value_string__`]
+		logger.Error(extended.ValueString)
+		extended.Values = make(map[string]string)
+		pattern := regexp.MustCompile(`(\w+)=({[^}]*}|'[^']*'|[^ ]*)`)
+		matches := pattern.FindAllStringSubmatch(extended.ValueString, -1)
+		for _, match := range matches {
+			key := match[1]
+			value := strings.Trim(match[2], "'")
+			extended.Values[key] = value
+		}
 	}
 
 	matchers := make([]string, 0)
