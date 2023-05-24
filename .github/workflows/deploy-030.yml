@@ -1,0 +1,22 @@
+name: Deploy to 030
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy_to_dev:
+    runs-on: ubuntu-latest
+    environment: development
+    env:
+      AWS_DEFAULT_REGION: eu-central-1
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_030 }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_030 }}
+      OAUTH_CLIENT_ID: ${{ secrets.OAUTH_CLIENT_ID }}
+      OAUTH_CLIENT_SECRET: ${{ secrets.OAUTH_CLIENT_SECRET }}
+      SMTP_HOST: ${{ secrets.SMTP_HOST }}
+      SMTP_USER: ${{ secrets.SMTP_USER }}
+      SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+    steps:
+    - uses: actions/checkout@v2
+    - run: |
+        bash .github/tvarit/deploy_to_dev_30.sh test
