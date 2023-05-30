@@ -472,7 +472,6 @@ func evaluateExecutionResult(execResults ExecutionResults, ts time.Time) Results
 		}
 		seenLabels[labelsStr] = true
 	}
-
 	return evalResults
 }
 

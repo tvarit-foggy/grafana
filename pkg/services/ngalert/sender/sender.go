@@ -12,7 +12,6 @@ import (
 	"github.com/grafana/grafana/pkg/services/ngalert/metrics"
 	ngmodels "github.com/grafana/grafana/pkg/services/ngalert/models"
 
-	"github.com/prometheus/alertmanager/api/v2/models"
 	"github.com/prometheus/client_golang/prometheus"
 	common_config "github.com/prometheus/common/config"
 	"github.com/prometheus/common/model"
@@ -172,7 +171,7 @@ func buildNotifierConfig(cfg *ngmodels.AdminConfiguration) (*config.Config, erro
 	return notifierConfig, nil
 }
 
-func alertToNotifierAlert(alert models.PostableAlert) *notifier.Alert {
+func alertToNotifierAlert(alert apimodels.PostableAlertWithValues) *notifier.Alert {
 	ls := make(labels.Labels, 0, len(alert.Alert.Labels))
 	a := make(labels.Labels, 0, len(alert.Annotations))
 

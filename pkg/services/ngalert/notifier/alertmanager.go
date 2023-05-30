@@ -15,7 +15,6 @@ import (
 	"time"
 	"unicode/utf8"
 
-	amv2 "github.com/prometheus/alertmanager/api/v2/models"
 	"github.com/prometheus/alertmanager/cluster"
 	"github.com/prometheus/alertmanager/config"
 	"github.com/prometheus/alertmanager/dispatch"
@@ -671,7 +670,7 @@ func isValidLabelName(ln model.LabelName) bool {
 // AlertValidationError is the error capturing the validation errors
 // faced on the alerts.
 type AlertValidationError struct {
-	Alerts []amv2.PostableAlert
+	Alerts []apimodels.PostableAlertWithValues
 	Errors []error // Errors[i] refers to Alerts[i].
 }
 

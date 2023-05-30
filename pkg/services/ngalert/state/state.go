@@ -29,19 +29,19 @@ type State struct {
 }
 
 type Evaluation struct {
-	EvaluationTime   time.Time
-	EvaluationState  eval.State
-	EvaluationString string
+	EvaluationTime   time.Time  `json:"evaluationTime"`
+	EvaluationState  eval.State `json:"evaluationState"`
+	EvaluationString string     `json:"evaluationString"`
 	// Values contains the RefID and value of reduce and math expressions.
 	// It does not contain values for classic conditions as the values
 	// in classic conditions do not have a RefID.
-	Values map[string]EvaluationValue
+	Values map[string]EvaluationValue `json:"values"`
 }
 
 // EvaluationValue contains the labels and value for a RefID in an evaluation.
 type EvaluationValue struct {
-	Labels data.Labels
-	Value  *float64
+	Labels data.Labels `json:"labels"`
+	Value  *float64    `json:"value"`
 }
 
 // NewEvaluationValues returns the labels and values for each RefID in the capture.
