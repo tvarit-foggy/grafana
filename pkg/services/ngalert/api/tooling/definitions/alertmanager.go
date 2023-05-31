@@ -10,7 +10,9 @@ import (
 	"time"
 
 	"github.com/go-openapi/strfmt"
+	"github.com/grafana/grafana-plugin-sdk-go/data"
 	"github.com/grafana/grafana/pkg/components/simplejson"
+	"github.com/grafana/grafana/pkg/services/ngalert/eval"
 	"github.com/grafana/grafana/pkg/services/secrets"
 	"github.com/grafana/grafana/pkg/util"
 	"github.com/pkg/errors"
@@ -331,10 +333,31 @@ type AlertsParams struct {
 	Receivers string `json:"receiver"`
 }
 
+type Evaluation struct {
+	EvaluationTime   time.Time
+	EvaluationState  eval.State
+	EvaluationString string
+	// Values contains the RefID and value of reduce and math expressions.
+	// It does not contain values for classic conditions as the values
+	// in classic conditions do not have a RefID.
+	Values map[string]EvaluationValue
+}
+
+// EvaluationValue contains the labels and value for a RefID in an evaluation.
+type EvaluationValue struct {
+	Labels data.Labels
+	Value  *float64
+}
+
+type PostableAlertWithValues struct {
+	amv2.PostableAlert
+	Values []Evaluation
+}
+
 // swagger:parameters RoutePostAMAlerts
 type PostableAlerts struct {
 	// in:body
-	PostableAlerts []amv2.PostableAlert `yaml:"" json:""`
+	PostableAlerts []PostableAlertWithValues `yaml:"" json:""`
 }
 
 // swagger:parameters RoutePostAlertingConfig

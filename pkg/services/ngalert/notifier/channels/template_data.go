@@ -2,18 +2,20 @@ package channels
 
 import (
 	"context"
+	"encoding/json"
 	"net/url"
 	"path"
-	"regexp"
 	"sort"
 	"strings"
 	"time"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/prometheus/alertmanager/notify"
 	"github.com/prometheus/alertmanager/template"
 	"github.com/prometheus/alertmanager/types"
 	"github.com/prometheus/common/model"
 
+	"github.com/grafana/grafana-plugin-sdk-go/data"
 	"github.com/grafana/grafana/pkg/infra/log"
 	ngmodels "github.com/grafana/grafana/pkg/services/ngalert/models"
 )
@@ -31,6 +33,18 @@ type ExtendedAlert struct {
 	PanelURL     string      `json:"panelURL"`
 	ValueString  string      `json:"valueString"`
 	Values       template.KV `json:"values"`
+}
+
+type Evaluation struct {
+	EvaluationTime   time.Time                  `json:"evaluationTime"`
+	EvaluationState  int                        `json:"evaluationState"`
+	EvaluationString string                     `json:"evaluationString"`
+	Values           map[string]EvaluationValue `json:"values"`
+}
+
+type EvaluationValue struct {
+	Labels data.Labels `json:"labels"`
+	Value  *float64    `json:"value"`
 }
 
 type ExtendedAlerts []ExtendedAlert
@@ -90,15 +104,21 @@ func extendAlert(alert template.Alert, externalURL string, logger log.Logger) *E
 	}
 	if alert.Annotations != nil {
 		extended.ValueString = alert.Annotations[`__value_string__`]
-		logger.Error(extended.ValueString)
-		extended.Values = make(map[string]string)
-		pattern := regexp.MustCompile(`(\w+)=({[^}]*}|'[^']*'|[^ ]*)`)
-		matches := pattern.FindAllStringSubmatch(extended.ValueString, -1)
-		for _, match := range matches {
-			key := match[1]
-			value := strings.Trim(match[2], "'")
-			extended.Values[key] = value
+		var Values []Evaluation
+		err := json.Unmarshal([]byte(alert.Annotations[`__Values__`]), &Values)
+		if err != nil {
+			logger.Error(err.Error())
 		}
+		spew.Dump(alert.Annotations[`__Values__`])
+		spew.Dump(Values)
+		// extended.Values = make(map[string]string)
+		// pattern := regexp.MustCompile(`(\w+)=({[^}]*}|'[^']*'|[^ ]*)`)
+		// matches := pattern.FindAllStringSubmatch(extended.ValueString, -1)
+		// for _, match := range matches {
+		// 	key := match[1]
+		// 	value := strings.Trim(match[2], "'")
+		// 	extended.Values[key] = value
+		// }
 	}
 
 	matchers := make([]string, 0)
@@ -139,7 +159,6 @@ func ExtendData(data *template.Data, logger log.Logger) *ExtendedData {
 func TmplText(ctx context.Context, tmpl *template.Template, alerts []*types.Alert, l log.Logger, tmplErr *error) (func(string) string, *ExtendedData) {
 	promTmplData := notify.GetTemplateData(ctx, tmpl, alerts, l)
 	data := ExtendData(promTmplData, l)
-
 	return func(name string) (s string) {
 		if *tmplErr != nil {
 			return
