@@ -9,7 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/prometheus/alertmanager/notify"
 	"github.com/prometheus/alertmanager/template"
 	"github.com/prometheus/alertmanager/types"
@@ -32,7 +31,7 @@ type ExtendedAlert struct {
 	DashboardURL string      `json:"dashboardURL"`
 	PanelURL     string      `json:"panelURL"`
 	ValueString  string      `json:"valueString"`
-	Values       template.KV `json:"values"`
+	Values       []Evaluation `json:"values"`
 }
 
 type Evaluation struct {
@@ -109,8 +108,7 @@ func extendAlert(alert template.Alert, externalURL string, logger log.Logger) *E
 		if err != nil {
 			logger.Error(err.Error())
 		}
-		spew.Dump(alert.Annotations[`__Values__`])
-		spew.Dump(Values)
+		extended.Values = Values
 		// extended.Values = make(map[string]string)
 		// pattern := regexp.MustCompile(`(\w+)=({[^}]*}|'[^']*'|[^ ]*)`)
 		// matches := pattern.FindAllStringSubmatch(extended.ValueString, -1)

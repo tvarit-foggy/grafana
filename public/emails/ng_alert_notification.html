@@ -213,12 +213,18 @@ text-decoration: underline;
     <span class="value-heading" style="font-weight: bold;">Value:</span> <span class="value-value" style="padding-left: 8px;">{{ .ValueString }}</span>
   </td>
 </tr> -->
-  <table style="width: 100%; border-collapse: collapse; margin: 24px 0 0;">
-    {{range $key, $value := .Values}}
-    <tr>
-        <td style="background-color: #1f2331; color: #d8d9da; padding: 15px;">{{$key}}</td>
-        <td style="background-color: #1f2331; color: #d8d9da; padding: 15px;">{{$value}}</td>
+  <table style="width:100%; border:1px solid transparent; border-collapse: collapse;">
+    <tr style="background-color: #f2f2f2;">
+        <th style="padding: 15px; border: 1px solid transparent;">Key</th>
+        <th style="padding: 15px; border: 1px solid transparent;">Value</th>
     </tr>
+    {{range .Values}}
+    {{range $key, $value := .Values}}
+    <tr style="background-color: #e6e6e6;">
+        <td style="padding: 15px; border: 1px solid transparent;">{{$key}}</td>
+        <td style="padding: 15px; border: 1px solid transparent;">{{if $value.Value}}{{$value.Value}}{{else}}N/A{{end}}</td>
+    </tr>
+    {{end}}
     {{end}}
   </table>
   {{ if gt (len .Annotations.SortedPairs) 0 }}
