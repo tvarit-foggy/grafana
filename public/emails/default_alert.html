@@ -51,6 +51,7 @@
             color: white;
             padding: 5px;
             display: inline-block;
+            text-transform: uppercase;
         }
 
         .active {
@@ -73,6 +74,11 @@
         .status.resolved {
             background: blue;
         }
+        .alert-name {
+            font-size: 1.2em;
+            color: #203363;
+            font-weight: bold;
+        }
         @media only screen and (max-width: 600px) {
             .container {
                 padding: 10px;
@@ -90,7 +96,7 @@
         <h2>Status: <span class="status {{.Status}}">{{.Status}}</span></h2>
 
         {{range .Alerts}}
-        <h3>Status: <span class="status {{.Status}}">{{.Status}}</span></h3>
+        <p class="alert-name"> Alert name: {{.Labels.alertname}}</p>
         <table>
             <tr>
                 <th>Starts At</th>
