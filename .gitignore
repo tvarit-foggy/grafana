@@ -160,4 +160,4 @@ public/locales/**/*.js
 deployment_tools_config.json
 
 # config files
-conf/defaults_user.ini
+conf/custom.ini

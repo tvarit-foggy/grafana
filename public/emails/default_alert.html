@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Alert Notification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            background: url('{{.AppUrl}}public/img/logo_transparent_200x.png') no-repeat center center fixed; 
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            background: #203363;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            margin-bottom: 20px;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .status {
+            color: white;
+            padding: 5px;
+            display: inline-block;
+            text-transform: uppercase;
+        }
+
+        .active {
+            background: #5cb85c;
+        }
+
+        .inactive {
+            background: #d9534f;
+        }
+
+        .footer {
+            padding: 10px;
+            text-align: center;
+            color: #203363;
+            font-size: 0.875rem;
+        }
+        .status.firing {
+            background: red;
+        }
+        .status.resolved {
+            background: blue;
+        }
+        .alert-name {
+            font-size: 1.2em;
+            color: #203363;
+            font-weight: bold;
+        }
+        @media only screen and (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Alert Notification</h1>
+        </div>
+
+        <h2>Status: <span class="status {{.Status}}">{{.Status}}</span></h2>
+
+        {{range .Alerts}}
+        <p class="alert-name"> Alert name: {{.Labels.alertname}}</p>
+        <table>
+            <tr>
+                <th>Starts At</th>
+                <th>Ends At</th>
+            </tr>
+            <tr>
+                <td>{{.StartsAt}}</td>
+                <td>{{.EndsAt}}</td>
+            </tr>
+        </table>
+        <p>Generator URL: <a href="{{.GeneratorURL}}">{{.GeneratorURL}}</a></p>
+        <p>Fingerprint: {{.Fingerprint}}</p>
+        <p>Silence URL: <a href="{{.SilenceURL}}">{{.SilenceURL}}</a></p>
+
+        <h4>Evaluations:</h4>
+        <table>
+        {{ range $Value := .Values }}
+        {{ range $key, $val := $Value.Values }}
+            <tr>
+              <td>{{$key}}</td> 
+              <td>{{$val.Value}}</td> 
+            </tr>
+        {{end}}
+        {{end}}
+        </table>
+        {{end}}
+        <p>For more details, please visit <a href="{{.ExternalURL}}">{{.ExternalURL}}</a>.</p>
+        <p>Thank you,</p>
+        <p>Your Monitoring Team</p>
+
+        <div class="footer">
+            <p>Sent by <a href="{{.AppUrl}}" style="color: #203363; text-decoration: none;">TiA v{{.BuildVersion}}</a></p>
+            <p>© 2022 Tvarit GmbH</p>
+        </div>
+    </div>
+</body>
+
+</html>
