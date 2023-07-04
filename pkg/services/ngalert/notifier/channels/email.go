@@ -108,8 +108,8 @@ func (en *EmailNotifier) Notify(ctx context.Context, as ...*types.Alert) (bool, 
 				excludes := alert.Labels["count exclude"]
 				excludes = strings.ReplaceAll(excludes, " ", "")
 				arr = strings.Split(excludes, ",")
-				// if *value.Value == 0 {
-				if *value.Value == 600 {
+				if *value.Value == 0 {
+				// if *value.Value == 600 {
 					found := false
 					for _, ar := range arr {
 						if ar == key {
