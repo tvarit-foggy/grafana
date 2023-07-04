@@ -88,6 +88,10 @@
                 padding: 10px;
             }
         }
+        .desc {
+            font-size: 1.5rem;
+            color: black;
+        }
     </style>
 </head>
 
@@ -103,9 +107,9 @@
         {{range .Alerts}}
         <p class="alert-name"> Alert name: {{.Labels.alertname}}</p>
         <p>Generator URL: <a href="{{.GeneratorURL}}">{{.GeneratorURL}}</a></p>
+        <p class="desc"> The above alert have failed because of no data from the datasource, please follow the below link to see more </p>
         <p>Fingerprint: {{.Fingerprint}}</p>
         <p>Silence URL: <a href="{{.SilenceURL}}">{{.SilenceURL}}</a></p>
-
         <h4>Evaluations:</h4>
         <table>
         {{ range $Value := .Values }}
