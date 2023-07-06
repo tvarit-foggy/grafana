@@ -101,15 +101,17 @@
         <h2>Status: <span class="status {{.Status}}">{{.Status}}</span></h2>
 
         {{range .Alerts}}
+        <p> {{.ValueString}} </p>
         <p class="alert-name"> Alert name: {{.Labels.alertname}}</p>
         {{ if gt (len .Values) 0 }}
             <h4>Evaluations:</h4>
             <table>
-                {{ range $Value := .Values }}
+                {{ range $it, $Value := .Values }}
                     {{ range $key, $val := $Value.Values }}
                         <tr>
                             <td>{{$key}}</td> 
                             <td>{{$val.Value}}</td> 
+                        </tr>
                     {{end}}
                 {{end}}
             </table>
@@ -142,7 +144,6 @@
         <p>For more details, please visit <a href="{{.ExternalURL}}">{{.ExternalURL}}</a>.</p>
         <p>Thank you,</p>
         <p>Your Monitoring Team</p>
-
         <div class="footer">
             <p>Sent by <a href="{{.AppUrl}}" style="color: #203363; text-decoration: none;">TiA v{{.BuildVersion}}</a></p>
             <p>© 2022 Tvarit GmbH</p>

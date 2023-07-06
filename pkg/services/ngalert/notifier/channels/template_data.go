@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/prometheus/alertmanager/notify"
 	"github.com/prometheus/alertmanager/template"
 	"github.com/prometheus/alertmanager/types"
@@ -109,6 +110,7 @@ func extendAlert(alert template.Alert, externalURL string, logger log.Logger) *E
 			logger.Error(err.Error())
 		}
 		extended.Values = Values
+		spew.Dump(extended)
 	}
 
 	matchers := make([]string, 0)
