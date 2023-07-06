@@ -53,7 +53,7 @@
 
         .status {
             color: white;
-            padding: 5px;
+            padding: 5px 10px;
             display: inline-block;
             text-transform: uppercase;
         }
@@ -106,39 +106,42 @@
 
         {{range .Alerts}}
         <p class="alert-name"> Alert name: {{.Labels.alertname}}</p>
-        <p>Generator URL: <a href="{{.GeneratorURL}}">{{.GeneratorURL}}</a></p>
-        <p class="desc"> The above alert have failed because of no data from the datasource, please follow the below link to see more </p>
-        <p>Fingerprint: {{.Fingerprint}}</p>
-        <p>Silence URL: <a href="{{.SilenceURL}}">{{.SilenceURL}}</a></p>
-        <h4>Evaluations:</h4>
-        <table>
-        {{ range $Value := .Values }}
-        {{ range $key, $val := $Value.Values }}
-            <tr>
-              <td>{{$key}}</td> 
-              <td>{{$val.Value}}</td> 
-            </tr>
-        {{end}}
-        {{end}}
-        </table>
-        <h4>Annotations:</h4>
-        <table>
-        {{ range $key, $val := .Annotations  }}
-            <tr>
-              <td>{{$key}}</td> 
-              <td>{{$val}}</td> 
-            </tr>
-        {{end}}
-        </table>
-        <h4>Labels:</h4>
-        <table>
-        {{ range $key, $val := .Labels }}
-            <tr>
-              <td>{{$key}}</td> 
-              <td>{{$val}}</td> 
-            </tr>
-        {{end}}
-        </table>
+       {{ if gt (len .Values) 0 }}
+            <h4>Evaluations:</h4>
+            <table>
+                {{ range $Value := .Values }}
+                    {{ range $key, $val := $Value.Values }}
+                        <tr>
+                            <td>{{$key}}</td> 
+                            <td>{{$val.Value}}</td> 
+                    {{end}}
+                {{end}}
+            </table>
+        {{ end }}
+        
+        {{ if .Annotations }}
+            <h4>Annotations:</h4>
+            <table>
+                {{ range $key, $val := .Annotations }}
+                    <tr>
+                        <td>{{$key}}</td> 
+                        <td>{{$val}}</td> 
+                    </tr>
+                {{end}}
+            </table>
+        {{ end }}
+        
+        {{ if .Labels }}
+            <h4>Labels:</h4>
+            <table>
+                {{ range $key, $val := .Labels }}
+                    <tr>
+                        <td>{{$key}}</td> 
+                        <td>{{$val}}</td> 
+                    </tr>
+                {{end}}
+            </table>
+        {{ end }}
         {{end}}
         <p>For more details, please visit <a href="{{.ExternalURL}}">{{.ExternalURL}}</a>.</p>
         <p>Thank you,</p>
