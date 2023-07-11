@@ -106,18 +106,6 @@
 
         {{range .Alerts}}
         <p class="alert-name"> Alert name: {{.Labels.alertname}}</p>
-       {{ if gt (len .Values) 0 }}
-            <h4>Evaluations:</h4>
-            <table>
-                {{ range $Value := .Values }}
-                    {{ range $key, $val := $Value.Values }}
-                        <tr>
-                            <td>{{$key}}</td> 
-                            <td>{{$val.Value}}</td> 
-                    {{end}}
-                {{end}}
-            </table>
-        {{ end }}
         
         {{ if .Annotations }}
             <h4>Annotations:</h4>
@@ -136,8 +124,13 @@
             <table>
                 {{ range $key, $val := .Labels }}
                     <tr>
-                        <td>{{$key}}</td> 
-                        <td>{{$val}}</td> 
+                        {{if eq $key "ref_id" }}
+                            <td> parameters </td>
+                            <td>{{$val}}</td> 
+                        {{else}}
+                            <td>{{$key}}</td> 
+                            <td>{{$val}}</td> 
+                        {{end}}
                     </tr>
                 {{end}}
             </table>

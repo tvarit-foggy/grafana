@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/grafana/grafana/pkg/expr/classic"
 	"github.com/grafana/grafana/pkg/infra/log"
 	m "github.com/grafana/grafana/pkg/models"
@@ -192,6 +193,7 @@ type NumberValueCapture struct {
 func executeCondition(ctx AlertExecCtx, c *models.Condition, now time.Time, exprService *expr.Service, dsCacheService datasources.CacheService) ExecutionResults {
 	execResp, err := executeQueriesAndExpressions(ctx, c.Data, now, exprService, dsCacheService)
 	if err != nil {
+		spew.Dump(ExecutionResults{Error: err})
 		return ExecutionResults{Error: err}
 	}
 

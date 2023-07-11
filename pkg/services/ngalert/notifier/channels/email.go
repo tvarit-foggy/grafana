@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/url"
 	"path"
-	"strings"
 
 	"github.com/prometheus/alertmanager/template"
 	"github.com/prometheus/alertmanager/types"
@@ -100,29 +99,9 @@ func (en *EmailNotifier) Notify(ctx context.Context, as ...*types.Alert) (bool, 
 		},
 	}
 
-	for _, alert := range data.Alerts {
-		for _, evaluation := range alert.Values {
-			for key, value := range evaluation.Values {
-				var arr []string
-				// TODO: cache the below code
-				excludes := alert.Labels["count exclude"]
-				excludes = strings.ReplaceAll(excludes, " ", "")
-				arr = strings.Split(excludes, ",")
-				if *value.Value == 0 {
-				// if *value.Value == 600 {
-					found := false
-					for _, ar := range arr {
-						if ar == key {
-							found = true
-							break
-						}
-					}
-					if !found {
-						cmd.Template = "no_data_alert"
-					}
-				}
-			}
-		}
+	if data.CommonLabels["rulename"] == "no data" {
+		cmd.Subject = "No Data Alert"
+		cmd.Template = "no_data_alert"
 	}
 
 	if tmplErr != nil {
