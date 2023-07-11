@@ -129,7 +129,7 @@
                 {{ range $key, $val := .Annotations }}
                     <tr>
                         <td>{{$key}}</td> 
-                        <td>{{$val}}</td> 
+                        <td><a href="{{$val}}">{{$val}}<a><td> 
                     </tr>
                 {{end}}
             </table>
