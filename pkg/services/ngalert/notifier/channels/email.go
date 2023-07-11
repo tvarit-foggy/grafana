@@ -5,7 +5,6 @@ import (
 	"net/url"
 	"path"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/prometheus/alertmanager/template"
 	"github.com/prometheus/alertmanager/types"
 
@@ -104,7 +103,6 @@ func (en *EmailNotifier) Notify(ctx context.Context, as ...*types.Alert) (bool, 
 		cmd.Subject = "No Data Alert"
 		cmd.Template = "no_data_alert"
 	}
-	spew.Dump(cmd)
 	if tmplErr != nil {
 		en.log.Warn("failed to template email message", "err", tmplErr.Error())
 	}
