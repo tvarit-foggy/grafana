@@ -101,31 +101,26 @@
         <div class="header">
             <h1>No Data Alert Notification</h1>
         </div>
-
         <h2>Status: <span class="status {{.Status}}">{{.Status}}</span></h2>
-
-        {{range .Alerts}}
-        <p class="alert-name"> Alert name: {{.Labels.alertname}}</p>
-        
-        {{ if .Annotations }}
+        <p class="alert-name"> Alert name: {{.Alert.Labels.alertname}}</p>
+        {{ if .Alert.Annotations }}
             <h4>Annotations:</h4>
             <table>
-                {{ range $key, $val := .Annotations }}
+                {{ range $key, $val := .Alert.Annotations }}
                     <tr>
                         <td>{{$key}}</td> 
-                        <td><a href="{{$val}}">{{$val}}</a></td> 
+                        <td><a href="{{$val}}">{{$val}}<a><td> 
                     </tr>
                 {{end}}
             </table>
         {{ end }}
-        
-        {{ if .Labels }}
+        {{ if .Alert.Labels }}
             <h4>Labels:</h4>
             <table>
-                {{ range $key, $val := .Labels }}
+                {{ range $key, $val := .Alert.Labels }}
                     <tr>
-                        {{if eq $key "ref_id" }}
-                            <td> parameters </td>
+                        {{if eq $key "ref_id"}}
+                            <td>parameters</td> 
                             <td>{{$val}}</td> 
                         {{else}}
                             <td>{{$key}}</td> 
@@ -135,7 +130,6 @@
                 {{end}}
             </table>
         {{ end }}
-        {{end}}
         <p>For more details, please visit <a href="{{.ExternalURL}}">{{.ExternalURL}}</a>.</p>
         <p>Thank you,</p>
         <p>Your Monitoring Team</p>
