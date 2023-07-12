@@ -99,16 +99,20 @@ func (en *EmailNotifier) Notify(ctx context.Context, as ...*types.Alert) (bool, 
 		},
 	}
 	// refer pkg/services/ngalert/schedule/compat.go
-	if data.CommonLabels["alertname"] == "DatasourceNoData" {
-		cmd.Subject = "No Data Alert"
-		cmd.Template = "no_data_alert"
-	}
 	if tmplErr != nil {
 		en.log.Warn("failed to template email message", "err", tmplErr.Error())
 	}
 
-	if err := bus.Dispatch(ctx, cmd); err != nil {
-		return false, err
+	alerts, _ := cmd.Data["Alerts"].(ExtendedAlerts)
+	for _, alert := range alerts {
+		cmd.Data["Alert"] = alert
+		if alert.Labels["alertname"] == "DatasourceNoData" {
+			cmd.Subject = "No Data Alert"
+			cmd.Template = "no_data_alert"
+		}
+		if err := bus.Dispatch(ctx, cmd); err != nil {
+			return false, err
+		}
 	}
 
 	return true, nil
