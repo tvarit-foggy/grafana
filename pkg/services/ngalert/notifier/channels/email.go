@@ -77,41 +77,63 @@ func (en *EmailNotifier) Notify(ctx context.Context, as ...*types.Alert) (bool, 
 	} else {
 		en.log.Debug("failed to parse external URL", "url", en.tmpl.ExternalURL.String(), "err", err.Error())
 	}
-
-	cmd := &models.SendEmailCommandSync{
-		SendEmailCommand: models.SendEmailCommand{
-			Subject: title,
-			Data: map[string]interface{}{
-				"Title":             title,
-				"Message":           tmpl(en.Message),
-				"Status":            data.Status,
-				"Alerts":            data.Alerts,
-				"GroupLabels":       data.GroupLabels,
-				"CommonLabels":      data.CommonLabels,
-				"CommonAnnotations": data.CommonAnnotations,
-				"ExternalURL":       data.ExternalURL,
-				"RuleUrl":           ruleURL,
-				"AlertPageUrl":      alertPageURL,
+	Dispatcher := func(Data ExtendedData, isNoDataAlert bool) (bool, error) {
+		cmd := &models.SendEmailCommandSync{
+			SendEmailCommand: models.SendEmailCommand{
+				Subject: title,
+				Data: map[string]interface{}{
+					"Title":             title,
+					"Message":           tmpl(en.Message),
+					"Status":            data.Status,
+					"Alerts":            data.Alerts,
+					"GroupLabels":       data.GroupLabels,
+					"CommonLabels":      data.CommonLabels,
+					"CommonAnnotations": data.CommonAnnotations,
+					"ExternalURL":       data.ExternalURL,
+					"RuleUrl":           ruleURL,
+					"AlertPageUrl":      alertPageURL,
+				},
+				To:          en.Addresses,
+				SingleEmail: en.SingleEmail,
+				Template:    "default_alert",
 			},
-			To:          en.Addresses,
-			SingleEmail: en.SingleEmail,
-			Template:    "default_alert",
-		},
+		}
+		// refer pkg/services/ngalert/schedule/compat.go
+		if tmplErr != nil {
+			en.log.Warn("failed to template email message", "err", tmplErr.Error())
+		}
+		if isNoDataAlert {
+			cmd.Subject = "No Data Alert"
+			cmd.Template = "no_data_alert"
+		}
+		if err := bus.Dispatch(ctx, cmd); err != nil {
+			return false, err
+		}
+		return true, nil
 	}
-
-	if data.CommonLabels["rulename"] == "no data" {
-		cmd.Subject = "No Data Alert"
-		cmd.Template = "no_data_alert"
+	dataAlerts := []ExtendedAlert{}
+	noDataAlerts := []ExtendedAlert{}
+	for _, alert := range data.Alerts {
+		if alert.Labels["alertname"] == "DatasourceNoData" {
+			noDataAlerts = append(noDataAlerts, alert)
+		} else {
+			dataAlerts = append(dataAlerts, alert)
+		}
 	}
-
-	if tmplErr != nil {
-		en.log.Warn("failed to template email message", "err", tmplErr.Error())
+	if len(dataAlerts) > 0 {
+		data.Alerts = dataAlerts
+		ok, err := Dispatcher(*data, false)
+		if !ok {
+			return ok, err
+		}
 	}
-
-	if err := bus.Dispatch(ctx, cmd); err != nil {
-		return false, err
+	if len(noDataAlerts) > 0 {
+		data.Alerts = noDataAlerts
+		ok, err := Dispatcher(*data, true)
+		if !ok {
+			return ok, err
+		}
 	}
-
 	return true, nil
 }
 

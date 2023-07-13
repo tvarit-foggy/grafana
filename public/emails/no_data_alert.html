@@ -105,7 +105,7 @@
         <h2>Status: <span class="status {{.Status}}">{{.Status}}</span></h2>
 
         {{range .Alerts}}
-        <p class="alert-name"> Alert name: {{.Labels.alertname}}</p>
+        <p class="alert-name"> Alert name: {{.Labels.rulename}}</p>
         
         {{ if .Annotations }}
             <h4>Annotations:</h4>
