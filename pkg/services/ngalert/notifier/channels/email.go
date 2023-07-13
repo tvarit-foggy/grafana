@@ -77,7 +77,6 @@ func (en *EmailNotifier) Notify(ctx context.Context, as ...*types.Alert) (bool, 
 	} else {
 		en.log.Debug("failed to parse external URL", "url", en.tmpl.ExternalURL.String(), "err", err.Error())
 	}
-
 	Dispatcher := func(Data ExtendedData, isNoDataAlert bool) (bool, error) {
 		cmd := &models.SendEmailCommandSync{
 			SendEmailCommand: models.SendEmailCommand{
@@ -112,34 +111,29 @@ func (en *EmailNotifier) Notify(ctx context.Context, as ...*types.Alert) (bool, 
 		}
 		return true, nil
 	}
-
-	dataAlerts := data
-	dataAlerts.Alerts = []ExtendedAlert{}
-	noDataAlerts := data
-	noDataAlerts.Alerts = []ExtendedAlert{}
-
+	dataAlerts := []ExtendedAlert{}
+	noDataAlerts := []ExtendedAlert{}
 	for _, alert := range data.Alerts {
 		if alert.Labels["alertname"] == "DatasourceNoData" {
-			noDataAlerts.Alerts = append(noDataAlerts.Alerts, alert)
+			noDataAlerts = append(noDataAlerts, alert)
 		} else {
-			dataAlerts.Alerts = append(dataAlerts.Alerts, alert)	
+			dataAlerts = append(dataAlerts, alert)
 		}
 	}
-
-	if len(dataAlerts.Alerts) > 0 {
-		ok, err := Dispatcher(*dataAlerts, false)
+	if len(dataAlerts) > 0 {
+		data.Alerts = dataAlerts
+		ok, err := Dispatcher(*data, false)
 		if !ok {
 			return ok, err
-		} 
+		}
 	}
-
-	if len(noDataAlerts.Alerts) > 0 {
-		ok, err := Dispatcher(*noDataAlerts, true)
+	if len(noDataAlerts) > 0 {
+		data.Alerts = noDataAlerts
+		ok, err := Dispatcher(*data, true)
 		if !ok {
 			return ok, err
-		} 
+		}
 	}
-
 	return true, nil
 }
 
