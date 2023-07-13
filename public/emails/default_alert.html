@@ -97,21 +97,24 @@
         <div class="header">
             <h1>Alert Notification</h1>
         </div>
+
         <h2>Status: <span class="status {{.Status}}">{{.Status}}</span></h2>
-        <p class="alert-name"> Alert name: {{.Alert.Labels.alertname}}</p>
+
+        {{range .Alerts}}
+        <p class="alert-name"> Alert name: {{.Labels.alertname}}</p>
         {{ $once := false }}
-        {{range $Values := .Alert.Values}}
-            {{ range $key, $value := $Values.Values}}
+        {{range $Value := .Values}}
+            {{ range $key, $value := $Value.Values}}
                 {{ if not $once  }}
                     <h4> Evaluations: </h4>
                     {{$once = true}}
                 {{end}}
             {{end}}
         {{end}}
-        {{ if gt (len .Alert.Values) 0 }}
+        {{ if gt (len .Values) 0 }}
             <table>
-                {{ range $it, $Values := .Alert.Values }}
-                    {{ range $key, $val := $Values.Values }}
+                {{ range $it, $Value := .Values }}
+                    {{ range $key, $val := $Value.Values }}
                         <tr>
                             <td>{{$key}}</td> 
                             <td>{{$val.Value}}</td> 
@@ -120,10 +123,10 @@
                 {{end}}
             </table>
         {{ end }}
-        {{ if .Alert.Annotations }}
+        {{ if .Annotations }}
             <h4>Annotations:</h4>
             <table>
-                {{ range $key, $val := .Alert.Annotations }}
+                {{ range $key, $val := .Annotations }}
                     <tr>
                         <td>{{$key}}</td> 
                         <td><a href="{{$val}}">{{$val}}<a><td> 
@@ -131,10 +134,11 @@
                 {{end}}
             </table>
         {{ end }}
-        {{ if .Alert.Labels }}
+        
+        {{ if .Labels }}
             <h4>Labels:</h4>
             <table>
-                {{ range $key, $val := .Alert.Labels }}
+                {{ range $key, $val := .Labels }}
                     <tr>
                         <td>{{$key}}</td> 
                         <td>{{$val}}</td> 
@@ -142,6 +146,7 @@
                 {{end}}
             </table>
         {{ end }}
+        {{end}}
         <p>For more details, please visit <a href="{{.ExternalURL}}">{{.ExternalURL}}</a>.</p>
         <p>Thank you,</p>
         <p>Your Monitoring Team</p>
