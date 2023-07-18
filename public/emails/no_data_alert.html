@@ -105,32 +105,39 @@
         <h2>Status: <span class="status {{.Status}}">{{.Status}}</span></h2>
 
         {{range .Alerts}}
-        <p class="alert-name"> Alert name: {{.Labels.alertname}}</p>
+        <p class="alert-name"> Alert name: {{.Labels.rulename}}</p>
         
-        {{ if .Annotations }}
+        {{ if or (.Annotations) (.URLAnnotations) }}
             <h4>Annotations:</h4>
             <table>
                 {{ range $key, $val := .Annotations }}
                     <tr>
                         <td>{{$key}}</td> 
-                        <td><a href="{{$val}}">{{$val}}</a></td> 
+                        <td>{{$val}}</td>
+                    </tr>
+                {{end}}
+                {{range $key, $val := .URLAnnotations}}
+                    <tr>
+                        <td>{{$key}}</td> 
+                        <td><a href="{{$val}}">{{$val}}<a></td> 
                     </tr>
                 {{end}}
             </table>
         {{ end }}
         
-        {{ if .Labels }}
+        {{ if  or (.Labels) (.URLLabels) }}
             <h4>Labels:</h4>
             <table>
                 {{ range $key, $val := .Labels }}
                     <tr>
-                        {{if eq $key "ref_id" }}
-                            <td> parameters </td>
-                            <td>{{$val}}</td> 
-                        {{else}}
-                            <td>{{$key}}</td> 
-                            <td>{{$val}}</td> 
-                        {{end}}
+                        <td>{{$key}}</td> 
+                        <td>{{$val}}</td>
+                    </tr>
+                {{end}}
+                {{range $key, $val := .URLLabels}}
+                    <tr>
+                        <td>{{$key}}</td> 
+                        <td><a href="{{$val}}">{{$val}}<a></td> 
                     </tr>
                 {{end}}
             </table>
