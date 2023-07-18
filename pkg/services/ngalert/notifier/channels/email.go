@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/url"
 	"path"
+	"regexp"
 
 	"github.com/prometheus/alertmanager/template"
 	"github.com/prometheus/alertmanager/types"
@@ -77,7 +78,34 @@ func (en *EmailNotifier) Notify(ctx context.Context, as ...*types.Alert) (bool, 
 	} else {
 		en.log.Debug("failed to parse external URL", "url", en.tmpl.ExternalURL.String(), "err", err.Error())
 	}
-	Dispatcher := func(Data ExtendedData, isNoDataAlert bool) (bool, error) {
+
+	checkUrl := func (input string) bool {
+		pattern := `^(https?|ftp)://[^\s/$.?#].[^\s]*$`
+		regex := regexp.MustCompile(pattern)
+		return regex.MatchString(input)
+	}
+	for i := range data.Alerts {
+		alert := &data.Alerts[i]
+		if alert.URLAnnotations == nil {
+			alert.URLAnnotations = map[string]string{}
+		}
+		if alert.URLLabels == nil {
+			alert.URLLabels = map[string]string{}
+		}
+		for key, value := range alert.Labels {
+			if checkUrl(value) {
+				alert.URLLabels[key] = value
+				delete(alert.Labels, key)
+			}
+		}
+		for key, value := range alert.Annotations {
+			if checkUrl(value) {
+				alert.URLAnnotations[key] = value
+				delete(alert.Annotations, key)
+			}
+		}
+	}
+	Dispatcher := func(data ExtendedData, isNoDataAlert bool) (bool, error) {
 		cmd := &models.SendEmailCommandSync{
 			SendEmailCommand: models.SendEmailCommand{
 				Subject: title,

@@ -20,18 +20,20 @@ import (
 )
 
 type ExtendedAlert struct {
-	Status       string      `json:"status"`
-	Labels       template.KV `json:"labels"`
-	Annotations  template.KV `json:"annotations"`
-	StartsAt     time.Time   `json:"startsAt"`
-	EndsAt       time.Time   `json:"endsAt"`
-	GeneratorURL string      `json:"generatorURL"`
-	Fingerprint  string      `json:"fingerprint"`
-	SilenceURL   string      `json:"silenceURL"`
-	DashboardURL string      `json:"dashboardURL"`
-	PanelURL     string      `json:"panelURL"`
-	ValueString  string      `json:"valueString"`
-	Values       []Evaluation `json:"values"`
+	Status         string            `json:"status"`
+	Labels         template.KV       `json:"labels"`
+	Annotations    template.KV       `json:"annotations"`
+	StartsAt       time.Time         `json:"startsAt"`
+	EndsAt         time.Time         `json:"endsAt"`
+	GeneratorURL   string            `json:"generatorURL"`
+	Fingerprint    string            `json:"fingerprint"`
+	SilenceURL     string            `json:"silenceURL"`
+	DashboardURL   string            `json:"dashboardURL"`
+	PanelURL       string            `json:"panelURL"`
+	ValueString    string            `json:"valueString"`
+	Values         []Evaluation      `json:"values"`
+	URLLabels      map[string]string `json:"URLLabels"`
+	URLAnnotations map[string]string `json:"URLAnnotations"`
 }
 
 type Evaluation struct {

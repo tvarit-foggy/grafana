@@ -123,25 +123,37 @@
                 {{end}}
             </table>
         {{ end }}
-        {{ if .Annotations }}
+        {{ if or (.Annotations) (.URLAnnotations) }}
             <h4>Annotations:</h4>
             <table>
                 {{ range $key, $val := .Annotations }}
                     <tr>
                         <td>{{$key}}</td> 
-                        <td><a href="{{$val}}">{{$val}}<a><td> 
+                        <td>{{$val}}</td>
+                    </tr>
+                {{end}}
+                {{range $key, $val := .URLAnnotations}}
+                    <tr>
+                        <td>{{$key}}</td> 
+                        <td><a href="{{$val}}">{{$val}}<a></td> 
                     </tr>
                 {{end}}
             </table>
         {{ end }}
         
-        {{ if .Labels }}
+        {{ if  or (.Labels) (.URLLabels) }}
             <h4>Labels:</h4>
             <table>
                 {{ range $key, $val := .Labels }}
                     <tr>
                         <td>{{$key}}</td> 
-                        <td>{{$val}}</td> 
+                        <td>{{$val}}</td>
+                    </tr>
+                {{end}}
+                {{range $key, $val := .URLLabels}}
+                    <tr>
+                        <td>{{$key}}</td> 
+                        <td><a href="{{$val}}">{{$val}}<a></td> 
                     </tr>
                 {{end}}
             </table>
