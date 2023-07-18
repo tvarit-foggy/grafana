@@ -130,7 +130,11 @@
             <table>
                 {{ range $key, $val := .Labels }}
                     <tr>
-                        <td>{{$key}}</td> 
+                        {{if eq $key "ref_id" }}
+                            <td> parameters </td>
+                        {{else}}
+                            <td>{{$key}}</td> 
+                        {{end}}
                         <td>{{$val}}</td>
                     </tr>
                 {{end}}
