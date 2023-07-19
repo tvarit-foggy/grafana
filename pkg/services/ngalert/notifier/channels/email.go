@@ -13,6 +13,7 @@ import (
 	"github.com/grafana/grafana/pkg/infra/log"
 	"github.com/grafana/grafana/pkg/models"
 	"github.com/grafana/grafana/pkg/util"
+	deepcopier "github.com/ulule/deepcopier"
 )
 
 // EmailNotifier is responsible for sending
@@ -143,21 +144,29 @@ func (en *EmailNotifier) Notify(ctx context.Context, as ...*types.Alert) (bool, 
 	noDataAlerts := []ExtendedAlert{}
 	for _, alert := range data.Alerts {
 		if alert.Labels["alertname"] == "DatasourceNoData" {
-			noDataAlerts = append(noDataAlerts, alert)
+			newAlert := ExtendedAlert{}
+			deepcopier.Copy(alert).To(&newAlert)
+			noDataAlerts = append(noDataAlerts, newAlert)
 		} else {
-			dataAlerts = append(dataAlerts, alert)
+			newAlert := ExtendedAlert{}
+			deepcopier.Copy(alert).To(&newAlert)
+			dataAlerts = append(dataAlerts, newAlert)
 		}
 	}
 	if len(dataAlerts) > 0 {
-		data.Alerts = dataAlerts
-		ok, err := Dispatcher(*data, false)
+		newData := &ExtendedData{}
+		deepcopier.Copy(data).To(newData)
+		newData.Alerts = dataAlerts
+		ok, err := Dispatcher(*newData, false)
 		if !ok {
 			return ok, err
 		}
 	}
 	if len(noDataAlerts) > 0 {
-		data.Alerts = noDataAlerts
-		ok, err := Dispatcher(*data, true)
+		newData := &ExtendedData{}
+		deepcopier.Copy(data).To(newData)
+		newData.Alerts = noDataAlerts
+		ok, err := Dispatcher(*newData, true)
 		if !ok {
 			return ok, err
 		}
