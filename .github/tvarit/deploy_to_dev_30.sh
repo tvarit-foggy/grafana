@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+#test commit
 set -e
 
 PREFIX=$1
