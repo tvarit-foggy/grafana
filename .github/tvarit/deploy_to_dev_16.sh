@@ -56,7 +56,7 @@ function create_load_balancer() {
     
 }
 
-aws lightsail get-certificates --certificate-name ${PREFIX}-tvarit-com > /dev/null
+# aws lightsail get-certificates --certificate-name ${PREFIX}-tvarit-com > /dev/null
 
 echo "Creating production database..."
 aws lightsail create-relational-database \
@@ -149,9 +149,9 @@ docker build --tag grafana/grafana:next-${PREFIX} .
 
 #push Docker image to ECR
 echo "push docker image to ECR........."
-aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin 047870419389.dkr.ecr.eu-central-1.amazonaws.com
-docker tag grafana/grafana:next-${PREFIX} 047870419389.dkr.ecr.eu-central-1.amazonaws.com/lightsail:latest
-docker push 047870419389.dkr.ecr.eu-central-1.amazonaws.com/lightsail:latest
+aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin 250373516626.dkr.ecr.eu-central-1.amazonaws.com
+docker tag grafana/grafana:next-${PREFIX} 250373516626.dkr.ecr.eu-central-1.amazonaws.com/lightsailinstance:latest
+docker push 250373516626.dkr.ecr.eu-central-1.amazonaws.com/lightsailinstance:latest
 
 instance_name=grafana-${PREFIX}
 static_ip_name=grafana-ip-${PREFIX}
