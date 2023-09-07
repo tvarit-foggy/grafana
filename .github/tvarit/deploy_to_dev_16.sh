@@ -165,7 +165,7 @@ if [ $return_value_instance -eq 0 ]; then
 fi
 
 echo "Creating lightsail instance!!!!!!"
-cd "$(dirname "$0")"
+cd
 cp lightsail.sh userdata.sh
 sed -i "s#<AWS_ACCESS_KEY/>#${AWS_ACCESS_KEY}#g" userdata.sh
 sed -i "s#<AWS_SECRET_KEY/>#${AWS_SECRET_KEY}#g" userdata.sh
