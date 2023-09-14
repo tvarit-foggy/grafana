@@ -125,7 +125,8 @@ find plugins/ -type f -name *.tar.gz -exec bash -c 'cd $(dirname $1) && tar -xf 
 
 echo "Finalising docker image..."
 cp grafana.ini.template grafana.ini
-
+sed -i "s#<DOMAIN/>#localhost#g" grafana.ini
+sed -i "s#<ROOT_URL/>#%(protocol)s://%(domain)s:%(http_port)s/#g" grafana.ini
 sed -i "s#<SIGNING_SECRET/>#${SIGNING_SECRET}#g" grafana.ini
 sed -i "s#<DB_ENDPOINT/>#${DB_ENDPOINT}#g" grafana.ini
 sed -i "s#<DB_PASSWORD/>#$(echo ${DB_PASSWORD} | sed 's/#/\\#/g' | sed 's/&/\\&/g')#g" grafana.ini
@@ -137,7 +138,7 @@ sed -i "s#<SMTP_PASSWORD/>#${SMTP_PASSWORD}#g" grafana.ini
 sed -i "s#<SMTP_FROM/>#[BETA] Tvarit AI Platform#g" grafana.ini
 
 cp cloudwatch.json.template cloudwatch.json
-
+sed -i "s#<DOMAIN/>#next-${PREFIX}.tvarit.com#g" cloudwatch.json
 
 cp Dockerfile.template Dockerfile
 sed -i "s#<BASE_IMAGE/>#grafana/grafana:next-${PREFIX}#g" Dockerfile
