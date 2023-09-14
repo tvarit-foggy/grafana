@@ -125,8 +125,8 @@ find plugins/ -type f -name *.tar.gz -exec bash -c 'cd $(dirname $1) && tar -xf 
 
 echo "Finalising docker image..."
 cp grafana.ini.template grafana.ini
-sed -i "s#<DOMAIN/>#localhost#g" grafana.ini
-sed -i "s#<ROOT_URL/>#%(protocol)s://%(domain)s:%(http_port)s/#g" grafana.ini
+sed -i "s#<DOMAIN/>#${PREFIX}.tvarit.com#g" grafana.ini
+sed -i "s#<ROOT_URL/>#https://${PREFIX}.tvarit.com/#g" grafana.ini
 sed -i "s#<SIGNING_SECRET/>#${SIGNING_SECRET}#g" grafana.ini
 sed -i "s#<DB_ENDPOINT/>#${DB_ENDPOINT}#g" grafana.ini
 sed -i "s#<DB_PASSWORD/>#$(echo ${DB_PASSWORD} | sed 's/#/\\#/g' | sed 's/&/\\&/g')#g" grafana.ini
