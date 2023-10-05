@@ -103,6 +103,8 @@ else
 sed -i "s#<AD_LOGIN_FLAG>#false#g" grafana.ini
 fi
 
+echo "${MAXION_CLIENT_ID}"
+cat "grafana.ini"
 
 cp cloudwatch.json.template cloudwatch.json
 sed -i "s#<DOMAIN/>#next-${PREFIX}.tvarit.com#g" cloudwatch.json
