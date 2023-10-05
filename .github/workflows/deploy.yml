@@ -16,6 +16,8 @@ jobs:
       SMTP_HOST: ${{ secrets.SMTP_HOST }}
       SMTP_USER: ${{ secrets.SMTP_USER }}
       SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+      MAXION_CLIENT_ID: ${{secrets.MAXION_CLIENT_ID}}
+      MAXION_CLIENT_SECRET: ${{secrets.MAXION_CLIENT_SECRET}}
     steps:
     - uses: actions/checkout@v2
     - run: |
@@ -34,6 +36,8 @@ jobs:
       SMTP_HOST: ${{ secrets.SMTP_HOST }}
       SMTP_USER: ${{ secrets.SMTP_USER }}
       SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+      MAXION_CLIENT_ID: ${{secrets.MAXION_CLIENT_ID}}
+      MAXION_CLIENT_SECRET: ${{secrets.MAXION_CLIENT_SECRET}}
     steps:
     - uses: actions/checkout@v2
     - run: |
