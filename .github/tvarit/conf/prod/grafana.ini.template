@@ -125,6 +125,7 @@ client_secret = <MAXION_CLIENT_SECRET/>
 scopes = openid email profile
 auth_url = https://login.microsoftonline.com/58288272-c24c-4c0c-bc60-dc0cbadd0866/oauth2/v2.0/authorize
 token_url = https://login.microsoftonline.com/58288272-c24c-4c0c-bc60-dc0cbadd0866/oauth2/v2.0/token
+skip_org_role_sync = true
 ;allowed_domains =
 ;allowed_groups =
 
