@@ -11,8 +11,8 @@ sleep 300
 rm -rf awscliv2.zip
 
 #with only ECR pull access. TODO: update
-AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID_016}
+AWS_SECRET_ACCESS_KEY=${AWS_SECRET_KEY_ID_016}
 AWS_REGION="eu-central-1"
 
 aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
