@@ -58,52 +58,66 @@ function create_load_balancer() {
 
 # aws lightsail get-certificates --certificate-name ${PREFIX}-tvarit-com > /dev/null
 
-echo "Creating production database..."
-aws lightsail create-relational-database \
-  --relational-database-name ${PREFIX}-grafana-db \
-  --availability-zone ${AWS_DEFAULT_REGION}a \
-  --relational-database-blueprint-id mysql_8_0 \
-  --relational-database-bundle-id micro_1_0 \
-  --preferred-backup-window 00:00-00:30 \
-  --preferred-maintenance-window Sun:01:00-Sun:01:30 \
-  --master-database-name grafana \
-  --master-username grafana \
-  --no-publicly-accessible || :
+echo "Checking if production database already exists..."
+existing_db=$(aws lightsail get-relational-database --relational-database-name ${PREFIX}-grafana-db --output text --query 'relationalDatabase.name' 2>/dev/null)
 
-echo "Waiting for database to be available..."
-for run in {1..60}; do
-  state=$(aws lightsail get-relational-database --relational-database-name ${PREFIX}-grafana-db --output text --query 'relationalDatabase.state')
-  if [ "${state}" == "available" ]; then
-    break
-  fi
+if [ -n "$existing_db" ]; then
+  echo "Production database already exists. Skipping creation."
+else
+  echo "Creating production database..."
+  aws lightsail create-relational-database \
+    --relational-database-name ${PREFIX}-grafana-db \
+    --availability-zone ${AWS_DEFAULT_REGION}a \
+    --relational-database-blueprint-id mysql_8_0 \
+    --relational-database-bundle-id micro_1_0 \
+    --preferred-backup-window 00:00-00:30 \
+    --preferred-maintenance-window Sun:01:00-Sun:01:30 \
+    --master-database-name grafana \
+    --master-username grafana \
+    --no-publicly-accessible || :
+
   echo "Waiting for database to be available..."
-  sleep 60
-done
+  for run in {1..60}; do
+    state=$(aws lightsail get-relational-database --relational-database-name ${PREFIX}-grafana-db --output text --query 'relationalDatabase.state')
+    if [ "${state}" == "available" ]; then
+      break
+    fi
+    echo "Waiting for database to be available..."
+    sleep 60
+  done
 
-if [ "${state}" != "available" ]; then
-  echo "Database not created in 60 mins"
-  exit 1
+  if [ "${state}" != "available" ]; then
+    echo "Database not created in 60 mins"
+    exit 1
+  fi
 fi
 
-echo "Creating staging database..."
-aws lightsail create-relational-database-from-snapshot \
-  --relational-database-name ${PREFIX}-next-grafana-db \
-  --source-relational-database-name ${PREFIX}-grafana-db \
-  --use-latest-restorable-time || :
+echo "Checking if staging database already exists..."
+existing_staging_db=$(aws lightsail get-relational-database --relational-database-name ${PREFIX}-next-grafana-db --output text --query 'relationalDatabase.name' 2>/dev/null)
 
-echo "Waiting for database to be available..."
-for run in {1..60}; do
-  state=$(aws lightsail get-relational-database --relational-database-name ${PREFIX}-next-grafana-db --output text --query 'relationalDatabase.state')
-  if [ "${state}" == "available" ]; then
-    break
-  fi
+if [ -n "$existing_staging_db" ]; then
+  echo "Staging database already exists. Skipping creation."
+else
+  echo "Creating staging database..."
+  aws lightsail create-relational-database-from-snapshot \
+    --relational-database-name ${PREFIX}-next-grafana-db \
+    --source-relational-database-name ${PREFIX}-grafana-db \
+    --use-latest-restorable-time || :
+
   echo "Waiting for database to be available..."
-  sleep 60
-done
+  for run in {1..60}; do
+    state=$(aws lightsail get-relational-database --relational-database-name ${PREFIX}-next-grafana-db --output text --query 'relationalDatabase.state')
+    if [ "${state}" == "available" ]; then
+      break
+    fi
+    echo "Waiting for database to be available..."
+    sleep 60
+  done
 
-if [ "${state}" != "available" ]; then
-  echo "Database not created in 60 mins"
-  exit 1
+  if [ "${state}" != "available" ]; then
+    echo "Database not created in 60 mins"
+    exit 1
+  fi
 fi
 
 DB_ENDPOINT=$(aws lightsail get-relational-database --relational-database-name ${PREFIX}-next-grafana-db --output text --query 'relationalDatabase.masterEndpoint.address')
