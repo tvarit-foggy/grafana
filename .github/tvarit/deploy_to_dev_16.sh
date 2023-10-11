@@ -85,29 +85,9 @@ if [ "${state}" != "available" ]; then
   exit 1
 fi
 
-echo "Creating staging database..."
-aws lightsail create-relational-database-from-snapshot \
-  --relational-database-name ${PREFIX}-next-grafana-db \
-  --source-relational-database-name ${PREFIX}-grafana-db \
-  --use-latest-restorable-time || :
 
-echo "Waiting for database to be available..."
-for run in {1..60}; do
-  state=$(aws lightsail get-relational-database --relational-database-name ${PREFIX}-next-grafana-db --output text --query 'relationalDatabase.state')
-  if [ "${state}" == "available" ]; then
-    break
-  fi
-  echo "Waiting for database to be available..."
-  sleep 60
-done
-
-if [ "${state}" != "available" ]; then
-  echo "Database not created in 60 mins"
-  exit 1
-fi
-
-DB_ENDPOINT=$(aws lightsail get-relational-database --relational-database-name ${PREFIX}-next-grafana-db --output text --query 'relationalDatabase.masterEndpoint.address')
-DB_PASSWORD=$(aws lightsail get-relational-database-master-user-password --relational-database-name ${PREFIX}-next-grafana-db --output text --query masterUserPassword)
+DB_ENDPOINT=$(aws lightsail get-relational-database --relational-database-name ${PREFIX}-grafana-db --output text --query 'relationalDatabase.masterEndpoint.address')
+DB_PASSWORD=$(aws lightsail get-relational-database-master-user-password --relational-database-name ${PREFIX}-grafana-db --output text --query masterUserPassword)
 SIGNING_SECRET=$(aws secretsmanager get-secret-value --secret-id grafana-signing-secret --output text --query SecretString)
 
 #AWS-016
@@ -115,7 +95,7 @@ AWS_ACCESS_KEY=$(aws secretsmanager get-secret-value --secret-id /credentials/gr
 AWS_SECRET_KEY=$(aws secretsmanager get-secret-value --secret-id /credentials/grafana-user/secret-key --output text --query SecretString)
 
 echo "Building docker image..."
-docker build --tag grafana/grafana:next-${PREFIX} .
+docker build --tag grafana/grafana:latest .
 
 cd .github/tvarit/conf/prod/
 echo "Downloading plugins..."
@@ -138,19 +118,19 @@ sed -i "s#<SMTP_PASSWORD/>#${SMTP_PASSWORD}#g" grafana.ini
 sed -i "s#<SMTP_FROM/>#[BETA] Tvarit AI Platform#g" grafana.ini
 
 cp cloudwatch.json.template cloudwatch.json
-sed -i "s#<DOMAIN/>#next-${PREFIX}.tvarit.com#g" cloudwatch.json
+sed -i "s#<DOMAIN/>#${PREFIX}.tvarit.com#g" cloudwatch.json
 
 cp Dockerfile.template Dockerfile
-sed -i "s#<BASE_IMAGE/>#grafana/grafana:next-${PREFIX}#g" Dockerfile
+sed -i "s#<BASE_IMAGE/>#grafana/grafana:latest}#g" Dockerfile
 sed -i "s#<AWS_ACCESS_KEY/>#${AWS_ACCESS_KEY}#g" Dockerfile
 sed -i "s#<AWS_SECRET_KEY/>#${AWS_SECRET_KEY}#g" Dockerfile
 sed -i "s#<AWS_REGION/>#${AWS_DEFAULT_REGION}#g" Dockerfile
-docker build --tag grafana/grafana:next-${PREFIX} .
+docker build --tag grafana/grafana:latest .
 
 #push Docker image to ECR
 echo "push docker image to ECR........."
 aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin 250373516626.dkr.ecr.eu-central-1.amazonaws.com
-docker tag grafana/grafana:next-${PREFIX} 250373516626.dkr.ecr.eu-central-1.amazonaws.com/lightsailinstance:latest
+docker tag grafana/grafana:latest 250373516626.dkr.ecr.eu-central-1.amazonaws.com/lightsailinstance:latest
 docker push 250373516626.dkr.ecr.eu-central-1.amazonaws.com/lightsailinstance:latest
 
 instance_name=grafana-${PREFIX}
