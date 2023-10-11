@@ -121,7 +121,7 @@ cp cloudwatch.json.template cloudwatch.json
 sed -i "s#<DOMAIN/>#${PREFIX}.tvarit.com#g" cloudwatch.json
 
 cp Dockerfile.template Dockerfile
-sed -i "s#<BASE_IMAGE/>#grafana/grafana:latest}#g" Dockerfile
+sed -i "s#<BASE_IMAGE/>#grafana/grafana:latest#g" Dockerfile
 sed -i "s#<AWS_ACCESS_KEY/>#${AWS_ACCESS_KEY}#g" Dockerfile
 sed -i "s#<AWS_SECRET_KEY/>#${AWS_SECRET_KEY}#g" Dockerfile
 sed -i "s#<AWS_REGION/>#${AWS_DEFAULT_REGION}#g" Dockerfile
