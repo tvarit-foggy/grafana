@@ -58,7 +58,7 @@ function create_load_balancer() {
 
 # aws lightsail get-certificates --certificate-name ${PREFIX}-tvarit-com > /dev/null
 
-echo "Creating production database..."
+echo "Creating test database..."
 aws lightsail create-relational-database \
   --relational-database-name ${PREFIX}-grafana-db \
   --availability-zone ${AWS_DEFAULT_REGION}a \
