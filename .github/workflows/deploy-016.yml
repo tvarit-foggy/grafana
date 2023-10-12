@@ -5,7 +5,7 @@ on:
 
 jobs:
   deploy_to_dev:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     environment: development
     env:
       AWS_DEFAULT_REGION: eu-central-1
