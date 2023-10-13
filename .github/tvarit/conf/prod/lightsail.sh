@@ -7,7 +7,10 @@ curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip
 apt install unzip -y
 unzip awscliv2.zip
 ./aws/install
-sleep 300
+while ! command -v aws &> /dev/null
+do
+    sleep 1
+done
 rm -rf awscliv2.zip
 
 #with only ECR pull access. TODO: update
