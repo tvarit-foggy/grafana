@@ -65,42 +65,42 @@ wait_for_lb_instance_healthy() {
     exit 1
 }
 
-echo "Creating Test database..."
-aws lightsail create-relational-database \
-  --relational-database-name ${PREFIX}-grafana-db \
-  --availability-zone ${AWS_DEFAULT_REGION}a \
-  --relational-database-blueprint-id mysql_8_0 \
-  --relational-database-bundle-id micro_1_0 \
-  --preferred-backup-window 00:00-00:30 \
-  --preferred-maintenance-window Sun:01:00-Sun:01:30 \
-  --master-database-name grafana \
-  --master-username grafana \
-  --no-publicly-accessible || :
+# echo "Creating Test database..."
+# aws lightsail create-relational-database \
+#   --relational-database-name ${PREFIX}-grafana-db \
+#   --availability-zone ${AWS_DEFAULT_REGION}a \
+#   --relational-database-blueprint-id mysql_8_0 \
+#   --relational-database-bundle-id micro_1_0 \
+#   --preferred-backup-window 00:00-00:30 \
+#   --preferred-maintenance-window Sun:01:00-Sun:01:30 \
+#   --master-database-name grafana \
+#   --master-username grafana \
+#   --no-publicly-accessible || :
 
-echo "Waiting for database to be available..."
-for run in {1..60}; do
-  state=$(aws lightsail get-relational-database --relational-database-name ${PREFIX}-grafana-db --output text --query 'relationalDatabase.state')
-  if [ "${state}" == "available" ]; then
-    break
-  fi
-  echo "Waiting for database to be available..."
-  sleep 5
-done
+# echo "Waiting for database to be available..."
+# for run in {1..60}; do
+#   state=$(aws lightsail get-relational-database --relational-database-name ${PREFIX}-grafana-db --output text --query 'relationalDatabase.state')
+#   if [ "${state}" == "available" ]; then
+#     break
+#   fi
+#   echo "Waiting for database to be available..."
+#   sleep 5
+# done
 
-if [ "${state}" != "available" ]; then
-  echo "Database not created in 5 mins"
-  exit 1
-fi
+# if [ "${state}" != "available" ]; then
+#   echo "Database not created in 5 mins"
+#   exit 1
+# fi
 
 echo "Creating staging database..."
 aws lightsail create-relational-database-from-snapshot \
-  --relational-database-name ${PREFIX}-next-grafana-db \
-  --source-relational-database-name ${PREFIX}-grafana-db \
+  --relational-database-name ${PREFIX}-grafana-db \
+  --source-relational-database-name ${PREFIX}-next-grafana-db \
   --use-latest-restorable-time || :
 
 echo "Waiting for database to be available..."
 for run in {1..60}; do
-  state=$(aws lightsail get-relational-database --relational-database-name ${PREFIX}-next-grafana-db --output text --query 'relationalDatabase.state')
+  state=$(aws lightsail get-relational-database --relational-database-name ${PREFIX}-grafana-db --output text --query 'relationalDatabase.state')
   if [ "${state}" == "available" ]; then
     break
   fi
@@ -113,8 +113,8 @@ if [ "${state}" != "available" ]; then
   exit 1
 fi
 
-DB_ENDPOINT=$(aws lightsail get-relational-database --relational-database-name ${PREFIX}-next-grafana-db --output text --query 'relationalDatabase.masterEndpoint.address')
-DB_PASSWORD=$(aws lightsail get-relational-database-master-user-password --relational-database-name ${PREFIX}-next-grafana-db --output text --query masterUserPassword)
+DB_ENDPOINT=$(aws lightsail get-relational-database --relational-database-name ${PREFIX}-grafana-db --output text --query 'relationalDatabase.masterEndpoint.address')
+DB_PASSWORD=$(aws lightsail get-relational-database-master-user-password --relational-database-name ${PREFIX}-grafana-db --output text --query masterUserPassword)
 SIGNING_SECRET=$(aws secretsmanager get-secret-value --secret-id grafana-signing-secret --output text --query SecretString)
 
 #AWS-016
