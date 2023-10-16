@@ -92,8 +92,29 @@ if [ "${state}" != "available" ]; then
   exit 1
 fi
 
-DB_ENDPOINT=$(aws lightsail get-relational-database --relational-database-name ${PREFIX}-grafana-db --output text --query 'relationalDatabase.masterEndpoint.address')
-DB_PASSWORD=$(aws lightsail get-relational-database-master-user-password --relational-database-name ${PREFIX}-grafana-db --output text --query masterUserPassword)
+echo "Creating staging database..."
+aws lightsail create-relational-database-from-snapshot \
+  --relational-database-name ${PREFIX}-next-grafana-db \
+  --source-relational-database-name ${PREFIX}-grafana-db \
+  --use-latest-restorable-time || :
+
+echo "Waiting for database to be available..."
+for run in {1..60}; do
+  state=$(aws lightsail get-relational-database --relational-database-name ${PREFIX}-next-grafana-db --output text --query 'relationalDatabase.state')
+  if [ "${state}" == "available" ]; then
+    break
+  fi
+  echo "Waiting for database to be available..."
+  sleep 60
+done
+
+if [ "${state}" != "available" ]; then
+  echo "Database not created in 60 mins"
+  exit 1
+fi
+
+DB_ENDPOINT=$(aws lightsail get-relational-database --relational-database-name ${PREFIX}-next-grafana-db --output text --query 'relationalDatabase.masterEndpoint.address')
+DB_PASSWORD=$(aws lightsail get-relational-database-master-user-password --relational-database-name ${PREFIX}-next-grafana-db --output text --query masterUserPassword)
 SIGNING_SECRET=$(aws secretsmanager get-secret-value --secret-id grafana-signing-secret --output text --query SecretString)
 
 #AWS-016
@@ -157,9 +178,12 @@ sed -i "s#<AWS_SECRET_KEY/>#${AWS_SECRET_KEY_ID_016}#g" userdata.sh
 
 # Create a new Lightsail instance with a different name
 aws lightsail create-instances --instance-names $new_instance_name --availability-zone eu-central-1a --blueprint-id ubuntu_22_04 --bundle-id nano_2_0 --user-data file://userdata.sh
-
+sleep 300
 # Wait for the new instance to be ready
 wait_for_instance_ready $new_instance_name
+
+# Open necessary ports on the instance
+aws lightsail open-instance-public-ports --port-info fromPort=3000,toPort=3000,protocol=TCP --instance-name $new_instance_name
 
 # Attach the new instance to the load balancer
 add_instance_to_load_balancer $new_instance_name grafana-lb
@@ -176,9 +200,5 @@ fi
 
 # Rename the new instance to the original instance name
 # aws lightsail update-instance-name --instance-name $new_instance_name --new-instance-name $instance_name
-
-
-# Open necessary ports on the instance
-aws lightsail open-instance-public-ports --port-info fromPort=3000,toPort=3000,protocol=TCP --instance-name $new_instance_name
 
 echo "Deployment completed!"
