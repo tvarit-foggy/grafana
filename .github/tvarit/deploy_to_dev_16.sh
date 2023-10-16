@@ -165,7 +165,8 @@ wait_for_instance_ready $new_instance_name
 add_instance_to_load_balancer $new_instance_name grafana-lb
 
 # Wait for the new instance to be healthy on the load balancer
-wait_for_lb_instance_healthy grafana-lb $new_instance_name
+# wait_for_lb_instance_healthy grafana-lb $new_instance_name
+sleep 180
 
 # If a previous instance existed, detach it from the LB and then delete it
 if [ "$previous_instance_exists" == "true" ]; then
