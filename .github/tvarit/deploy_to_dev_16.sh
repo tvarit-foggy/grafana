@@ -160,8 +160,18 @@ aws ecr get-login-password --region eu-central-1 | docker login --username AWS -
 docker tag grafana/grafana:latest 250373516626.dkr.ecr.eu-central-1.amazonaws.com/lightsailinstance:latest
 docker push 250373516626.dkr.ecr.eu-central-1.amazonaws.com/lightsailinstance:latest
 
-new_instance_name=grafana-${PREFIX}
-instance_name=grafana-${PREFIX}-new
+
+# Fetch the name of the only Lightsail instance
+instance_name=$(aws lightsail get-instances --query "instances[0].name" --output text)
+
+if [ -z "$instance_name" ]; then
+  echo "No Lightsail instances found."
+  exit 1
+fi
+
+timestamp=$(date +%Y%m%d%H%M%S)
+
+new_instance_name="grafana-${PREFIX}-$timestamp"
 
 # Check if previous instance exists
 return_value_instance=$(validate_lightsail_instance $instance_name)
@@ -178,7 +188,7 @@ sed -i "s#<AWS_SECRET_KEY/>#${AWS_SECRET_KEY_ID_016}#g" userdata.sh
 
 # Create a new Lightsail instance with a different name
 aws lightsail create-instances --instance-names $new_instance_name --availability-zone eu-central-1a --blueprint-id ubuntu_22_04 --bundle-id nano_2_0 --user-data file://userdata.sh
-sleep 300
+sleep 600
 # Wait for the new instance to be ready
 wait_for_instance_ready $new_instance_name
 

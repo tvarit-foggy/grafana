@@ -21,7 +21,7 @@ aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
 
 docker login -u AWS -p $(aws ecr get-login-password --region eu-central-1) 250373516626.dkr.ecr.eu-central-1.amazonaws.com
 docker pull 250373516626.dkr.ecr.eu-central-1.amazonaws.com/lightsailinstance:latest
-docker images >> test.txt #for testing
 #docker run -d -p 3000:3000 grafana/grafana
 docker run -d -p 80:3000 250373516626.dkr.ecr.eu-central-1.amazonaws.com/lightsailinstance:latest
+docker images >> test.txt
 echo "user data executed"
