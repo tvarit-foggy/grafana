@@ -139,8 +139,8 @@ aws ecr get-login-password --region eu-central-1 | docker login --username AWS -
 docker tag grafana/grafana:latest 250373516626.dkr.ecr.eu-central-1.amazonaws.com/lightsailinstance:latest
 docker push 250373516626.dkr.ecr.eu-central-1.amazonaws.com/lightsailinstance:latest
 
-new_instance_name=grafana-${PREFIX}
-instance_name=grafana-${PREFIX}-new
+instance_name=grafana-${PREFIX}
+new_instance_name=grafana-${PREFIX}-new
 
 # Check if previous instance exists
 return_value_instance=$(validate_lightsail_instance $instance_name)

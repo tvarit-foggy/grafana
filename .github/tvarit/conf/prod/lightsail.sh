@@ -1,3 +1,4 @@
+echo "executing user data"
 sudo su
 apt update
 apt install docker.io -y
@@ -7,10 +8,7 @@ curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip
 apt install unzip -y
 unzip awscliv2.zip
 ./aws/install
-while ! command -v aws &> /dev/null
-do
-    sleep 1
-done
+sleep 300
 rm -rf awscliv2.zip
 
 #with only ECR pull access. TODO: update
@@ -26,3 +24,4 @@ docker pull 250373516626.dkr.ecr.eu-central-1.amazonaws.com/lightsailinstance:la
 docker images >> test.txt #for testing
 #docker run -d -p 3000:3000 grafana/grafana
 docker run -d -p 80:3000 250373516626.dkr.ecr.eu-central-1.amazonaws.com/lightsailinstance:latest
+echo "user data executed"
