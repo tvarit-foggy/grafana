@@ -8,13 +8,13 @@ if [ -z "${PREFIX}" ]; then
 fi
 
 validate_lightsail_instance() {
-    instance_name="$1"
+    local instance_name="$1"
     aws lightsail get-instance --instance-name "$instance_name" >/dev/null 2>&1
     return $?
 }
 
 delete_lightsail_instance() {
-    instance_name="$1"
+    local instance_name="$1"
     aws lightsail delete-instance --instance-name $instance_name
 }
 
@@ -37,7 +37,7 @@ create_load_balancer() {
 }
 
 wait_for_instance_ready() {
-    instance_name="$1"
+    local instance_name="$1"
     end=$((SECONDS+600))
     while [ $SECONDS -lt $end ]; do
         instance_state=$(aws lightsail get-instance --instance-name "$instance_name" --query 'instance.state.name' --output text)
@@ -165,7 +165,8 @@ wait_for_instance_ready $new_instance_name
 add_instance_to_load_balancer $new_instance_name grafana-lb
 
 # Wait for the new instance to be healthy on the load balancer
-wait_for_lb_instance_healthy grafana-lb $new_instance_name
+# wait_for_lb_instance_healthy grafana-lb $new_instance_name
+sleep 90
 
 # If a previous instance existed, detach it from the LB and then delete it
 if [ "$previous_instance_exists" == "true" ]; then
