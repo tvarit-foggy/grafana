@@ -106,7 +106,7 @@ docker build --tag grafana/grafana:latest .
 cd .github/tvarit/conf/prod/
 echo "Downloading plugins..."
 rm -rf plugins
-aws s3 sync s3://com.tvarit.grafana.artifacts/grafana-plugins plugins
+aws s3 sync s3://com.tvarit.grafana.artifacts/grafana-test-plugins plugins
 find plugins/ -type f -name *.tar.gz -exec bash -c 'cd $(dirname $1) && tar -xf $(basename $1) && rm $(basename $1); cd -' bash {} \;
 
 echo "Finalising docker image..."
