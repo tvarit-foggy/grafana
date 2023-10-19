@@ -166,7 +166,7 @@ sed -i "s#<AWS_ACCESS_KEY/>#${AWS_ACCESS_KEY_ID_016}#g" userdata.sh
 sed -i "s#<AWS_SECRET_KEY/>#${AWS_SECRET_KEY_ID_016}#g" userdata.sh
 
 # Create a new Lightsail instance with a different name
-aws lightsail create-instances --instance-names $new_instance_name --availability-zone eu-central-1a --blueprint-id ubuntu_22_04 --bundle-id nano_2_0 --user-data file://userdata.sh
+aws lightsail create-instances --instance-names $new_instance_name --availability-zone eu-central-1a --blueprint-id ubuntu_22_04 --bundle-id small_3_0 --user-data file://userdata.sh
 sleep 600
 # Wait for the new instance to be ready
 wait_for_instance_ready $new_instance_name
