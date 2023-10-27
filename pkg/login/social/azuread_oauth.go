@@ -69,8 +69,8 @@ func (s *SocialAzureAD) UserInfo(client *http.Client, token *oauth2.Token) (*Bas
 		return nil, errors.New("error getting user info: no email found in access token")
 	}
 
-	role := extractRole(claims, s.autoAssignOrgRole)
-	logger.Debug("AzureAD OAuth: extracted role", "email", email, "role", role)
+	/* role := extractRole(claims, s.autoAssignOrgRole)
+	logger.Debug("AzureAD OAuth: extracted role", "email", email, "role", role) */
 
 	groups, err := extractGroups(client, claims, token)
 	if err != nil {
@@ -87,7 +87,7 @@ func (s *SocialAzureAD) UserInfo(client *http.Client, token *oauth2.Token) (*Bas
 		Name:   claims.Name,
 		Email:  email,
 		Login:  email,
-		Role:   string(role),
+		Role:   "", /* string(role), */
 		Groups: groups,
 	}, nil
 }
@@ -117,7 +117,7 @@ func extractEmail(claims azureClaims) string {
 
 	return claims.Email
 }
-
+/*
 func extractRole(claims azureClaims, autoAssignRole string) models.RoleType {
 	if len(claims.Roles) == 0 {
 		return models.RoleType(autoAssignRole)
@@ -146,7 +146,7 @@ func hasRole(roles []string, role models.RoleType) bool {
 	}
 	return false
 }
-
+*/
 type getAzureGroupRequest struct {
 	SecurityEnabledOnly bool `json:"securityEnabledOnly"`
 }
