@@ -1,0 +1,120 @@
+{
+  "editable": false,
+  "panels": [
+    {
+      "gridPos": {
+        "h": 9,
+        "w": 8,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "maxPerRow": 3,
+      "options": {
+        "content": "<video width=\"100%\" height=\"98%\" controls>\n  <source src=\"${videos}\" type=\"video/mp4\">\nYour browser does not support the video.\n</video>",
+        "mode": "html"
+      },
+      "pluginVersion": "8.4.0",
+      "repeat": "videos",
+      "repeatDirection": "h",
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "gridPos": {
+        "h": 9,
+        "w": 8,
+        "x": 8,
+        "y": 18
+      },
+      "id": 10,
+      "options": {
+        "content": "<a href=\"https://grafana.com/docs/grafana/v8.4/\" style=\"overflow:hidden; position: relative; display: block; width: 100%; height: 98%; text-align: center; text-decoration: none !important;\" target=\"_blank\">\n  <img width=\"100%\" height=\"100%\" src=\"https://www.vectorlogo.zone/logos/grafana/grafana-ar21.svg\"></img>\n  <div style=\"font-size: 1vw; position: absolute; bottom: 12px; width: 100%;\">TiA is based on Grafana 8.4. Click to visit Grafana documentation</div>\n</a>",
+        "mode": "html"
+      },
+      "pluginVersion": "8.4.0",
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "gridPos": {
+        "h": 9,
+        "w": 8,
+        "x": 16,
+        "y": 18
+      },
+      "id": 11,
+      "options": {
+        "content": "<a href=\"mailto:support@tvarit.com\" style=\"overflow:hidden; position: relative; display: block; width: 100%; height: 98%; text-align: center; text-decoration: none !important;\">\n  <img width=\"30%\" height=\"100%\" src=\"https://tvarit.com/wp-content/uploads/icon_people-1.svg\"></img>\n  <div style=\"font-size: 1vw; position: absolute; bottom: 12px; width: 100%;\">Reach out to us at support@tvarit.com for any queries</div>\n</a>",
+        "mode": "html"
+      },
+      "pluginVersion": "8.4.0",
+      "transparent": true,
+      "type": "text"
+    }
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "hide": 2,
+        "includeAll": true,
+        "multi": true,
+        "name": "videos",
+        "options": [
+          {
+            "selected": true,
+            "text": "All",
+            "value": "$__all"
+          },
+          {
+            "selected": false,
+            "text": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/WhatIsAIAndHowCanItHelpInManufacturing.mp4",
+            "value": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/WhatIsAIAndHowCanItHelpInManufacturing.mp4"
+          },
+          {
+            "selected": false,
+            "text": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/HowDoesItConceptuallyWork.mov",
+            "value": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/HowDoesItConceptuallyWork.mov"
+          },
+          {
+            "selected": false,
+            "text": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/DataRequirements.mov",
+            "value": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/DataRequirements.mov"
+          },
+          {
+            "selected": false,
+            "text": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/MainProcessRequirements.mov",
+            "value": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/MainProcessRequirements.mov"
+          },
+          {
+            "selected": false,
+            "text": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/HumanResourceRequirements.mov",
+            "value": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/HumanResourceRequirements.mov"
+          },
+          {
+            "selected": false,
+            "text": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/SuccessCriterion.mov",
+            "value": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/SuccessCriterion.mov"
+          },
+          {
+            "selected": false,
+            "text": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/RisksInvolved.mov",
+            "value": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/RisksInvolved.mov"
+          }
+        ],
+        "query": "https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/WhatIsAIAndHowCanItHelpInManufacturing.mp4,https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/HowDoesItConceptuallyWork.mov,https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/DataRequirements.mov,https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/MainProcessRequirements.mov,https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/HumanResourceRequirements.mov,https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/SuccessCriterion.mov,https://maxion-knowledge-sharing.s3.eu-central-1.amazonaws.com/RisksInvolved.mov",
+        "skipUrlSync": false,
+        "type": "custom"
+      }
+    ]
+  },
+  "timepicker": {
+    "hidden": true
+  },
+  "title": "Documentation"
+}

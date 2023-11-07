@@ -1,0 +1,25 @@
+{
+  "editable": false,
+  "panels": [
+    {
+      "gridPos": {
+        "h": 27,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "content": "<div style=\"overflow:scroll; position: relative; display: block; width: 100%; height: 98%; text-align: center;\">\n  <img width=\"100%\" src=\"http://localhost:3000/public/img/use-cases/1.png\"></img>\n  <img width=\"100%\" src=\"http://localhost:3000/public/img/use-cases/2.png\"></img>\n  <img width=\"100%\" src=\"http://localhost:3000/public/img/use-cases/3.png\"></img>\n  <img width=\"100%\" src=\"http://localhost:3000/public/img/use-cases/4.png\"></img>\n  <img width=\"100%\" src=\"http://localhost:3000/public/img/use-cases/5.png\"></img>\n</div>\n<a style=\"display: block; position: absolute; right: 0; top: 9.5vh; background: #55AA66; padding: 1vw 2vw 1vw 3vw; text-align: right; font-size: 1.1vw; font-weight: 500; color: white; text-decoration: none !important;\" href=\"mailto:support@tvarit.com\">\n  Contact us at support@tvarit.com to know more\n  <img style=\"margin-left: 48px;\" src=\"https://tvarit.com/wp-content/themes/tvarit/config-stylebase/assets/arr.svg\">\n</a>\n",
+        "mode": "html"
+      },
+      "pluginVersion": "8.4.0",
+      "transparent": true,
+      "type": "text"
+    }
+  ],
+ "timepicker": {
+    "hidden": true
+  },
+  "title": "TiA Use-Cases"
+}
