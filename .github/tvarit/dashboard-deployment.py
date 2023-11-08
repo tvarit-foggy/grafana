@@ -65,6 +65,7 @@ def upload_release_notes_to_s3(versioning_info, bucket_name, s3_key):
     # Create a temporary text file to store the filtered response
     with open("release-notes.txt", "w") as file:
         for entry in versioning_info:
+            print(entry)
             file.write(f"{entry}\n")
 
     # Use the AWS CLI to upload the file to the specified S3 bucket
