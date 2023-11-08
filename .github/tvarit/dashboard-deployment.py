@@ -2,7 +2,6 @@ import requests
 import json
 import datetime
 import subprocess
-import urllib.parse
 
 def find_existing_folder(api_url, api_key, folder_name):
     headers = {
@@ -62,18 +61,15 @@ def get_last_run(bucket_name, prefix):
         print(f"Error listing S3 objects: {e}")
         return None
 
-def upload_release_notes_to_s3(versioning_info, bucket_name, s3_key):
-    encoded_s3_key = urllib.parse.quote(s3_key, safe='')
-    
+def upload_release_notes_to_s3(versioning_info, bucket_name, s3_key): 
     # Create a temporary text file to store the filtered response
-    
     with open("release-notes.txt", "w") as file:
         for entry in versioning_info:
             print(entry)
             file.write(f"{entry}\n")
-
+    formatted_s3_key = f"2023-11-08T19:28:58.028330/Mahle/Production Dashboards PsQ/Data Check Report - New Data"
     # Use the AWS CLI to upload the file to the specified S3 bucket
-    aws_cli_command = f"aws s3 cp release-notes.txt s3://{bucket_name}/{encoded_s3_key}"
+    aws_cli_command = f"aws s3 cp release-notes.txt s3://{bucket_name}/{formatted_s3_key}"
     try:
         subprocess.run(aws_cli_command, shell=True, check=True)
         print(f"Release Notes uploaded to S3: s3://{bucket_name}/{s3_key}")
