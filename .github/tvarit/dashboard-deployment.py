@@ -138,8 +138,16 @@ for key in data_test.keys():
                     print(response)
                     last_run = get_last_run('tvarit.product.releasenotes','')
                     if last_run:
-                        last_run=datetime.datetime.strptime(last_run, "%Y-%m-%dT%H:%M:%SZ")
-                        response = [entry for entry in response if datetime.datetime.fromisoformat(entry["created"]) > last_run]
+                        last_run=datetime.datetime.strptime(last_run, "%Y-%m-%dT%H:%M:%S.%f")
+                        filtered_response = []
+                        for entry in response:
+                            if "created" in entry:
+                                try:
+                                    created_datetime = datetime.datetime.strptime(entry["created"], "%Y-%m-%dT%H:%M:%SZ")
+                                    if created_datetime > last_run_datetime:
+                                        filtered_response.append(entry)
+                                except ValueError as e:
+                                    print(f"Error parsing 'created' field: {e}")
                     current_datetime = datetime.datetime.now().isoformat()
                     upload_release_notes_to_s3(response, 'tvarit.product.releasenotes', f'{current_datetime}/{key}/{folder}/{dashboard_title}')
                     
