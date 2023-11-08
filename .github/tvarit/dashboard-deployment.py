@@ -134,7 +134,7 @@ for key in data_test.keys():
                     dashboard_title = dashboard["title"]
                     dashboard_id = dashboard["id"]
                     
-                    response = requests.get(f'{test_grafana_url}/dashboards/id/{dashboard_id}/versions', headers=headers)
+                    response = json.loads(requests.get(f'{test_grafana_url}/dashboards/id/{dashboard_id}/versions', headers=headers))
                     print(response)
                     last_run = get_last_run('tvarit.product.releasenotes','')
                     if last_run:
