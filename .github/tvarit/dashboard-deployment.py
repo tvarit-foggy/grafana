@@ -145,7 +145,7 @@ for key in data_test.keys():
                             if "created" in entry:
                                 try:
                                     created_datetime = datetime.datetime.strptime(entry["created"], "%Y-%m-%dT%H:%M:%SZ")
-                                    if created_datetime > last_run_datetime:
+                                    if created_datetime > last_run:
                                         filtered_response.append(entry)
                                 except ValueError as e:
                                     print(f"Error parsing 'created' field: {e}")
