@@ -116,7 +116,7 @@ sed -i "s#<AWS_ACCESS_KEY/>#${AWS_ACCESS_KEY}#g" Dockerfile
 sed -i "s#<AWS_SECRET_KEY/>#${AWS_SECRET_KEY}#g" Dockerfile
 sed -i "s#<AWS_REGION/>#${AWS_DEFAULT_REGION}#g" Dockerfile
 docker build --tag grafana/grafana:next-${PREFIX} .
-sleep 300
+
 echo "Upload docker image to lightsail container service and get image etag..."
 IMAGE=$(aws lightsail push-container-image \
   --service-name  "${PREFIX}-next-grafana" \
