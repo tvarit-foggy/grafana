@@ -1,6 +1,5 @@
 import requests
 import json
-import boto3
 import subprocess
 def find_existing_folder(api_url, api_key, folder_name):
     headers = {
