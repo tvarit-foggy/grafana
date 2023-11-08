@@ -41,7 +41,7 @@ cloud_grafana_url = "https://cloud.tvarit.com/api"
 test_grafana_url = "https://test.tvarit.com/api"
 grafana_url = ""
 
-aws_cli_command = "aws secretsmanager get-secret-value --secret-id /credentials/grafana-user/access-key --output text --query SecretString"
+aws_cli_command = "aws secretsmanager get-secret-value --secret-id grafana-deployment-api --output text --query SecretString"
 
 try:
     # Run the AWS CLI command and capture its output
