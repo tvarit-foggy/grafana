@@ -1,6 +1,8 @@
 import requests
 import json
+import datetime
 import subprocess
+
 def find_existing_folder(api_url, api_key, folder_name):
     headers = {
         "Authorization": f"Bearer {api_key}",
@@ -33,6 +35,48 @@ def replace_in_dict(obj, search, replacement):
         return obj.replace(search, replacement)
     else:
         return obj
+
+def get_last_run(bucket_name, prefix):
+    try:
+        # Use the AWS CLI to list objects in the S3 bucket and prefix
+        aws_cli_command = f"aws s3 ls s3://{bucket_name}/{prefix}"
+        result = subprocess.check_output(aws_cli_command, shell=True).decode("utf-8")
+
+        # Split the result into lines and extract folder names
+        lines = result.splitlines()
+        folder_names = [line.split()[-1].rstrip('/') for line in lines if line.endswith('/')]
+
+        if not folder_names:
+            print("No folders found in the specified prefix.")
+            return None
+
+        # Sort folder names in descending order (latest first)
+        folder_names.sort(reverse=True)
+
+        # Extract the latest folder name
+        latest_folder_name = folder_names[0]
+
+        return latest_folder_name
+    except subprocess.CalledProcessError as e:
+        print(f"Error listing S3 objects: {e}")
+        return None
+
+def upload_release_notes_to_s3(versioning_info, bucket_name, s3_key):
+    # Create a temporary text file to store the filtered response
+    with open("release-notes.txt", "w") as file:
+        for entry in versioning_info:
+            file.write(f"{entry}\n")
+
+    # Use the AWS CLI to upload the file to the specified S3 bucket
+    aws_cli_command = f"aws s3 cp release-notes.txt s3://{bucket_name}/{s3_key}"
+    try:
+        subprocess.run(aws_cli_command, shell=True, check=True)
+        print(f"Release Notes uploaded to S3: s3://{bucket_name}/{s3_key}")
+    except subprocess.CalledProcessError as e:
+        print(f"Error uploading to S3: {e}")
+    finally:
+        # Clean up the temporary file
+        subprocess.run("rm release-notes.txt", shell=True)
 
 print('Settting up variables')
 
@@ -88,7 +132,16 @@ for key in data_test.keys():
             for dashboard in dashboards_response:
                     dashboard_uid = dashboard["uid"]
                     dashboard_title = dashboard["title"]
-
+                    dashboard_id = dashboard["id"]
+                    
+                    response = requests.get(f'{test_grafana_url}/dashboards/id/{dashboard_id}/versions')
+                    last_run = get_last_run('tvarit.product.releasenotes','')
+                    if last_run:
+                        last_run=datetime.datetime.strptime(last_run, "%Y-%m-%dT%H:%M:%SZ")
+                        response = [entry for entry in response if datetime.datetime.fromisoformat(entry["created"]) > last_run]
+                    current_datetime = datetime.datetime.now().isoformat()
+                    upload_release_notes_to_s3(response, 'tvarit.product.releasenotes', f'{current_datetime}/{key}/{folder}/{dashboard_title}')
+                    
                     # Add functionality for versioning
                     print(f"Dashboard '{dashboard_title}' has a new version.")
                     # print(dashboard)
