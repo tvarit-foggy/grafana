@@ -150,7 +150,7 @@ for key in data_test.keys():
                                 except ValueError as e:
                                     print(f"Error parsing 'created' field: {e}")
                     current_datetime = datetime.datetime.now().isoformat()
-                    upload_release_notes_to_s3(response, 'tvarit.product.releasenotes', f'{current_datetime}/{key}/{folder}/{dashboard_title}')
+                    upload_release_notes_to_s3(filtered_response, 'tvarit.product.releasenotes', f'{current_datetime}/{key}/{folder}/{dashboard_title}')
                     
                     # Add functionality for versioning
                     print(f"Dashboard '{dashboard_title}' has a new version.")
