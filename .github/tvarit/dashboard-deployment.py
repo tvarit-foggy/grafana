@@ -136,6 +136,7 @@ for key in data_test.keys():
                     dashboard_id = dashboard["id"]
                     
                     response = requests.get(f'{test_grafana_url}/dashboards/id/{dashboard_id}/versions')
+                    print(response)
                     last_run = get_last_run('tvarit.product.releasenotes','')
                     if last_run:
                         last_run=datetime.datetime.strptime(last_run, "%Y-%m-%dT%H:%M:%SZ")
