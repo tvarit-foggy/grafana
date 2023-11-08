@@ -84,7 +84,7 @@ for key in data_test.keys():
             print(source_folder, destination_folder)
             response = requests.get(f"{test_grafana_url}/search", params={"folderIds": [source_folder]}, headers=headers)
             dashboards_response = response.json()
-            print(dashboards_response)
+            # print(dashboards_response)
             for dashboard in dashboards_response:
                     dashboard_uid = dashboard["uid"]
                     dashboard_title = dashboard["title"]
