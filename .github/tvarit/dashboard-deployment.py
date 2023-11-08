@@ -46,6 +46,8 @@ aws_cli_command = "aws secretsmanager get-secret-value --secret-id /credentials/
 try:
     # Run the AWS CLI command and capture its output
     result = subprocess.run(aws_cli_command, shell=True, text=True, capture_output=True, check=True)
+    print(result)
+    print(result.stdout)
     secret_json = json.loads(result.stdout)
     
     data = secret_json
