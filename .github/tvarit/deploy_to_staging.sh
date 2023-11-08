@@ -95,6 +95,17 @@ sed -i "s#<SMTP_USER/>#${SMTP_USER}#g" grafana.ini
 sed -i "s#<SMTP_PASSWORD/>#${SMTP_PASSWORD}#g" grafana.ini
 sed -i "s#<SMTP_FROM/>#[BETA] Tvarit AI Platform#g" grafana.ini
 
+if [ "${PREFIX}" == "maxion" ]; then
+sed -i "s#<AD_LOGIN_FLAG/>#true#g" grafana.ini
+sed -i "s#<MAXION_CLIENT_ID/>#${MAXION_CLIENT_ID}#g" grafana.ini
+sed -i "s#<MAXION_CLIENT_SECRET/>#${MAXION_CLIENT_SECRET}#g" grafana.ini
+else
+sed -i "s#<AD_LOGIN_FLAG>#false#g" grafana.ini
+fi
+
+echo "${MAXION_CLIENT_ID}"
+cat "grafana.ini"
+
 cp cloudwatch.json.template cloudwatch.json
 sed -i "s#<DOMAIN/>#next-${PREFIX}.tvarit.com#g" cloudwatch.json
 

@@ -115,6 +115,20 @@ password = """<SMTP_PASSWORD/>"""
 from_address = <SMTP_USER/>
 from_name = <SMTP_FROM/>
 
+#################################### Azure AD OAuth #######################
+[auth.azuread]
+name = Maxion Login
+enabled = <AD_LOGIN_FLAG/>
+;allow_sign_up = false
+client_id = <MAXION_CLIENT_ID/>
+client_secret = <MAXION_CLIENT_SECRET/>
+scopes = openid email profile
+auth_url = https://login.microsoftonline.com/58288272-c24c-4c0c-bc60-dc0cbadd0866/oauth2/v2.0/authorize
+token_url = https://login.microsoftonline.com/58288272-c24c-4c0c-bc60-dc0cbadd0866/oauth2/v2.0/token
+skip_org_role_sync = true
+;allowed_domains =
+;allowed_groups =
+
 #################################### Unified Alerting ####################
 [unified_alerting]
 #Enable the Unified Alerting sub-system and interface. When enabled we'll migrate all of your alert rules and notification channels to the new system. New alert rules will be created and your notification channels will be converted into an Alertmanager configuration. Previous data is preserved to enable backwards compatibility but new data is removed.```
