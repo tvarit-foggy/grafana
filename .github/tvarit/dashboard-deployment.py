@@ -68,7 +68,7 @@ def upload_release_notes_to_s3(versioning_info, bucket_name, s3_key):
             print(entry)
             file.write(f"{entry}\n")
     # Use the AWS CLI to upload the file to the specified S3 bucket
-    aws_cli_command = f'aws s3 cp release-notes.txt "s3://{bucket_name}/{s3_key}"'
+    aws_cli_command = f'aws s3 cp release-notes.txt "s3://{bucket_name}/{s3_key}/release-notes.txt"'
     try:
         subprocess.run(aws_cli_command, shell=True, check=True)
         print(f"Release Notes uploaded to S3: s3://{bucket_name}/{s3_key}")
