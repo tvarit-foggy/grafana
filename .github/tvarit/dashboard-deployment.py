@@ -150,9 +150,9 @@ for key in data_test.keys():
                     response = json.loads(response.content.decode('utf-8'))
                     # print(response)
                     last_run = get_last_run('tvarit.product.releasenotes','')
+                    filtered_response = []
                     if last_run:
                         last_run=datetime.datetime.strptime(last_run, "%Y-%m-%dT%H:%M:%S.%f")
-                        filtered_response = []
                         for entry in response:
                             if "created" in entry:
                                 try:
