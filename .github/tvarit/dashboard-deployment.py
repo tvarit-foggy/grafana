@@ -162,6 +162,8 @@ for key in data_test.keys():
                                 except ValueError as e:
                                     print(f"Error parsing 'created' field: {e}")
                     current_datetime = datetime.datetime.now().isoformat()
+                    
+                    print(filtered_response)
                     notes = format_release_notes(filtered_response)
                     
                     upload_release_notes_to_s3(notes, 'tvarit.product.releasenotes', f'{current_datetime}/{key}/{folder}/{dashboard_title}-release-notes.txt')
