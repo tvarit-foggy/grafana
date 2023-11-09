@@ -65,10 +65,9 @@ def upload_release_notes_to_s3(versioning_info, bucket_name, s3_key):
     # Create a temporary text file to store the filtered response
     with open("release-notes.txt", "w") as file:
         for entry in versioning_info:
-            print(entry)
             file.write(f"{entry}\n")
     # Use the AWS CLI to upload the file to the specified S3 bucket
-    aws_cli_command = f'aws s3 cp release-notes.txt "s3://{bucket_name}/{s3_key}/release-notes.txt"'
+    aws_cli_command = f'aws s3 cp release-notes.txt "s3://{bucket_name}/{s3_key}"'
     try:
         subprocess.run(aws_cli_command, shell=True, check=True)
         print(f"Release Notes uploaded to S3: s3://{bucket_name}/{s3_key}")
@@ -78,7 +77,20 @@ def upload_release_notes_to_s3(versioning_info, bucket_name, s3_key):
         # Clean up the temporary file
         subprocess.run("rm release-notes.txt", shell=True)
 
-print('Settting up variables')
+def format_release_notes(data):
+    release_notes = []
+
+    for entry in data:
+        version = entry["version"]
+        created_by = entry["createdBy"]
+        created_date = datetime.datetime.strptime(entry["created"], "%Y-%m-%dT%H:%M:%SZ").strftime("%Y-%m-%d %H:%M:%S")
+        message = entry["message"]
+
+        release_notes.append(f"Version {version} - {created_date} by {created_by}\n\t- {message}")
+
+    return "\n\n".join(release_notes)
+
+print('Setting up variables')
 
 maxion_grafana_url = "https://maxion.tvarit.com/api"
 cloud_grafana_url = "https://cloud.tvarit.com/api"
@@ -95,7 +107,7 @@ try:
     data = secret_json
 except subprocess.CalledProcessError as e:
     # Handle any errors or exceptions here
-    print("AWS CLI command failed with error:")
+    print("Secrets Manager command failed with error:")
     print(e.stderr)
 
 print('###################################Starting Deployment###################################')
@@ -125,7 +137,7 @@ for key in data_test.keys():
         source_folder = find_existing_folder(test_grafana_url, org_data['api'], folder)
         destination_folder = find_existing_folder(grafana_url, api, folder)
         if source_folder and destination_folder:
-            print(source_folder, destination_folder)
+            # print(source_folder, destination_folder)
             response = requests.get(f"{test_grafana_url}/search", params={"folderIds": [source_folder]}, headers=headers)
             dashboards_response = response.json()
             # print(dashboards_response)
@@ -136,7 +148,7 @@ for key in data_test.keys():
                     
                     response = requests.get(f'{test_grafana_url}/dashboards/id/{dashboard_id}/versions', headers=headers)
                     response = json.loads(response.content.decode('utf-8'))
-                    print(response)
+                    # print(response)
                     last_run = get_last_run('tvarit.product.releasenotes','')
                     if last_run:
                         last_run=datetime.datetime.strptime(last_run, "%Y-%m-%dT%H:%M:%S.%f")
@@ -150,7 +162,9 @@ for key in data_test.keys():
                                 except ValueError as e:
                                     print(f"Error parsing 'created' field: {e}")
                     current_datetime = datetime.datetime.now().isoformat()
-                    upload_release_notes_to_s3(filtered_response, 'tvarit.product.releasenotes', f'{current_datetime}/{key}/{folder}/{dashboard_title}')
+                    notes = format_release_notes(filtered_response)
+                    
+                    upload_release_notes_to_s3(notes, 'tvarit.product.releasenotes', f'{current_datetime}/{key}/{folder}/{dashboard_title}-release-notes.txt')
                     
                     # Add functionality for versioning
                     print(f"Dashboard '{dashboard_title}' has a new version.")
