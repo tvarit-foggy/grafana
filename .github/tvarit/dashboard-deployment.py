@@ -161,6 +161,9 @@ for key in data_test.keys():
                                         filtered_response.append(entry)
                                 except ValueError as e:
                                     print(f"Error parsing 'created' field: {e}")
+                    
+                    else:
+                        filtered_response = response
                     current_datetime = datetime.datetime.now().isoformat()
                     
                     print(filtered_response)
