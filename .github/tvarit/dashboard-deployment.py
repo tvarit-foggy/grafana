@@ -64,8 +64,7 @@ def get_last_run(bucket_name, prefix):
 def upload_release_notes_to_s3(versioning_info, bucket_name, s3_key): 
     # Create a temporary text file to store the filtered response
     with open("release-notes.txt", "w") as file:
-        for entry in versioning_info:
-            file.write(f"{entry}\n")
+        file.write(f"{versioning_info}\n")
     # Use the AWS CLI to upload the file to the specified S3 bucket
     aws_cli_command = f'aws s3 cp release-notes.txt "s3://{bucket_name}/{s3_key}"'
     try:
