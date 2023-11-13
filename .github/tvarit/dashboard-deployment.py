@@ -148,7 +148,7 @@ for key in data_test.keys():
                     response = requests.get(f'{test_grafana_url}/dashboards/id/{dashboard_id}/versions', headers=headers)
                     response = json.loads(response.content.decode('utf-8'))
                     print(response)
-                    last_run = get_last_run('tvarit.product.releasenotes','')
+                    last_run = get_last_run('tvarit.product.releasenotes',{key})
                     filtered_response = []
                     if last_run:
                         last_run=datetime.datetime.strptime(last_run, "%Y-%m-%dT%H:%M:%S.%f")
@@ -168,7 +168,7 @@ for key in data_test.keys():
                     print(filtered_response)
                     notes = format_release_notes(filtered_response)
                     
-                    upload_release_notes_to_s3(notes, 'tvarit.product.releasenotes', f'{current_datetime}/{key}/{folder}/{dashboard_title}-release-notes.txt')
+                    upload_release_notes_to_s3(notes, 'tvarit.product.releasenotes', f'{key}/{current_datetime}/{folder}/{dashboard_title}-release-notes.txt')
                     
                     # Add functionality for versioning
                     print(f"Dashboard '{dashboard_title}' has a new version.")
