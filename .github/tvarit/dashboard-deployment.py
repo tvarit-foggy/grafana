@@ -112,7 +112,7 @@ except subprocess.CalledProcessError as e:
 print('###################################Starting Deployment###################################')
 
 data_test = data.get("Test", {})
-
+current_datetime = datetime.datetime.now().isoformat()
 for key in data_test.keys():
     print('Deploying in ',key)
     if key in ['Alcar', 'Gienanth', 'Procast', 'Voit', 'Doktas', 'ESW', 'Endurance', 'Foehl', 'Mahle', 'Mbusch']:
@@ -124,7 +124,7 @@ for key in data_test.keys():
     headers = {
         "Authorization": f"Bearer {org_data['api']}"
     }
-
+    org = key
     data_prod = data.get("Prod", {}).get(key, {})
     api = data_prod['api']
     headers2 = {
@@ -148,7 +148,7 @@ for key in data_test.keys():
                     response = requests.get(f'{test_grafana_url}/dashboards/id/{dashboard_id}/versions', headers=headers)
                     response = json.loads(response.content.decode('utf-8'))
                     print(response)
-                    last_run = get_last_run('tvarit.product.releasenotes',{key})
+                    last_run = get_last_run('tvarit.product.releasenotes',{org})
                     filtered_response = []
                     if last_run:
                         last_run=datetime.datetime.strptime(last_run, "%Y-%m-%dT%H:%M:%S.%f")
@@ -163,12 +163,11 @@ for key in data_test.keys():
                     
                     else:
                         filtered_response = response
-                    current_datetime = datetime.datetime.now().isoformat()
                     
                     print(filtered_response)
                     notes = format_release_notes(filtered_response)
                     
-                    upload_release_notes_to_s3(notes, 'tvarit.product.releasenotes', f'{key}/{current_datetime}/{folder}/{dashboard_title}-release-notes.txt')
+                    upload_release_notes_to_s3(notes, 'tvarit.product.releasenotes', f'{org}/{current_datetime}/{folder}/{dashboard_title}-release-notes.txt')
                     
                     # Add functionality for versioning
                     print(f"Dashboard '{dashboard_title}' has a new version.")
