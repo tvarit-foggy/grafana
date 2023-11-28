@@ -159,6 +159,65 @@
             </table>
         {{ end }}
         {{end}}
+        {{range .NoDataAlerts}}
+        <p class="alert-name"> Alert name: {{.Labels.alertname}}</p>
+        {{ $once := false }}
+        {{range $Value := .Values}}
+            {{ range $key, $value := $Value.Values}}
+                {{ if not $once  }}
+                    <h4> Evaluations: </h4>
+                    {{$once = true}}
+                {{end}}
+            {{end}}
+        {{end}}
+        {{ if gt (len .Values) 0 }}
+            <table>
+                {{ range $it, $Value := .Values }}
+                    {{ range $key, $val := $Value.Values }}
+                        <tr>
+                            <td>{{$key}}</td> 
+                            <td>{{$val.Value}}</td> 
+                        </tr>
+                    {{end}}
+                {{end}}
+            </table>
+        {{ end }}
+        {{ if or (.Annotations) (.URLAnnotations) }}
+            <h4>Annotations:</h4>
+            <table>
+                {{ range $key, $val := .Annotations }}
+                    <tr>
+                        <td>{{$key}}</td> 
+                        <td>{{$val}}</td>
+                    </tr>
+                {{end}}
+                {{range $key, $val := .URLAnnotations}}
+                    <tr>
+                        <td>{{$key}}</td> 
+                        <td><a href="{{$val}}">{{$val}}<a></td> 
+                    </tr>
+                {{end}}
+            </table>
+        {{ end }}
+        
+        {{ if  or (.Labels) (.URLLabels) }}
+            <h4>Labels:</h4>
+            <table>
+                {{ range $key, $val := .Labels }}
+                    <tr>
+                        <td>{{$key}}</td> 
+                        <td>{{$val}}</td>
+                    </tr>
+                {{end}}
+                {{range $key, $val := .URLLabels}}
+                    <tr>
+                        <td>{{$key}}</td> 
+                        <td><a href="{{$val}}">{{$val}}<a></td> 
+                    </tr>
+                {{end}}
+            </table>
+        {{ end }}
+        {{end}}
         <p>For more details, please visit <a href="{{.ExternalURL}}">{{.ExternalURL}}</a>.</p>
         <p>Thank you,</p>
         <p>Your Monitoring Team</p>
