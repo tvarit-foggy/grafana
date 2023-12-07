@@ -80,7 +80,7 @@ func (en *EmailNotifier) Notify(ctx context.Context, as ...*types.Alert) (bool, 
 		en.log.Debug("failed to parse external URL", "url", en.tmpl.ExternalURL.String(), "err", err.Error())
 	}
 
-	checkUrl := func (input string) bool {
+	checkUrl := func(input string) bool {
 		pattern := `^(https?|ftp)://[^\s/$.?#].[^\s]*$`
 		regex := regexp.MustCompile(pattern)
 		return regex.MatchString(input)
@@ -106,7 +106,20 @@ func (en *EmailNotifier) Notify(ctx context.Context, as ...*types.Alert) (bool, 
 			}
 		}
 	}
-	Dispatcher := func(data ExtendedData, isNoDataAlert bool) (bool, error) {
+	Dispatcher := func(data ExtendedData) (bool, error) {
+		dataAlerts := []ExtendedAlert{}
+		noDataAlerts := []ExtendedAlert{}
+		for _, alert := range data.Alerts {
+			if alert.Labels["alertname"] == "DatasourceNoData" {
+				newAlert := ExtendedAlert{}
+				deepcopier.Copy(alert).To(&newAlert)
+				noDataAlerts = append(noDataAlerts, newAlert)
+			} else {
+				newAlert := ExtendedAlert{}
+				deepcopier.Copy(alert).To(&newAlert)
+				dataAlerts = append(dataAlerts, newAlert)
+			}
+		}
 		cmd := &models.SendEmailCommandSync{
 			SendEmailCommand: models.SendEmailCommand{
 				Subject: title,
@@ -114,13 +127,14 @@ func (en *EmailNotifier) Notify(ctx context.Context, as ...*types.Alert) (bool, 
 					"Title":             title,
 					"Message":           tmpl(en.Message),
 					"Status":            data.Status,
-					"Alerts":            data.Alerts,
+					"Alerts":            dataAlerts,
 					"GroupLabels":       data.GroupLabels,
 					"CommonLabels":      data.CommonLabels,
 					"CommonAnnotations": data.CommonAnnotations,
 					"ExternalURL":       data.ExternalURL,
 					"RuleUrl":           ruleURL,
 					"AlertPageUrl":      alertPageURL,
+					"NoDataAlerts":      noDataAlerts,
 				},
 				To:          en.Addresses,
 				SingleEmail: en.SingleEmail,
@@ -131,46 +145,17 @@ func (en *EmailNotifier) Notify(ctx context.Context, as ...*types.Alert) (bool, 
 		if tmplErr != nil {
 			en.log.Warn("failed to template email message", "err", tmplErr.Error())
 		}
-		if isNoDataAlert {
-			cmd.Subject = "No Data Alert"
-			cmd.Template = "no_data_alert"
-		}
+		
 		if err := bus.Dispatch(ctx, cmd); err != nil {
 			return false, err
 		}
 		return true, nil
 	}
-	dataAlerts := []ExtendedAlert{}
-	noDataAlerts := []ExtendedAlert{}
-	for _, alert := range data.Alerts {
-		if alert.Labels["alertname"] == "DatasourceNoData" {
-			newAlert := ExtendedAlert{}
-			deepcopier.Copy(alert).To(&newAlert)
-			noDataAlerts = append(noDataAlerts, newAlert)
-		} else {
-			newAlert := ExtendedAlert{}
-			deepcopier.Copy(alert).To(&newAlert)
-			dataAlerts = append(dataAlerts, newAlert)
-		}
+	ok, err := Dispatcher(*data);
+	if !ok {
+		return ok, err
 	}
-	if len(dataAlerts) > 0 {
-		newData := &ExtendedData{}
-		deepcopier.Copy(data).To(newData)
-		newData.Alerts = dataAlerts
-		ok, err := Dispatcher(*newData, false)
-		if !ok {
-			return ok, err
-		}
-	}
-	if len(noDataAlerts) > 0 {
-		newData := &ExtendedData{}
-		deepcopier.Copy(data).To(newData)
-		newData.Alerts = noDataAlerts
-		ok, err := Dispatcher(*newData, true)
-		if !ok {
-			return ok, err
-		}
-	}
+	data.Alerts = ExtendedAlerts{}
 	return true, nil
 }
 
