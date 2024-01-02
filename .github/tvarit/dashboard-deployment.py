@@ -133,10 +133,10 @@ def translate_titles(data, target_language):
             if key == 'title':
                 data[key] = translate_text(value, target_language)
             else:
-                translate_titles(value)
+                translate_titles(value, target_language)
     elif isinstance(data, list):
         for item in data:
-            translate_titles(item)
+            translate_titles(item, target_language)
 
 
 def translate_enclosed_text(data, target_language):
