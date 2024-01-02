@@ -1,6 +1,7 @@
 import requests
 import json
 import datetime
+import copy
 import os
 import subprocess
 
@@ -264,13 +265,13 @@ for key in data_test.keys():
                 #Translate dashboards
                 translate_flag = org_data.get("language", [])
                 if translate_flag != None or len(translate_flag) > 0:
-                    dashboard_json_translated = dashboard_json
+                    dashboard_json_translated = dashboard_json.copy()
 
                     for language in org_data['language']:
                         translate_titles(dashboard_json_translated, language)
                         dashboard_json_translated = translate_enclosed_text(dashboard_json_translated, language)
                         all_dashboards.append(dashboard_json_translated)
-                print(len(all_dashboards))
+                print(all_dashboards)
                 for dash in all_dashboards:
                     dashboard = dash.get("dashboard", {})
                     print(dashboard)
