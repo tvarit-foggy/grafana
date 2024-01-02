@@ -260,7 +260,8 @@ for key in data_test.keys():
                     if key in data_prod:
                         replace_in_dict(dashboard_json, org_data[key], data_prod[key])
                 all_dashboards.append(dashboard_json)
-                if org_data['language'] != None or len(org_data['language']) > 0:
+                translate_flag = org_data.get("language", [])
+                if translate_flag != None or len(translate_flag) > 0:
                     dashboard_json_translated = dashboard_json
 
                     for language in org_data['language']:
@@ -270,7 +271,7 @@ for key in data_test.keys():
                 
                 for dash in all_dashboards:
                     dashboard = dash.get("dashboard", {})
-                    print(dashboard_title)
+                    print(dashboard)
                     del dashboard["uid"]
                     # dashboard["version"] = "1"
                     del dashboard["id"]
