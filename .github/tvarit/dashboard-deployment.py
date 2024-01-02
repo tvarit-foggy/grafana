@@ -259,7 +259,7 @@ for key in data_test.keys():
                     for key in org_data.keys():
                         if key in data_prod:
                             replace_in_dict(dashboard_json, org_data[key], data_prod[key])
-                        if org_data['translate'] != None or len(org_data['translate']) > 0:
+                        if org_data['language'] != None or len(org_data['language']) > 0:
                             dashboard_json_translated = dashboard_json
 
                             for language in org_data['language']:
