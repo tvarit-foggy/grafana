@@ -260,6 +260,8 @@ for key in data_test.keys():
                     if key in data_prod:
                         replace_in_dict(dashboard_json, org_data[key], data_prod[key])
                 all_dashboards.append(dashboard_json)
+
+                #Translate dashboards
                 translate_flag = org_data.get("language", [])
                 if translate_flag != None or len(translate_flag) > 0:
                     dashboard_json_translated = dashboard_json
@@ -268,7 +270,7 @@ for key in data_test.keys():
                         translate_titles(dashboard_json_translated, language)
                         dashboard_json_translated = translate_enclosed_text(dashboard_json_translated, language)
                         all_dashboards.append(dashboard_json_translated)
-                
+                print(len(all_dashboards))
                 for dash in all_dashboards:
                     dashboard = dash.get("dashboard", {})
                     print(dashboard)
