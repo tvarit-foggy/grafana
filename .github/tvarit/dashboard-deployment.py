@@ -260,17 +260,18 @@ for key in data_test.keys():
                 for key in org_data.keys():
                     if key in data_prod:
                         replace_in_dict(dashboard_json, org_data[key], data_prod[key])
-                all_dashboards.append(dashboard_json)
+                all_dashboards.append(copy.deepcopy(dashboard_json))  # Append a deepcopy
 
-                #Translate dashboards
+                # Translate dashboards
                 translate_flag = org_data.get("language", [])
-                if translate_flag != None or len(translate_flag) > 0:
-                    dashboard_json_translated = dashboard_json.copy()
+                if translate_flag and len(translate_flag) > 0:
+                    dashboard_json_translated = copy.deepcopy(dashboard_json)  # Create an independent copy
 
                     for language in org_data['language']:
                         translate_titles(dashboard_json_translated, language)
                         dashboard_json_translated = translate_enclosed_text(dashboard_json_translated, language)
-                        all_dashboards.append(dashboard_json_translated)
+                        all_dashboards.append(copy.deepcopy(dashboard_json_translated))  # Append a deepcopy
+
                 print(all_dashboards)
                 for dash in all_dashboards:
                     dashboard = dash.get("dashboard", {})
