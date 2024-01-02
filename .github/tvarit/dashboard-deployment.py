@@ -256,11 +256,10 @@ for key in data_test.keys():
                 
                 dashboard_json = response.json()
                 all_dashboards = []
-                all_dashboards.append(dashboard_json)
                 for key in org_data.keys():
                     if key in data_prod:
                         replace_in_dict(dashboard_json, org_data[key], data_prod[key])
-
+                all_dashboards.append(dashboard_json)
                 if org_data['language'] != None or len(org_data['language']) > 0:
                     dashboard_json_translated = dashboard_json
 
@@ -269,21 +268,21 @@ for key in data_test.keys():
                         dashboard_json_translated = translate_enclosed_text(dashboard_json_translated, language)
                         all_dashboards.append(dashboard_json_translated)
                 
-                for dashboard_json in all_dashboards:
-                    dashboard = dashboard_json.get("dashboard", {})
+                for dash in all_dashboards:
+                    dashboard = dash.get("dashboard", {})
                     print(dashboard_title)
                     del dashboard["uid"]
                     # dashboard["version"] = "1"
                     del dashboard["id"]
-                    if 'meta' in dashboard_json:
-                        del dashboard_json['meta']
+                    if 'meta' in dash:
+                        del dash['meta']
                     # print(dashboard)
-                    dashboard_json["dashboard"] = dashboard
-                    dashboard_json["overwrite"] = True
-                    dashboard_json["folderId"] = destination_folder
+                    dash["dashboard"] = dashboard
+                    dash["overwrite"] = True
+                    dash["folderId"] = destination_folder
 
                     print(f'Uploading to {grafana_url}')
-                    response = requests.post(f"{grafana_url}/dashboards/db", headers=headers2, json=dashboard_json)
+                    response = requests.post(f"{grafana_url}/dashboards/db", headers=headers2, json=dash)
                     if response.status_code == 200:
                         print("Dashboard creation/updating successful!")
                     else:
