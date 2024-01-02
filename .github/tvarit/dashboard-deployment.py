@@ -89,12 +89,89 @@ def format_release_notes(data):
 
     return "\n\n".join(release_notes)
 
+def translate_text(text, target_language):
+    url = 'https://api-free.deepl.com/v2/translate'
+    headers = {'Authorization': f'DeepL-Auth-Key {deepl_key}'}
+    
+    if '$' in text:  # Check if text contains '$'
+        words = text.split()  # Split text into words
+        translated_words = []
+        for word in words:
+            if word.startswith('$'):
+                translated_words.append(word)  # Append words starting with '$' as they are
+            else:
+                payload = {
+                    'text': word,
+                    'target_lang': target_language
+                }
+                response = requests.post(url, headers=headers, data=payload)
+                if response.status_code == 200:
+                    translation = response.json()
+                    translated_word = translation['translations'][0]['text']
+                    translated_words.append(translated_word)
+                else:
+                    return f"Translation failed with status code {response.status_code}"
+        return ' '.join(translated_words)  # Join translated and non-translated words
+    else:
+        payload = {
+            'text': text,
+            'target_lang': target_language
+        }
+        response = requests.post(url, headers=headers, data=payload)
+        if response.status_code == 200:
+            translation = response.json()
+            return translation['translations'][0]['text']
+        else:
+            return f"Translation failed with status code {response.status_code}"
+
+
+def translate_titles(data):
+     
+    if isinstance(data, dict):
+        for key, value in data.items():
+            if key == 'title':
+                data[key] = translate_text(value, 'de')
+            else:
+                translate_titles(value)
+    elif isinstance(data, list):
+        for item in data:
+            translate_titles(item)
+
+
+def translate_enclosed_text(data, target_language):
+    if isinstance(data, dict):
+        for key, value in data.items():
+            data[key] = translate_enclosed_text(value, target_language)
+    elif isinstance(data, list):
+        for i, item in enumerate(data):
+            data[i] = translate_enclosed_text(item, target_language)
+    elif isinstance(data, str):
+        start_tag = '/*<t>*/'
+        end_tag = '/*</t>*/'
+        start_index = data.find(start_tag)
+        while start_index != -1:
+            end_index = data.find(end_tag, start_index + len(start_tag))
+            if end_index != -1:
+                enclosed_text = data[start_index + len(start_tag):end_index]
+                translated_text = translate_text(enclosed_text, target_language)
+                # Add single quotes around the translated text
+                translated_text = f"{translated_text}"
+                data = data.replace(start_tag + enclosed_text + end_tag, translated_text)
+                start_index = data.find(start_tag, end_index + len(end_tag))
+            else:
+                break
+    return data
+
+
+
 print('Setting up variables')
 
 maxion_grafana_url = "https://maxion.tvarit.com/api"
 cloud_grafana_url = "https://cloud.tvarit.com/api"
 test_grafana_url = "https://test.tvarit.com/api"
 grafana_url = ""
+
+deepl_key = 'ca4b9630-c2de-168a-c872-782187a17213:fx'
 
 aws_cli_command = "aws secretsmanager get-secret-value --secret-id grafana-deployment-api --output text --query SecretString"
 
@@ -177,29 +254,35 @@ for key in data_test.keys():
                     # print(response)
                     
                     dashboard_json = response.json()
-                    
+                    all_dashboards = []
                     for key in org_data.keys():
                         if key in data_prod:
                             replace_in_dict(dashboard_json, org_data[key], data_prod[key])
-                    # print("Dashboard JSON")
-                    # print(dashboard_json)
-                    dashboard = dashboard_json.get("dashboard", {})
-                    del dashboard["uid"]
-                    # dashboard["version"] = "1"
-                    del dashboard["id"]
-                    if 'meta' in dashboard_json:
-                        del dashboard_json['meta']
-                    # print(dashboard)
-                    dashboard_json["dashboard"] = dashboard
-                    dashboard_json["overwrite"] = True
-                    dashboard_json["folderId"] = destination_folder
+                        if org_data['translate'] != None:
+                            dashboard_json_translated = dashboard_json
 
-                    print(f'Uploading to {grafana_url}')
-                    response = requests.post(f"{grafana_url}/dashboards/db", headers=headers2, json=dashboard_json)
-                    if response.status_code == 200:
-                        print("Dashboard creation/updating successful!")
-                    else:
-                        print(f"Error {response.status_code}: {response.content.decode('utf-8')}")
+                            for language in org_data['language']:
+                                translate_titles(dashboard_json_translated)
+                                dashboard_json_translated = translate_enclosed_text(dashboard_json_translated, 'de')
+                                all_dashboards.append(dashboard_json_translated)
+                    for dashboard_json in all_dashboards:
+                        dashboard = dashboard_json.get("dashboard", {})
+                        del dashboard["uid"]
+                        # dashboard["version"] = "1"
+                        del dashboard["id"]
+                        if 'meta' in dashboard_json:
+                            del dashboard_json['meta']
+                        # print(dashboard)
+                        dashboard_json["dashboard"] = dashboard
+                        dashboard_json["overwrite"] = True
+                        dashboard_json["folderId"] = destination_folder
+
+                        print(f'Uploading to {grafana_url}')
+                        response = requests.post(f"{grafana_url}/dashboards/db", headers=headers2, json=dashboard_json)
+                        if response.status_code == 200:
+                            print("Dashboard creation/updating successful!")
+                        else:
+                            print(f"Error {response.status_code}: {response.content.decode('utf-8')}")
         else:
             print(f'Could not find folder {folder} in org {key}')
 
