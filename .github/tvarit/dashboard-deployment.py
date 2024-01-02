@@ -219,72 +219,75 @@ for key in data_test.keys():
             dashboards_response = response.json()
             # print(dashboards_response)
             for dashboard in dashboards_response:
-                    dashboard_uid = dashboard["uid"]
-                    dashboard_title = dashboard["title"]
-                    dashboard_id = dashboard["id"]
-                    
-                    response = requests.get(f'{test_grafana_url}/dashboards/id/{dashboard_id}/versions', headers=headers)
-                    response = json.loads(response.content.decode('utf-8'))
-                    print(response)
-                    last_run = get_last_run('tvarit.product.releasenotes',{org})
-                    filtered_response = []
-                    if last_run:
-                        last_run=datetime.datetime.strptime(last_run, "%Y-%m-%dT%H:%M:%S.%f")
-                        for entry in response:
-                            if "created" in entry:
-                                try:
-                                    created_datetime = datetime.datetime.strptime(entry["created"], "%Y-%m-%dT%H:%M:%SZ")
-                                    if created_datetime > last_run:
-                                        filtered_response.append(entry)
-                                except ValueError as e:
-                                    print(f"Error parsing 'created' field: {e}")
-                    
-                    else:
-                        filtered_response = response
-                    
-                    print(filtered_response)
-                    notes = format_release_notes(filtered_response)
-                    
-                    upload_release_notes_to_s3(notes, 'tvarit.product.releasenotes', f'{org}/{current_datetime}/{folder}/{dashboard_title}-release-notes.txt')
-                    
-                    # Add functionality for versioning
-                    print(f"Dashboard '{dashboard_title}' has a new version.")
+                dashboard_uid = dashboard["uid"]
+                dashboard_title = dashboard["title"]
+                dashboard_id = dashboard["id"]
+                
+                response = requests.get(f'{test_grafana_url}/dashboards/id/{dashboard_id}/versions', headers=headers)
+                response = json.loads(response.content.decode('utf-8'))
+                print(response)
+                last_run = get_last_run('tvarit.product.releasenotes',{org})
+                filtered_response = []
+                if last_run:
+                    last_run=datetime.datetime.strptime(last_run, "%Y-%m-%dT%H:%M:%S.%f")
+                    for entry in response:
+                        if "created" in entry:
+                            try:
+                                created_datetime = datetime.datetime.strptime(entry["created"], "%Y-%m-%dT%H:%M:%SZ")
+                                if created_datetime > last_run:
+                                    filtered_response.append(entry)
+                            except ValueError as e:
+                                print(f"Error parsing 'created' field: {e}")
+                
+                else:
+                    filtered_response = response
+                
+                print(filtered_response)
+                notes = format_release_notes(filtered_response)
+                
+                upload_release_notes_to_s3(notes, 'tvarit.product.releasenotes', f'{org}/{current_datetime}/{folder}/{dashboard_title}-release-notes.txt')
+                
+                # Add functionality for versioning
+                print(f"Dashboard '{dashboard_title}' has a new version.")
+                # print(dashboard)
+                # Step 5: Retrieve Dashboard JSON
+                response = requests.get(f"{test_grafana_url}/dashboards/uid/{dashboard_uid}", headers=headers)
+                # print(response)
+                
+                dashboard_json = response.json()
+                all_dashboards = []
+                all_dashboards.append(dashboard_json)
+                for key in org_data.keys():
+                    if key in data_prod:
+                        replace_in_dict(dashboard_json, org_data[key], data_prod[key])
+
+                if org_data['language'] != None or len(org_data['language']) > 0:
+                    dashboard_json_translated = dashboard_json
+
+                    for language in org_data['language']:
+                        translate_titles(dashboard_json_translated, language)
+                        dashboard_json_translated = translate_enclosed_text(dashboard_json_translated, language)
+                        all_dashboards.append(dashboard_json_translated)
+                
+                for dashboard_json in all_dashboards:
+                    dashboard = dashboard_json.get("dashboard", {})
+                    print(dashboard_title)
+                    del dashboard["uid"]
+                    # dashboard["version"] = "1"
+                    del dashboard["id"]
+                    if 'meta' in dashboard_json:
+                        del dashboard_json['meta']
                     # print(dashboard)
-                    # Step 5: Retrieve Dashboard JSON
-                    response = requests.get(f"{test_grafana_url}/dashboards/uid/{dashboard_uid}", headers=headers)
-                    # print(response)
-                    
-                    dashboard_json = response.json()
-                    all_dashboards = []
-                    for key in org_data.keys():
-                        if key in data_prod:
-                            replace_in_dict(dashboard_json, org_data[key], data_prod[key])
-                        if org_data['language'] != None or len(org_data['language']) > 0:
-                            dashboard_json_translated = dashboard_json
+                    dashboard_json["dashboard"] = dashboard
+                    dashboard_json["overwrite"] = True
+                    dashboard_json["folderId"] = destination_folder
 
-                            for language in org_data['language']:
-                                translate_titles(dashboard_json_translated, language)
-                                dashboard_json_translated = translate_enclosed_text(dashboard_json_translated, language)
-                                all_dashboards.append(dashboard_json_translated)
-                    
-                    for dashboard_json in all_dashboards:
-                        dashboard = dashboard_json.get("dashboard", {})
-                        del dashboard["uid"]
-                        # dashboard["version"] = "1"
-                        del dashboard["id"]
-                        if 'meta' in dashboard_json:
-                            del dashboard_json['meta']
-                        # print(dashboard)
-                        dashboard_json["dashboard"] = dashboard
-                        dashboard_json["overwrite"] = True
-                        dashboard_json["folderId"] = destination_folder
-
-                        print(f'Uploading to {grafana_url}')
-                        response = requests.post(f"{grafana_url}/dashboards/db", headers=headers2, json=dashboard_json)
-                        if response.status_code == 200:
-                            print("Dashboard creation/updating successful!")
-                        else:
-                            print(f"Error {response.status_code}: {response.content.decode('utf-8')}")
+                    print(f'Uploading to {grafana_url}')
+                    response = requests.post(f"{grafana_url}/dashboards/db", headers=headers2, json=dashboard_json)
+                    if response.status_code == 200:
+                        print("Dashboard creation/updating successful!")
+                    else:
+                        print(f"Error {response.status_code}: {response.content.decode('utf-8')}")
         else:
             print(f'Could not find folder {folder} in org {key}')
 
