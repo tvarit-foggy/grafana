@@ -1,6 +1,7 @@
 import requests
 import json
 import datetime
+import os
 import subprocess
 
 def find_existing_folder(api_url, api_key, folder_name):
@@ -125,12 +126,12 @@ def translate_text(text, target_language):
             return f"Translation failed with status code {response.status_code}"
 
 
-def translate_titles(data):
+def translate_titles(data, target_language):
      
     if isinstance(data, dict):
         for key, value in data.items():
             if key == 'title':
-                data[key] = translate_text(value, 'de')
+                data[key] = translate_text(value, target_language)
             else:
                 translate_titles(value)
     elif isinstance(data, list):
@@ -171,7 +172,7 @@ cloud_grafana_url = "https://cloud.tvarit.com/api"
 test_grafana_url = "https://test.tvarit.com/api"
 grafana_url = ""
 
-deepl_key = 'ca4b9630-c2de-168a-c872-782187a17213:fx'
+deepl_key = os.environ.get('DEEPL_API_KEY')
 
 aws_cli_command = "aws secretsmanager get-secret-value --secret-id grafana-deployment-api --output text --query SecretString"
 
@@ -258,13 +259,14 @@ for key in data_test.keys():
                     for key in org_data.keys():
                         if key in data_prod:
                             replace_in_dict(dashboard_json, org_data[key], data_prod[key])
-                        if org_data['translate'] != None:
+                        if org_data['translate'] != None or len(org_data['translate']) > 0:
                             dashboard_json_translated = dashboard_json
 
                             for language in org_data['language']:
-                                translate_titles(dashboard_json_translated)
-                                dashboard_json_translated = translate_enclosed_text(dashboard_json_translated, 'de')
+                                translate_titles(dashboard_json_translated, language)
+                                dashboard_json_translated = translate_enclosed_text(dashboard_json_translated, language)
                                 all_dashboards.append(dashboard_json_translated)
+                    
                     for dashboard_json in all_dashboards:
                         dashboard = dashboard_json.get("dashboard", {})
                         del dashboard["uid"]
