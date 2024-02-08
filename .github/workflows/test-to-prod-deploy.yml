@@ -3,7 +3,7 @@ name: Deploy Dashboards
 on:
   workflow_dispatch:
     inputs:
-      plant:
+      plants:
         description: 'Orgs to deploy'
         required: true
         default: 'pna,sar'
@@ -16,6 +16,7 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
+      INPUT_ORGS: ${{github.event.inputs.plants}}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2

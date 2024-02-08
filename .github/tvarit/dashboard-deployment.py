@@ -174,7 +174,8 @@ test_grafana_url = "https://test.tvarit.com/api"
 grafana_url = ""
 
 deepl_key = os.environ.get('DEEPL_API_KEY')
-
+input_orgs = os.environ.get('INPUT_ORGS').split(',')
+input_orgs = [key.upper() for key in input_orgs]
 aws_cli_command = "aws secretsmanager get-secret-value --secret-id grafana-deployment-api --output text --query SecretString"
 
 try:
@@ -190,7 +191,14 @@ except subprocess.CalledProcessError as e:
 
 print('###################################Starting Deployment###################################')
 
-data_test = data.get("Test", {})
+input_data = {
+    key: value for key, value in data["Test"].items() if key.upper() in input_orgs
+}
+
+data_test = input_data.get("Test", {})
+
+
+
 current_datetime = datetime.datetime.now().isoformat()
 for key in data_test.keys():
     print('Deploying in ',key)
