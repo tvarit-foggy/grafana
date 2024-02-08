@@ -2,7 +2,11 @@ name: Deploy Dashboards
 
 on:
   workflow_dispatch:
-
+    inputs:
+      plant:
+        description: 'Orgs to deploy'
+        required: true
+        default: 'pna,sar'
 jobs:
   deploy_to_production:
     runs-on: ubuntu-latest
