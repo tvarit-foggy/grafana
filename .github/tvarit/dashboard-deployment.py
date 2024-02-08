@@ -177,7 +177,7 @@ deepl_key = os.environ.get('DEEPL_API_KEY')
 input_orgs = os.environ.get('INPUT_ORGS').split(',')
 input_orgs = [key.upper() for key in input_orgs]
 aws_cli_command = "aws secretsmanager get-secret-value --secret-id grafana-deployment-api --output text --query SecretString"
-
+print(input_orgs)
 try:
     # Run the AWS CLI command and capture its output
     result = subprocess.run(aws_cli_command, shell=True, text=True, capture_output=True, check=True)
@@ -191,14 +191,9 @@ except subprocess.CalledProcessError as e:
 
 print('###################################Starting Deployment###################################')
 
-input_data = {
+data_test = {
     key: value for key, value in data["Test"].items() if key.upper() in input_orgs
 }
-
-data_test = input_data.get("Test", {})
-
-
-
 current_datetime = datetime.datetime.now().isoformat()
 for key in data_test.keys():
     print('Deploying in ',key)
