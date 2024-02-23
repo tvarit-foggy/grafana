@@ -197,7 +197,7 @@ data_test = {
 current_datetime = datetime.datetime.now().isoformat()
 for key in data_test.keys():
     print('Deploying in ',key)
-    if key in ['Alcar', 'Gienanth', 'Procast', 'Voit', 'Doktas', 'ESW', 'Endurance', 'Foehl', 'Mahle', 'Mbusch']:
+    if key in ['Alcar', 'Gienanth', 'Procast', 'Voit', 'Doktas', 'ESW', 'Endurance', 'Foehl', 'Mahle', 'Mbusch', 'UnoMinda']:
         grafana_url = cloud_grafana_url
     else:
         grafana_url = maxion_grafana_url
