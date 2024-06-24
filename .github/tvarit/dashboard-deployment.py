@@ -23,6 +23,7 @@ def find_existing_folder(api_url, api_key, folder_name):
         return None
 
 def replace_in_dict(obj, search, replacement):
+    print("replace_in_dict",obj,search,replacement)
     if isinstance(obj, dict):
         for key in list(obj.keys()):
             obj[key] = replace_in_dict(obj[key], search, replacement)
@@ -40,6 +41,8 @@ maxion_grafana_url = "https://maxion.tvarit.com/api"
 cloud_grafana_url = "https://cloud.tvarit.com/api"
 test_grafana_url = "https://test.tvarit.com/api"
 grafana_url = ""
+error_count = 0
+error_message = ''
 
 aws_cli_command = "aws secretsmanager get-secret-value --secret-id /credentials/grafana-user/access-key --output text --query SecretString"
 
@@ -84,23 +87,27 @@ for key in data_test.keys():
             print(source_folder, destination_folder)
             response = requests.get(f"{test_grafana_url}/search", params={"folderIds": [source_folder]}, headers=headers)
             dashboards_response = response.json()
-            print(dashboards_response)
             for dashboard in dashboards_response:
                     dashboard_uid = dashboard["uid"]
                     dashboard_title = dashboard["title"]
 
                     # Add functionality for versioning
                     print(f"Dashboard '{dashboard_title}' has a new version.")
-                    # print(dashboard)
                     # Step 5: Retrieve Dashboard JSON
                     response = requests.get(f"{test_grafana_url}/dashboards/uid/{dashboard_uid}", headers=headers)
-                    # print(response)
                     
                     dashboard_json = response.json()
+                    print("dashboard_json", dashboard_json)
                     
                     for key in org_data.keys():
                         if key in data_prod:
-                            replace_in_dict(dashboard_json, org_data[key], data_prod[key])
+                            try:
+                                replace_in_dict(dashboard_json, org_data[key], data_prod[key])
+                            except Exception as e:
+                                print("Error: ", str(e))
+                                error_count += 1
+                                error_message += str(e)
+                                break
                     # print("Dashboard JSON")
                     # print(dashboard_json)
                     dashboard = dashboard_json.get("dashboard", {})
@@ -115,11 +122,14 @@ for key in data_test.keys():
                     dashboard_json["folderId"] = destination_folder
 
                     print(f'Uploading to ${grafana_url}')
-                    response = requests.post(f"{grafana_url}/dashboards/db", headers=headers2, json=dashboard_json)
-                    if response.status_code == 200:
-                        print("Dashboard creation/updating successful!")
+                    if error_count < 1:
+                        response = requests.post(f"{grafana_url}/dashboards/db", headers=headers2, json=dashboard_json)
+                        if response.status_code == 200:
+                            print("Dashboard creation/updating successful!")
+                        else:
+                            print(f"Error {response.status_code}: {response.content.decode('utf-8')}")
                     else:
-                        print(f"Error {response.status_code}: {response.content.decode('utf-8')}")
+                        print("Dashboard creation Failed. Error: ", error_message)
         else:
             print(f'Could not find folder {folder} in org {key}')
 
