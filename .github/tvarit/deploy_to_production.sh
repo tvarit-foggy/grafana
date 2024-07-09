@@ -93,6 +93,11 @@ sed -i "s#<AWS_REGION/>#${AWS_DEFAULT_REGION}#g" Dockerfile
 docker build --tag grafana/grafana:latest .
 
 echo "Upload docker image to lightsail container service and get image etag..."
+
+aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin 250373516626.dkr.ecr.eu-central-1.amazonaws.com
+docker tag grafana/grafana:latest 250373516626.dkr.ecr.eu-central-1.amazonaws.com/pna-grafana:latest
+docker push 250373516626.dkr.ecr.eu-central-1.amazonaws.com/pna-grafana:latest
+
 IMAGE=$(aws lightsail push-container-image \
   --service-name  "${PREFIX}-grafana" \
   --label "${PREFIX}-grafana" \
