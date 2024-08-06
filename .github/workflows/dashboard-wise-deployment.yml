@@ -4,7 +4,11 @@ on:
   workflow_dispatch:
     inputs:
       plants:
-        description: 'Dashboard to deploy'
+        description: 'Plants to deploy'
+        required: true
+        default: ''
+      dashboard_uid:
+        description : 'Dashboard uid to deploy'
         required: true
         default: ''
 jobs:
