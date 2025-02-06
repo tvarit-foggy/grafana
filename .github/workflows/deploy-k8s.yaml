@@ -17,9 +17,6 @@ jobs:
         registry: ${{ vars.TVARIT_PROD_AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.TVARIT_PROD_AWS_REGION }}.amazonaws.com
         username: ${{ vars.TVARIT_PROD_AWS_ACCESS_KEY_ID }}
         password: ${{ secrets.TVARIT_PROD_AWS_SECRET_ACCESS_KEY }}
-      env:
-        AWS_ACCESS_KEY_ID: ${{ vars.TVARIT_PROD_AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.TVARIT_PROD_AWS_SECRET_ACCESS_KEY }}
     - name: docker publish to grafana-next
       uses: docker/build-push-action@v5
       with:
