@@ -1,0 +1,50 @@
+name: deploy-to-k8s
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: stage
+    steps:
+    - uses: actions/checkout@v3
+    - name: docker setup
+      uses: docker/setup-buildx-action@v3
+    - name: docker login
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ vars.TVARIT_PROD_AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.TVARIT_PROD_AWS_REGION }}.amazonaws.com
+        username: ${{ vars.TVARIT_PROD_AWS_ACCESS_KEY_ID }}
+        password: ${{ secrets.TVARIT_PROD_AWS_SECRET_ACCESS_KEY }}
+    - name: docker publish to grafana-next
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: Dockerfile
+        tags: ${{ vars.TVARIT_PROD_AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.TVARIT_PROD_AWS_REGION }}.amazonaws.com/tia:grafana-next
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        outputs: |
+          type=registry
+    - uses: trstringer/manual-approval@v1
+      with:
+        secret: ${{ github.TOKEN }}
+        approvers: "${{ vars.APPROVERS }}"
+        minimum-approvals: 1
+        issue-title: "Deploying grafana to production environment"
+        issue-body: "Commit URL: ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}.\n\nTimeout: 6 hrs (auto-cancel after this)."
+        exclude-workflow-initiator-as-approver: false
+        additional-approved-words: ''
+        additional-denied-words: ''
+      timeout-minutes: 360
+    - name: docker publish to grafana
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: Dockerfile
+        tags: ${{ vars.TVARIT_PROD_AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.TVARIT_PROD_AWS_REGION }}.amazonaws.com/tia:grafana
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        outputs: |
+          type=registry
