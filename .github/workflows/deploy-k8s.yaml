@@ -17,16 +17,16 @@ jobs:
         registry: ${{ vars.TVARIT_PROD_AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.TVARIT_PROD_AWS_REGION }}.amazonaws.com
         username: ${{ vars.TVARIT_PROD_AWS_ACCESS_KEY_ID }}
         password: ${{ secrets.TVARIT_PROD_AWS_SECRET_ACCESS_KEY }}
-    - name: docker publish to grafana-next
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        file: Dockerfile
-        tags: ${{ vars.TVARIT_PROD_AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.TVARIT_PROD_AWS_REGION }}.amazonaws.com/tia:grafana-next
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
-        outputs: |
-          type=registry
+    # - name: docker publish to grafana-next
+    #   uses: docker/build-push-action@v5
+    #   with:
+    #     context: .
+    #     file: Dockerfile
+    #     tags: ${{ vars.TVARIT_PROD_AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.TVARIT_PROD_AWS_REGION }}.amazonaws.com/tia:grafana-next
+    #     cache-from: type=gha
+    #     cache-to: type=gha,mode=max
+    #     outputs: |
+    #       type=registry
     - uses: trstringer/manual-approval@v1
       with:
         secret: ${{ github.TOKEN }}
