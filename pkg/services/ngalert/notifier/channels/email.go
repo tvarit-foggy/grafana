@@ -80,7 +80,7 @@ func (en *EmailNotifier) Notify(ctx context.Context, as ...*types.Alert) (bool, 
 		en.log.Debug("failed to parse external URL", "url", en.tmpl.ExternalURL.String(), "err", err.Error())
 	}
 
-	checkUrl := func (input string) bool {
+	checkUrl := func(input string) bool {
 		pattern := `^(https?|ftp)://[^\s/$.?#].[^\s]*$`
 		regex := regexp.MustCompile(pattern)
 		return regex.MatchString(input)
@@ -171,6 +171,7 @@ func (en *EmailNotifier) Notify(ctx context.Context, as ...*types.Alert) (bool, 
 			return ok, err
 		}
 	}
+	data.Alerts = ExtendedAlerts{}
 	return true, nil
 }
 
