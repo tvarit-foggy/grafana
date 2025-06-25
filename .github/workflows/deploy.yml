@@ -41,6 +41,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - run: |
-        bash .github/tvarit/deploy_to_production.sh maxion
+        bash .github/tvarit/deploy_to_production.sh archive-maxion
         bash .github/tvarit/deploy_to_production.sh cloud
     needs: [deploy_to_staging]
